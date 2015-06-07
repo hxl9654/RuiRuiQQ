@@ -1,0 +1,40 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using BaiduCang;
+using System.Net;
+using web;
+namespace SmartQQ
+{
+
+    public partial class Form1 : Form
+    {
+        private HttpWebResponse response;
+        public Form1()
+        {
+            InitializeComponent();
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            bool CAPTCHA = false;
+            String str1 = "https://ssl.ptlogin2.qq.com/check?pt_tea=1&uin=";
+            String str2 = "&appid=501004106&js_ver=10121&js_type=0&login_sig=&u1=http%3A%2F%2Fw.qq.com%2Fproxy.html&r=0.4053995015565306";
+            String tagUrl = str1 + textBoxID.Text + str2;
+            
+            String temp = web.GetUrltoHtml(tagUrl,"UTF-8");
+            String temp1 = temp.Split("ptui_checkVC('".ToCharArray())[0];
+            if(temp1.ToCharArray()[0]=='1')
+            {
+                CAPTCHA = true;
+                
+            }
+        }
+    }
+}

@@ -27,6 +27,12 @@ namespace SmartQQ
         
         private void textBoxID_LostFocus(object sender, EventArgs e)
         {
+            
+
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
             String str1 = "https://ssl.ptlogin2.qq.com/check?pt_tea=1&uin=";
             String str2 = "&appid=501004106&js_ver=10121&js_type=0&login_sig=&u1=http%3A%2F%2Fw.qq.com%2Fproxy.html&r=0.4053995015565306";
             String tagUrl = str1 + textBoxID.Text + str2;
@@ -36,6 +42,7 @@ namespace SmartQQ
             reader = new StreamReader(res.GetResponseStream());
             pin = reader.ReadToEnd();
 
+            MessageBox.Show(pin);
             pin = pin.Replace("ptui_checkVC(", "");
             pin = pin.Replace(");", "");
             pin = pin.Replace("'", "");
@@ -66,12 +73,6 @@ namespace SmartQQ
                 textBoxCAPTCHA.Visible = false;
                 label3.Visible = false;
             }
-
-        }
-
-        private void button1_Click(object sender, EventArgs e)
-        {
-            
         }
 
         private void FormLogin_Load(object sender, EventArgs e)

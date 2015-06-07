@@ -1,0 +1,61 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using System.Net;
+
+namespace SmartQQ
+{
+    bool CAPTCHA = false;
+    public partial class FormLogin : Form
+    {
+        private HttpWebResponse response;
+        public FormLogin()
+        {
+            InitializeComponent();
+        }
+        
+        private void textBoxID_LostFocus(object sender, EventArgs e)
+        {
+            String str1 = "https://ssl.ptlogin2.qq.com/check?pt_tea=1&uin=";
+            String str2 = "&appid=501004106&js_ver=10121&js_type=0&login_sig=&u1=http%3A%2F%2Fw.qq.com%2Fproxy.html&r=0.4053995015565306";
+            String tagUrl = str1 + textBoxID.Text + str2;
+            
+            String temp = postget.GetUrltoHtml(tagUrl, "UTF-8");
+
+            temp = temp.Replace("ptui_checkVC(", "");
+            temp = temp.Replace(");", "");
+            temp = temp.Replace("'", "");
+            string[] tmp = temp.Split(',');
+
+            if(tmp[0]=="1")
+            {
+                CAPTCHA = true;
+
+                this.Size = new Size(this.Size.Width, this.Size.Height + 60);
+                String strimg1="https://ssl.captcha.qq.com/getimage?aid=501004106&r=0.005933324107900262&uin=";
+                String strimg2 ="&cap_cd=";
+                String strimg = strimg1 + textBoxID.Text + strimg2 + tmp[1];
+
+                HttpWebRequest req = (HttpWebRequest)WebRequest.Create(strimg);
+                HttpWebResponse res = (HttpWebResponse)req.GetResponse();
+                pictureBoxCAPTCHA.Image = Image.FromStream(res.GetResponseStream());
+            }
+            else
+            {
+                CAPTCHA = false;
+            }
+
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+
+        }
+    }
+}

@@ -1,2 +1,10 @@
 E:\OneDrive\Dropbox\code\C#\SmartQQ\SmartQQ\SmartQQ\bin\Debug\SmartQQ.exe.config
 E:\OneDrive\Dropbox\code\C#\SmartQQ\SmartQQ\bin\Debug\SmartQQ.exe.config
+E:\OneDrive\Dropbox\code\C#\SmartQQ\SmartQQ\bin\Debug\SmartQQ.exe
+E:\OneDrive\Dropbox\code\C#\SmartQQ\SmartQQ\bin\Debug\SmartQQ.pdb
+E:\OneDrive\Dropbox\code\C#\SmartQQ\SmartQQ\obj\Debug\SmartQQ.csprojResolveAssemblyReference.cache
+E:\OneDrive\Dropbox\code\C#\SmartQQ\SmartQQ\obj\Debug\SmartQQ.csproj.GenerateResource.Cache
+E:\OneDrive\Dropbox\code\C#\SmartQQ\SmartQQ\obj\Debug\SmartQQ.exe
+E:\OneDrive\Dropbox\code\C#\SmartQQ\SmartQQ\obj\Debug\SmartQQ.pdb
+E:\OneDrive\Dropbox\code\C#\SmartQQ\SmartQQ\obj\Debug\SmartQQ.Properties.Resources.resources
+E:\OneDrive\Dropbox\code\C#\SmartQQ\SmartQQ\obj\Debug\SmartQQ.FormLogin.resources

@@ -1,0 +1,55 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+
+namespace SmartQQ
+{
+    private string GetModel(string strUrl)  
+   {  
+    string strRet = null;  
+    try 
+    {  
+     HttpWebRequest request = (HttpWebRequest)WebRequest.Create(strUrl);  
+     request.Timeout = 2000;  
+     HttpWebResponse response = (HttpWebResponse)request.GetResponse();  
+     
+     System.IO.Stream resStream = response.GetResponseStream();    
+     Encoding encode = System.Text.Encoding.Default;  
+     StreamReader readStream = new StreamReader( resStream, encode );  
+ 
+     Char[] read = new Char[256];  
+     int count = readStream.Read( read, 0, 256 );  
+     while (count > 0)  
+     {  
+      String str = new String(read, 0, count);  
+      strRet = strRet + str;  
+      count = readStream.Read(read, 0, 256);  
+     }  
+ 
+     resStream.Close();  
+    }  
+    catch(Exception e)  
+    {  
+     strRet="";  
+    }  
+    return strRet;  
+   }  
+    public partial class Form1 : Form
+    {
+        public Form1()
+        {
+            InitializeComponent();
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+
+        }
+    }
+}
