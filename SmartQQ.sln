@@ -8,6 +8,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{96537B1B-98D0-40AD-A5AD-75BAB9E7E785}"
 	ProjectSection(SolutionItems) = preProject
 		SmartQQ\encode.js = SmartQQ\encode.js
+		SmartQQ\hash.js = SmartQQ\hash.js
 	EndProjectSection
 EndProject
 Global

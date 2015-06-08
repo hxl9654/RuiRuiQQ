@@ -30,7 +30,7 @@ namespace SmartQQ
         HttpWebResponse res = null;
         StreamReader reader = null;
         String CaptchaCode;
-        String p_skey, uin, skey, p_uin, ptwebqq, vfwebqq, psessionid;
+        String p_skey, uin, skey, p_uin, ptwebqq, vfwebqq, psessionid, hash;
         int ClientID = 94659243;
         private void textBoxID_LostFocus(object sender, EventArgs e)
         {
@@ -164,8 +164,14 @@ namespace SmartQQ
             vfwebqq = tmp[14];
             psessionid = tmp[16];
 
+            hash = GetHash(textBoxID.Text,ptwebqq);
+            getFrienf();
+
+            timerHeart.Enabled = true;
             if(CAPTCHA)GetCaptcha();
         }
+
+
         //感谢QQBOT群（346167134） 杨小泡的热心帮助！
         internal static string HexString2Ascii(string hexString)
         {
@@ -179,7 +185,15 @@ namespace SmartQQ
             }
             return res;
         }
-
+        private String GetHash(String no, String ptwebqq)
+        {
+            var scriptEngine = new Jurassic.ScriptEngine();
+            scriptEngine.EnableDebugging = true;
+            scriptEngine.SetGlobalValue("window", new WindowObject(scriptEngine));
+            scriptEngine.ExecuteFile(System.AppDomain.CurrentDomain.BaseDirectory + "hash.js");
+            var ret = scriptEngine.CallGlobalFunction<string>("friendsHash", no, ptwebqq, 0);
+            return ret;
+        }
         internal static string EncodePassword(string password, string token, string bits)
         {
             var scriptEngine = new Jurassic.ScriptEngine();
@@ -220,6 +234,13 @@ namespace SmartQQ
                 }
             }
         } 
+        public void getFrienf()
+        {
+            String url = "http://s.web2.qq.com/api/get_user_friends2";
+            String sendData = string.Format("r={{\"vfwebqq\":\"{0}\",\"hash\":\"{1}\"}}", vfwebqq, this.hash);
+            String dat = PostHtml(url, "http://s.web2.qq.com/proxy.html?v=20130916001&callback=1&id=1", sendData, Encoding.UTF8, true);
+            MessageBox.Show(dat); 
+        }
         private void label3_Click(object sender, EventArgs e)
         {
             GetCaptcha();
@@ -237,6 +258,21 @@ namespace SmartQQ
         public FormLogin()
         {
             InitializeComponent();
+        }
+
+        private void timerHeart_Tick(object sender, EventArgs e)
+        {
+            timerHeart.Stop();
+            String url = "http://d.web2.qq.com/channel/poll2";
+            String sendData1 = "r= {\"ptwebqq\":\"";
+            String sendData2 = "\",\"clientid\":";
+            String sendData3 = ",\"psessionid\":\"";
+            String sendData4 = "\",\"key\":\"\"}";
+            String sendData = sendData1 + ptwebqq + sendData2 + ClientID.ToString() + sendData3 + psessionid + sendData4;
+
+            String dat = PostHtml(url, "http://d.web2.qq.com/proxy.html?v=20130916001&callback=1&id=2", sendData, Encoding.UTF8, true);
+            MessageBox.Show(dat);
+            timerHeart.Start();
         }
     }
     public class WindowObject : ObjectInstance

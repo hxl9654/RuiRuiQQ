@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.buttonLogIn = new System.Windows.Forms.Button();
             this.textBoxID = new System.Windows.Forms.TextBox();
             this.textBoxPassword = new System.Windows.Forms.TextBox();
@@ -36,6 +37,7 @@
             this.label3 = new System.Windows.Forms.Label();
             this.textBoxCAPTCHA = new System.Windows.Forms.TextBox();
             this.pictureBoxCAPTCHA = new System.Windows.Forms.PictureBox();
+            this.timerHeart = new System.Windows.Forms.Timer(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxCAPTCHA)).BeginInit();
             this.SuspendLayout();
             // 
@@ -117,6 +119,11 @@
             this.pictureBoxCAPTCHA.Visible = false;
             this.pictureBoxCAPTCHA.Click += new System.EventHandler(this.pictureBoxCAPTCHA_Click);
             // 
+            // timerHeart
+            // 
+            this.timerHeart.Interval = 1000;
+            this.timerHeart.Tick += new System.EventHandler(this.timerHeart_Tick);
+            // 
             // FormLogin
             // 
             this.AcceptButton = this.buttonLogIn;
@@ -153,6 +160,7 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.TextBox textBoxCAPTCHA;
         private System.Windows.Forms.PictureBox pictureBoxCAPTCHA;
+        private System.Windows.Forms.Timer timerHeart;
     }
 }
 
