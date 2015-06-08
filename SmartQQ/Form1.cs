@@ -30,7 +30,7 @@ namespace SmartQQ
         HttpWebResponse res = null;
         StreamReader reader = null;
         String CaptchaCode;
-        String p_skey, uin, skey, p_uin, ptwebqq;
+        String p_skey, uin, skey, p_uin, ptwebqq, vfwebqq, psessionid;
         int ClientID = 94659243;
         private void textBoxID_LostFocus(object sender, EventArgs e)
         {
@@ -151,8 +151,19 @@ namespace SmartQQ
             //二次登录
             url = "http://d.web2.qq.com/channel/login2";
             url1 = string.Format("r={{\"ptwebqq\":\"{0}\",\"clientid\":{1},\"psessionid\":\"\",\"status\":\"online\"}}", this.ptwebqq, this.ClientID);
-            String dat = PostHtml(url, "http://d.web2.qq.com/proxy.html?v=20130916001&callback=1&id=2", url1, Encoding.UTF8, true);
-            MessageBox.Show(dat);
+            String dat = PostHtml(url, "http://d.web2.qq.com/proxy.html?v=20130916001&callback=1&id=2", url1, Encoding.UTF8, true);            
+
+            char[] t = new char[2];
+            t[0]=':';
+            t[1]=',';
+            dat = dat.Replace("{", "");
+            dat = dat.Replace("}", "");
+            dat = dat.Replace("\"", "");
+            tmp = dat.Split(t);
+
+            vfwebqq = tmp[14];
+            psessionid = tmp[16];
+
             if(CAPTCHA)GetCaptcha();
         }
         //感谢QQBOT群（346167134） 杨小泡的热心帮助！
