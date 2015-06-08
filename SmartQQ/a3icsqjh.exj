@@ -12,8 +12,8 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Windows.Forms;
 using System.Security;
-using Jurassic;
-using Jurassic.Library;
+using QQ加密演算;
+
 namespace SmartQQ
 {
 
@@ -105,9 +105,12 @@ namespace SmartQQ
                 return;
             }
 
-            String tokentemp = System.Text.RegularExpressions.Regex.Replace(pt_uin, @"\\x", "");
-            String token = HexString2Ascii(tokentemp);
-            string key = EncodePassword(textBoxPassword.Text, token, textBoxCAPTCHA.Text.ToUpper());
+            MMYS m = new MMYS();//实例化密码演算的类
+            string key = m.QXWEncodePwd(pt_uin, textBoxPassword.Text, textBoxCAPTCHA.Text.ToUpper());
+            //String key = MD5.MD5_QQ_2_Encrypt(textBoxID.Text, textBoxPassword.Text, textBoxCAPTCHA.Text);
+            //String key = MD5.MD5_QQ_2_Encrypt(pt_uin, textBoxPassword.Text, textBoxCAPTCHA.Text);
+            //String key = MD5.MD5_QQ_2_Encrypt(userid, textBoxPassword.Text, textBoxCAPTCHA.Text);
+            //string key = ExecuteScript(pt_uin, textBoxPassword.Text, textBoxCAPTCHA.Text.ToUpper());
 
             String url1 = "https://ssl.ptlogin2.qq.com/login?u=";
             String url2 = "&p=";
@@ -123,25 +126,12 @@ namespace SmartQQ
             res = (HttpWebResponse)req.GetResponse();
             reader = new StreamReader(res.GetResponseStream());
 
-            pin = reader.ReadToEnd();            
+            pin = reader.ReadToEnd();
+            MessageBox.Show(key);
             MessageBox.Show(pin);
             
             if(CAPTCHA)GetCaptcha();
         }
-        //感谢QQBOT群（346167134） 杨小泡的热心帮助！
-        internal static string HexString2Ascii(string hexString)
-        {
-            string res = String.Empty;
-            for (int a = 0; a < hexString.Length; a = a + 2)
-            {
-                string Char2Convert = hexString.Substring(a, 2);
-                int n = Convert.ToInt32(Char2Convert, 16);
-                char c = (char)n;
-                res += c.ToString();
-            }
-            return res;
-        }
-
         internal static string EncodePassword(string password, string token, string bits)
         {
             var scriptEngine = new Jurassic.ScriptEngine();
@@ -151,7 +141,16 @@ namespace SmartQQ
             var ret = scriptEngine.CallGlobalFunction<string>("getEncryption", password, token, bits, 0);
             return ret;
         }
-        
+        public class WindowObject : ObjectInstance
+        {
+            public WindowObject(ScriptEngine engine)
+                : base(engine.Global)
+            {
+                this.PopulateFunctions();
+            }
+
+            // your methods here
+        }
         private void label3_Click(object sender, EventArgs e)
         {
             GetCaptcha();
@@ -169,15 +168,5 @@ namespace SmartQQ
         {
             InitializeComponent();
         }
-    }
-    public class WindowObject : ObjectInstance
-    {
-        public WindowObject(ScriptEngine engine)
-            : base(engine.Global)
-        {
-            this.PopulateFunctions();
-        }
-
-        // your methods here
     }
 }

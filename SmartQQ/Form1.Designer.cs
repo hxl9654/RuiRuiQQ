@@ -51,6 +51,7 @@
             // 
             // textBoxID
             // 
+            this.textBoxID.Cursor = System.Windows.Forms.Cursors.IBeam;
             this.textBoxID.Location = new System.Drawing.Point(60, 29);
             this.textBoxID.MaxLength = 50;
             this.textBoxID.Name = "textBoxID";
@@ -94,6 +95,7 @@
             this.label3.TabIndex = 5;
             this.label3.Text = "验证码";
             this.label3.Visible = false;
+            this.label3.Click += new System.EventHandler(this.label3_Click);
             // 
             // textBoxCAPTCHA
             // 
@@ -111,6 +113,7 @@
             this.pictureBoxCAPTCHA.TabIndex = 7;
             this.pictureBoxCAPTCHA.TabStop = false;
             this.pictureBoxCAPTCHA.Visible = false;
+            this.pictureBoxCAPTCHA.Click += new System.EventHandler(this.pictureBoxCAPTCHA_Click);
             // 
             // FormLogin
             // 
