@@ -40,8 +40,9 @@ namespace SmartQQ
             String tagUrl = str1 + textBoxID.Text + str2;
 
             req = (HttpWebRequest)WebRequest.Create(tagUrl);
-            res = (HttpWebResponse)req.GetResponse();
+            res = (HttpWebResponse)req.GetResponse();           
             reader = new StreamReader(res.GetResponseStream());
+
             pin = reader.ReadToEnd();
 
             pin = pin.Replace("ptui_checkVC(", "");
@@ -90,6 +91,7 @@ namespace SmartQQ
             pictureBoxCAPTCHA.Image = Image.FromStream(res.GetResponseStream());
 
             ptvsession = res.Cookies["verifysession"].Value;
+
         }
 
         private void buttonLogIn_Click(object sender, EventArgs e)
@@ -129,7 +131,6 @@ namespace SmartQQ
             res = (HttpWebResponse)req.GetResponse();
             reader = new StreamReader(res.GetResponseStream());
 
-
             String temp = reader.ReadToEnd();            
             //二次登录准备
             temp = temp.Replace("ptui_checkVC(", "");
@@ -167,6 +168,7 @@ namespace SmartQQ
 
             hash = GetHash(textBoxID.Text,ptwebqq);
             getFrienf();
+            getGroup();
 
             timerHeart.Enabled = true;
             if(CAPTCHA)GetCaptcha();
@@ -283,6 +285,13 @@ namespace SmartQQ
             String sendData = string.Format("r={{\"vfwebqq\":\"{0}\",\"hash\":\"{1}\"}}", vfwebqq, this.hash);
             String dat = PostHtml(url, "http://s.web2.qq.com/proxy.html?v=20130916001&callback=1&id=1", sendData, Encoding.UTF8, true);
             MessageBox.Show(dat); 
+        }
+        public void getGroup()
+        {
+            String url = "http://s.web2.qq.com/api/get_group_name_list_mask2";
+            String sendData = string.Format("r={{\"vfwebqq\":\"{0}\",\"hash\":\"{1}\"}}", this.vfwebqq, this.hash);
+            String dat = PostHtml(url, "http://s.web2.qq.com/proxy.html?v=20130916001&callback=1&id=1", sendData, Encoding.UTF8, true);
+            MessageBox.Show(dat);
         }
         private void label3_Click(object sender, EventArgs e)
         {
