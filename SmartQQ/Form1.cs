@@ -31,6 +31,7 @@ namespace SmartQQ
         StreamReader reader = null;
         String CaptchaCode;
         String p_skey, uin, skey, p_uin, ptwebqq, vfwebqq, psessionid, hash;
+        public String HeartPackdata;
         int ClientID = 94659243;
         private void textBoxID_LostFocus(object sender, EventArgs e)
         {
@@ -233,7 +234,49 @@ namespace SmartQQ
                     return SR.ReadToEnd();
                 }
             }
-        } 
+        }
+        public void HeartPack()
+        {
+            String url = "http://d.web2.qq.com/channel/poll2";
+            String sendData1 = "r= {\"ptwebqq\":\"";
+            String sendData2 = "\",\"clientid\":";
+            String sendData3 = ",\"psessionid\":\"";
+            String sendData4 = "\",\"key\":\"\"}";
+            HeartPackdata = sendData1 + ptwebqq + sendData2 + ClientID.ToString() + sendData3 + psessionid + sendData4;
+            
+            Encoding encode = Encoding.UTF8;
+            string Referer = "http://d.web2.qq.com/proxy.html?v=20130916001&callback=1&id=2";
+
+            HttpWebRequest req = WebRequest.Create(url) as HttpWebRequest;
+            req.CookieContainer = this.cookies;
+            req.ContentType = "application/x-www-form-urlencoded";
+            req.Method = "POST";
+            req.UserAgent = "Mozilla/5.0 (Windows NT 5.1; rv:30.0) Gecko/20100101 Firefox/30.0";
+            req.Proxy = null;
+            req.ProtocolVersion = HttpVersion.Version10;
+            if (!string.IsNullOrEmpty(Referer))
+                req.Referer = Referer;
+
+            req.BeginGetRequestStream(new AsyncCallback(RequestProceed), req);
+        }
+        private void RequestProceed(IAsyncResult asyncResult)
+        {
+
+            HttpWebRequest request = (HttpWebRequest)asyncResult.AsyncState;
+            StreamWriter postDataWriter = new StreamWriter(request.EndGetRequestStream(asyncResult));
+            postDataWriter.Write(HeartPackdata);            
+            postDataWriter.Close();
+            request.BeginGetResponse(new AsyncCallback(ResponesProceed), request);
+        }
+        private void ResponesProceed(IAsyncResult ar)
+        {
+            StreamReader reader = null;
+            HttpWebRequest req = ar.AsyncState as HttpWebRequest;
+            HttpWebResponse res = req.GetResponse() as HttpWebResponse;
+            reader = new StreamReader(res.GetResponseStream());
+            String temp = reader.ReadToEnd();
+            MessageBox.Show(temp);
+        }
         public void getFrienf()
         {
             String url = "http://s.web2.qq.com/api/get_user_friends2";
@@ -263,15 +306,7 @@ namespace SmartQQ
         private void timerHeart_Tick(object sender, EventArgs e)
         {
             timerHeart.Stop();
-            String url = "http://d.web2.qq.com/channel/poll2";
-            String sendData1 = "r= {\"ptwebqq\":\"";
-            String sendData2 = "\",\"clientid\":";
-            String sendData3 = ",\"psessionid\":\"";
-            String sendData4 = "\",\"key\":\"\"}";
-            String sendData = sendData1 + ptwebqq + sendData2 + ClientID.ToString() + sendData3 + psessionid + sendData4;
-
-            String dat = PostHtml(url, "http://d.web2.qq.com/proxy.html?v=20130916001&callback=1&id=2", sendData, Encoding.UTF8, true);
-            MessageBox.Show(dat);
+            HeartPack();
             timerHeart.Start();
         }
     }
@@ -283,6 +318,7 @@ namespace SmartQQ
             this.PopulateFunctions();
         }
 
-        // your methods here
+
     }
+    
 }
