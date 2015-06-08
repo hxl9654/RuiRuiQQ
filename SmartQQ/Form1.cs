@@ -19,6 +19,9 @@ namespace SmartQQ
 
     public partial class FormLogin : Form
     {
+        CookieContainer cookies = new CookieContainer();
+        CookieCollection CookieCollection = new CookieCollection();
+        CookieContainer CookieContainer = new CookieContainer();
         String ptvsession = "";
         bool CAPTCHA = false;
         string pin = string.Empty;
@@ -27,7 +30,8 @@ namespace SmartQQ
         HttpWebResponse res = null;
         StreamReader reader = null;
         String CaptchaCode;
-
+        String p_skey, uin, skey, p_uin, ptwebqq;
+        int ClientID = 94659243;
         private void textBoxID_LostFocus(object sender, EventArgs e)
         {
             String str1 = "https://ssl.ptlogin2.qq.com/check?pt_tea=1&uin=";
@@ -79,7 +83,7 @@ namespace SmartQQ
             String strimg = strimg1 + textBoxID.Text + strimg2 + CaptchaCode;
 
             req = (HttpWebRequest)WebRequest.Create(strimg);
-            req.CookieContainer = new CookieContainer();
+            req.CookieContainer = cookies;
             res = (HttpWebResponse)req.GetResponse();
 
             pictureBoxCAPTCHA.Image = Image.FromStream(res.GetResponseStream());
@@ -105,6 +109,7 @@ namespace SmartQQ
                 return;
             }
 
+            //一次登录
             String tokentemp = System.Text.RegularExpressions.Regex.Replace(pt_uin, @"\\x", "");
             String token = HexString2Ascii(tokentemp);
             string key = EncodePassword(textBoxPassword.Text, token, textBoxCAPTCHA.Text.ToUpper());
@@ -116,16 +121,38 @@ namespace SmartQQ
             String url5 = "%3Flogin2qq%3D1%26webqq_type%3D10&h=1&ptredirect=0&ptlang=2052&daid=164&from_ui=1&pttype=1";
             String url6 = "&dumy=&fp=loginerroralert&action=0-15-19190&mibao_css=m_webqq&t=1&g=1&js_type=0&js_ver=10123&";
             String url7 = "login_sig=&pt_randsalt=0&pt_vcode_v1=0&pt_verifysession_v1=";
-
             String url = url1 + textBoxID.Text + url2 + key + url3 + textBoxCAPTCHA.Text + url4 + url5 + url6 + url7 + ptvsession;
 
             req = (HttpWebRequest)WebRequest.Create(url);
+            req.CookieContainer = cookies;
             res = (HttpWebResponse)req.GetResponse();
             reader = new StreamReader(res.GetResponseStream());
 
-            pin = reader.ReadToEnd();            
-            MessageBox.Show(pin);
-            
+
+            String temp = reader.ReadToEnd();            
+            //二次登录准备
+            temp = temp.Replace("ptui_checkVC(", "");
+            temp = temp.Replace(");", "");
+            temp = temp.Replace("'", "");
+            string[] tmp = temp.Split(',');
+            url = tmp[2];
+
+            req = (HttpWebRequest)WebRequest.Create(url);
+            req.CookieContainer = cookies;
+            res = (HttpWebResponse)req.GetResponse();
+
+            Uri uri = new Uri("http://web2.qq.com/");
+            ptwebqq = cookies.GetCookies(uri)["ptwebqq"].Value;
+            p_skey = cookies.GetCookies(uri)["p_skey"].Value;
+            uin = cookies.GetCookies(uri)["uin"].Value;
+            skey = cookies.GetCookies(uri)["skey"].Value;
+            p_uin = cookies.GetCookies(uri)["p_uin"].Value;
+
+            //二次登录
+            url = "http://d.web2.qq.com/channel/login2";
+            url1 = string.Format("r={{\"ptwebqq\":\"{0}\",\"clientid\":{1},\"psessionid\":\"\",\"status\":\"online\"}}", this.ptwebqq, this.ClientID);
+            String dat = PostHtml(url, "http://d.web2.qq.com/proxy.html?v=20130916001&callback=1&id=2", url1, Encoding.UTF8, true);
+            MessageBox.Show(dat);
             if(CAPTCHA)GetCaptcha();
         }
         //感谢QQBOT群（346167134） 杨小泡的热心帮助！
@@ -151,7 +178,37 @@ namespace SmartQQ
             var ret = scriptEngine.CallGlobalFunction<string>("getEncryption", password, token, bits, 0);
             return ret;
         }
-        
+        //http://www.itokit.com/2012/0721/74607.html
+        public string PostHtml(string url, string Referer, string data, Encoding encode, bool SaveCookie)
+        {
+            HttpWebRequest req = WebRequest.Create(url) as HttpWebRequest;
+            req.CookieContainer = this.cookies;
+            req.ContentType = "application/x-www-form-urlencoded";
+            req.Method = "POST";
+            req.UserAgent = "Mozilla/5.0 (Windows NT 5.1; rv:30.0) Gecko/20100101 Firefox/30.0";
+            req.Proxy = null;
+            req.ProtocolVersion = HttpVersion.Version10;
+            if (!string.IsNullOrEmpty(Referer))
+                req.Referer = Referer;
+            byte[] mybyte = Encoding.Default.GetBytes(data);
+            req.ContentLength = mybyte.Length;
+            using (Stream stream = req.GetRequestStream())
+            {
+                stream.Write(mybyte, 0, mybyte.Length);
+            }
+            using (HttpWebResponse hwr = req.GetResponse() as HttpWebResponse)
+            {
+                if (SaveCookie)
+                {
+                    this.CookieCollection = hwr.Cookies;
+                    this.cookies.GetCookies(req.RequestUri);
+                }
+                using (StreamReader SR = new StreamReader(hwr.GetResponseStream(), encode))
+                {
+                    return SR.ReadToEnd();
+                }
+            }
+        } 
         private void label3_Click(object sender, EventArgs e)
         {
             GetCaptcha();
@@ -164,6 +221,7 @@ namespace SmartQQ
         private void FormLogin_Load(object sender, EventArgs e)
         {
             this.Size = new Size(230, 160);
+            GetCaptcha();
         }
         public FormLogin()
         {
