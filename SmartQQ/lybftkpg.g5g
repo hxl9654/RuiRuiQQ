@@ -17,7 +17,6 @@ using Jurassic.Library;
 using Newtonsoft.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Timers;
 namespace SmartQQ
 {
 
@@ -209,7 +208,7 @@ namespace SmartQQ
             listBoxFriend.Items.Clear();
             for(int i=0;i<user.result.info.Count;i++)
             {
-                listBoxFriend.Items.Add(user.result.info[i].uin+ ":" + GetRealQQ(user.result.info[i].uin) + ":" + user.result.info[i].nick );
+                listBoxFriend.Items.Add(user.result.info[i].nick + ":" + GetRealQQ(user.result.info[i].uin));
             }
         }
         
@@ -288,31 +287,20 @@ namespace SmartQQ
         }
         String GetRealQQ(string uin)
         {
-
-            String url = "http://s.web2.qq.com/api/get_friend_uin2?tuin=" + uin + "&type=1&vfwebqq=" + vfwebqq + "&t=" + GetTimeStamp();
-        
+            String url = "http://s.web2.qq.com/api/get_friend_uin2?tuin=" + uin + "&type=1&vfwebqq=" + vfwebqq;
             req = (HttpWebRequest)WebRequest.Create(url);
-            req.CookieContainer = cookies;
-            req.Referer = "http://d.web2.qq.com/proxy.html?v=20130916001&callback=1&id=2";
             res = (HttpWebResponse)req.GetResponse();
             reader = new StreamReader(res.GetResponseStream());
 
             pin = reader.ReadToEnd();
 
             textBoxLog.Text = pin;
-
-            if (pin == "{\"retcode\":100101}")
-            {
-                return GetRealQQ(uin);
-            }
             pin = pin.Replace("{\"retcode\":0,\"result\":{\"uiuin\":\"\",\"account\":","");
-            pin = pin.Replace("}", "");
-            pin = pin.Replace("\"uin\":", "");
+            pin = pin.Replace(",\"uin\":3246238445}}", "");
             pin = pin.Replace("\r", "");
             pin = pin.Replace("\n", "");
-            string[] tmp = pin.Split(',');
 
-            return tmp[0];
+            return pin;
         }
         //感谢QQBOT群（346167134） 杨小泡的热心帮助！
         internal static string HexString2Ascii(string hexString)
@@ -485,14 +473,6 @@ namespace SmartQQ
         {
             ReLogin();
         }
-        public static string GetTimeStamp()
-        {
-            TimeSpan ts = DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, 0);
-            string ret = string.Empty;
-            ret = Convert.ToInt64(ts.TotalMilliseconds).ToString();
-
-            return ret;
-        }  
     }
     public class WindowObject : ObjectInstance
     {

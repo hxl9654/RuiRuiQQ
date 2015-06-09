@@ -40,8 +40,9 @@
             this.timerHeart = new System.Windows.Forms.Timer(this.components);
             this.timerTimeOut = new System.Windows.Forms.Timer(this.components);
             this.groupbox1 = new System.Windows.Forms.GroupBox();
+            this.buttonLogout = new System.Windows.Forms.Button();
             this.listBoxLog = new System.Windows.Forms.ListBox();
-            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.textBoxResiveMessage = new System.Windows.Forms.TextBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.listBoxFriend = new System.Windows.Forms.ListBox();
@@ -49,7 +50,8 @@
             this.listBoxGroup = new System.Windows.Forms.ListBox();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
             this.buttonSend = new System.Windows.Forms.Button();
-            this.textBox2 = new System.Windows.Forms.TextBox();
+            this.textBoxSendMessage = new System.Windows.Forms.TextBox();
+            this.textBoxLog = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxCAPTCHA)).BeginInit();
             this.groupbox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -60,7 +62,7 @@
             // 
             // buttonLogIn
             // 
-            this.buttonLogIn.Location = new System.Drawing.Point(62, 73);
+            this.buttonLogIn.Location = new System.Drawing.Point(20, 70);
             this.buttonLogIn.Name = "buttonLogIn";
             this.buttonLogIn.Size = new System.Drawing.Size(75, 23);
             this.buttonLogIn.TabIndex = 0;
@@ -121,6 +123,7 @@
             // textBoxCAPTCHA
             // 
             this.textBoxCAPTCHA.Location = new System.Drawing.Point(8, 142);
+            this.textBoxCAPTCHA.MaxLength = 4;
             this.textBoxCAPTCHA.Name = "textBoxCAPTCHA";
             this.textBoxCAPTCHA.Size = new System.Drawing.Size(68, 21);
             this.textBoxCAPTCHA.TabIndex = 6;
@@ -138,7 +141,7 @@
             // 
             // timerHeart
             // 
-            this.timerHeart.Interval = 1000;
+            this.timerHeart.Interval = 10;
             this.timerHeart.Tick += new System.EventHandler(this.timerHeart_Tick);
             // 
             // timerTimeOut
@@ -148,6 +151,7 @@
             // 
             // groupbox1
             // 
+            this.groupbox1.Controls.Add(this.buttonLogout);
             this.groupbox1.Controls.Add(this.label1);
             this.groupbox1.Controls.Add(this.textBoxCAPTCHA);
             this.groupbox1.Controls.Add(this.pictureBoxCAPTCHA);
@@ -163,6 +167,17 @@
             this.groupbox1.TabStop = false;
             this.groupbox1.Text = "登录";
             // 
+            // buttonLogout
+            // 
+            this.buttonLogout.Enabled = false;
+            this.buttonLogout.Location = new System.Drawing.Point(102, 70);
+            this.buttonLogout.Name = "buttonLogout";
+            this.buttonLogout.Size = new System.Drawing.Size(75, 23);
+            this.buttonLogout.TabIndex = 8;
+            this.buttonLogout.Text = "注销";
+            this.buttonLogout.UseVisualStyleBackColor = true;
+            this.buttonLogout.Click += new System.EventHandler(this.buttonLogout_Click);
+            // 
             // listBoxLog
             // 
             this.listBoxLog.FormattingEnabled = true;
@@ -172,16 +187,17 @@
             this.listBoxLog.Size = new System.Drawing.Size(192, 244);
             this.listBoxLog.TabIndex = 9;
             // 
-            // textBox1
+            // textBoxResiveMessage
             // 
-            this.textBox1.AcceptsTab = true;
-            this.textBox1.BackColor = System.Drawing.SystemColors.Window;
-            this.textBox1.Location = new System.Drawing.Point(6, 17);
-            this.textBox1.Multiline = true;
-            this.textBox1.Name = "textBox1";
-            this.textBox1.ReadOnly = true;
-            this.textBox1.Size = new System.Drawing.Size(294, 325);
-            this.textBox1.TabIndex = 10;
+            this.textBoxResiveMessage.AcceptsTab = true;
+            this.textBoxResiveMessage.BackColor = System.Drawing.SystemColors.Window;
+            this.textBoxResiveMessage.Location = new System.Drawing.Point(6, 17);
+            this.textBoxResiveMessage.Multiline = true;
+            this.textBoxResiveMessage.Name = "textBoxResiveMessage";
+            this.textBoxResiveMessage.ReadOnly = true;
+            this.textBoxResiveMessage.ScrollBars = System.Windows.Forms.ScrollBars.Both;
+            this.textBoxResiveMessage.Size = new System.Drawing.Size(314, 333);
+            this.textBoxResiveMessage.TabIndex = 10;
             // 
             // groupBox2
             // 
@@ -198,7 +214,7 @@
             this.groupBox3.Controls.Add(this.listBoxFriend);
             this.groupBox3.Location = new System.Drawing.Point(226, 12);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(208, 270);
+            this.groupBox3.Size = new System.Drawing.Size(264, 270);
             this.groupBox3.TabIndex = 12;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "好友列表";
@@ -208,7 +224,7 @@
             this.listBoxFriend.ItemHeight = 12;
             this.listBoxFriend.Location = new System.Drawing.Point(10, 20);
             this.listBoxFriend.Name = "listBoxFriend";
-            this.listBoxFriend.Size = new System.Drawing.Size(192, 244);
+            this.listBoxFriend.Size = new System.Drawing.Size(248, 244);
             this.listBoxFriend.TabIndex = 9;
             // 
             // groupBox4
@@ -216,7 +232,7 @@
             this.groupBox4.Controls.Add(this.listBoxGroup);
             this.groupBox4.Location = new System.Drawing.Point(226, 288);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(208, 173);
+            this.groupBox4.Size = new System.Drawing.Size(264, 173);
             this.groupBox4.TabIndex = 13;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "群组列表";
@@ -227,17 +243,17 @@
             this.listBoxGroup.ItemHeight = 12;
             this.listBoxGroup.Location = new System.Drawing.Point(6, 19);
             this.listBoxGroup.Name = "listBoxGroup";
-            this.listBoxGroup.Size = new System.Drawing.Size(196, 148);
+            this.listBoxGroup.Size = new System.Drawing.Size(252, 148);
             this.listBoxGroup.TabIndex = 9;
             // 
             // groupBox5
             // 
             this.groupBox5.Controls.Add(this.buttonSend);
-            this.groupBox5.Controls.Add(this.textBox2);
-            this.groupBox5.Controls.Add(this.textBox1);
-            this.groupBox5.Location = new System.Drawing.Point(440, 12);
+            this.groupBox5.Controls.Add(this.textBoxSendMessage);
+            this.groupBox5.Controls.Add(this.textBoxResiveMessage);
+            this.groupBox5.Location = new System.Drawing.Point(496, 12);
             this.groupBox5.Name = "groupBox5";
-            this.groupBox5.Size = new System.Drawing.Size(306, 443);
+            this.groupBox5.Size = new System.Drawing.Size(326, 449);
             this.groupBox5.TabIndex = 14;
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "聊天信息";
@@ -245,37 +261,48 @@
             // buttonSend
             // 
             this.buttonSend.Enabled = false;
-            this.buttonSend.Location = new System.Drawing.Point(249, 356);
+            this.buttonSend.Location = new System.Drawing.Point(269, 356);
             this.buttonSend.Name = "buttonSend";
-            this.buttonSend.Size = new System.Drawing.Size(51, 81);
+            this.buttonSend.Size = new System.Drawing.Size(51, 87);
             this.buttonSend.TabIndex = 12;
             this.buttonSend.Text = "发送";
             this.buttonSend.UseVisualStyleBackColor = true;
             // 
-            // textBox2
+            // textBoxSendMessage
             // 
-            this.textBox2.AcceptsTab = true;
-            this.textBox2.BackColor = System.Drawing.SystemColors.Window;
-            this.textBox2.Location = new System.Drawing.Point(0, 356);
-            this.textBox2.Multiline = true;
-            this.textBox2.Name = "textBox2";
-            this.textBox2.ReadOnly = true;
-            this.textBox2.Size = new System.Drawing.Size(236, 81);
-            this.textBox2.TabIndex = 11;
+            this.textBoxSendMessage.AcceptsTab = true;
+            this.textBoxSendMessage.BackColor = System.Drawing.SystemColors.Window;
+            this.textBoxSendMessage.Location = new System.Drawing.Point(0, 356);
+            this.textBoxSendMessage.Multiline = true;
+            this.textBoxSendMessage.Name = "textBoxSendMessage";
+            this.textBoxSendMessage.ReadOnly = true;
+            this.textBoxSendMessage.ScrollBars = System.Windows.Forms.ScrollBars.Both;
+            this.textBoxSendMessage.Size = new System.Drawing.Size(263, 87);
+            this.textBoxSendMessage.TabIndex = 11;
+            // 
+            // textBoxLog
+            // 
+            this.textBoxLog.Location = new System.Drawing.Point(12, 467);
+            this.textBoxLog.Multiline = true;
+            this.textBoxLog.Name = "textBoxLog";
+            this.textBoxLog.ReadOnly = true;
+            this.textBoxLog.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.textBoxLog.Size = new System.Drawing.Size(810, 32);
+            this.textBoxLog.TabIndex = 15;
             // 
             // FormLogin
             // 
             this.AcceptButton = this.buttonSend;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(758, 473);
+            this.ClientSize = new System.Drawing.Size(834, 502);
+            this.Controls.Add(this.textBoxLog);
             this.Controls.Add(this.groupBox5);
             this.Controls.Add(this.groupBox4);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupbox1);
             this.MaximizeBox = false;
-            this.MaximumSize = new System.Drawing.Size(774, 511);
             this.MinimumSize = new System.Drawing.Size(774, 511);
             this.Name = "FormLogin";
             this.Text = "Smart QQ Robot";
@@ -289,6 +316,7 @@
             this.groupBox5.ResumeLayout(false);
             this.groupBox5.PerformLayout();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -306,7 +334,7 @@
         private System.Windows.Forms.Timer timerTimeOut;
         private System.Windows.Forms.GroupBox groupbox1;
         private System.Windows.Forms.ListBox listBoxLog;
-        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.TextBox textBoxResiveMessage;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.ListBox listBoxFriend;
@@ -314,7 +342,9 @@
         private System.Windows.Forms.ListBox listBoxGroup;
         private System.Windows.Forms.GroupBox groupBox5;
         private System.Windows.Forms.Button buttonSend;
-        private System.Windows.Forms.TextBox textBox2;
+        private System.Windows.Forms.TextBox textBoxSendMessage;
+        private System.Windows.Forms.Button buttonLogout;
+        private System.Windows.Forms.TextBox textBoxLog;
     }
 }
 
