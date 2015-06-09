@@ -118,7 +118,6 @@
             this.label3.TabIndex = 5;
             this.label3.Text = "验证码";
             this.label3.Visible = false;
-            this.label3.Click += new System.EventHandler(this.label3_Click);
             // 
             // textBoxCAPTCHA
             // 
@@ -226,6 +225,7 @@
             this.listBoxFriend.Name = "listBoxFriend";
             this.listBoxFriend.Size = new System.Drawing.Size(248, 244);
             this.listBoxFriend.TabIndex = 9;
+            this.listBoxFriend.SelectedIndexChanged += new System.EventHandler(this.listBoxFriend_SelectedIndexChanged);
             // 
             // groupBox4
             // 
@@ -245,6 +245,7 @@
             this.listBoxGroup.Name = "listBoxGroup";
             this.listBoxGroup.Size = new System.Drawing.Size(252, 148);
             this.listBoxGroup.TabIndex = 9;
+            this.listBoxGroup.SelectedIndexChanged += new System.EventHandler(this.listBoxGroup_SelectedIndexChanged);
             // 
             // groupBox5
             // 
@@ -267,15 +268,16 @@
             this.buttonSend.TabIndex = 12;
             this.buttonSend.Text = "发送";
             this.buttonSend.UseVisualStyleBackColor = true;
+            this.buttonSend.Click += new System.EventHandler(this.buttonSend_Click);
             // 
             // textBoxSendMessage
             // 
             this.textBoxSendMessage.AcceptsTab = true;
             this.textBoxSendMessage.BackColor = System.Drawing.SystemColors.Window;
+            this.textBoxSendMessage.ImeMode = System.Windows.Forms.ImeMode.On;
             this.textBoxSendMessage.Location = new System.Drawing.Point(0, 356);
             this.textBoxSendMessage.Multiline = true;
             this.textBoxSendMessage.Name = "textBoxSendMessage";
-            this.textBoxSendMessage.ReadOnly = true;
             this.textBoxSendMessage.ScrollBars = System.Windows.Forms.ScrollBars.Both;
             this.textBoxSendMessage.Size = new System.Drawing.Size(263, 87);
             this.textBoxSendMessage.TabIndex = 11;
