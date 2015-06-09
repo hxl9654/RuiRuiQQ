@@ -16,7 +16,8 @@ namespace SmartQQ
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new FormLogin());
+            FormLogin formlogin = new FormLogin();
+            Application.Run(formlogin);
         }
     }
 }
