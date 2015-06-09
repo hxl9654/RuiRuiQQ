@@ -16,7 +16,6 @@ using Jurassic;
 using Jurassic.Library;
 using Newtonsoft.Json;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Timers;
 namespace SmartQQ
 {
@@ -147,6 +146,7 @@ namespace SmartQQ
         }
         private void HeartPackAction(string temp)
         {
+            string GName="";
             if (temp == "{\"retcode\":121,\"t\":\"0\"}\r\n")
             {
                 ReLogin();
@@ -173,13 +173,14 @@ namespace SmartQQ
                 {
                     ReLogin();
                     MessageBox.Show(result.result[i].value.reason);
+                    return;
                 }
                 else if (result.result[i].poll_type == "message")
                 {
                     for (int j = 0; j < user.result.info.Count; j++)
                         if (user.result.info[j].uin == result.result[i].value.from_uin)
                         {
-                            textBoxResiveMessage.Text += (user.result.info[j].nick + "\n" + result.result[i].value.content[1] + "\n");
+                            textBoxResiveMessage.Text += (user.result.info[j].nick + "  " + GetRealQQ(user.result.info[j].uin) + Environment.NewLine + result.result[i].value.content[1].ToString() + Environment.NewLine);
                         }
                 }
                 else if (result.result[i].poll_type == "group_message")
@@ -187,15 +188,16 @@ namespace SmartQQ
                     for (int j = 0; j < group.result.gnamelist.Count; j++)
                         if (group.result.gnamelist[j].gid == result.result[i].value.from_uin)
                         {
-                            string GName = group.result.gnamelist[j].name;
+                            GName = group.result.gnamelist[j].name;
                         }
                     for (int j = 0; j < user.result.info.Count; j++)
                         if (user.result.info[j].uin == result.result[i].value.send_uin)
                         {
-                            textBoxResiveMessage.Text += (user.result.info[j].nick + "\n" + result.result[i].value.content[1] + "\n");
+                            textBoxResiveMessage.Text += (GName + "   " + user.result.info[j].nick + "  " + GetRealQQ(user.result.info[j].uin) + Environment.NewLine + result.result[i].value.content[1].ToString() + Environment.NewLine);
                         }
                 }
-               textBoxLog.Text = temp;
+                ReInitTimerTimeOur();
+                textBoxLog.Text = temp;
             }               
         }
         public void getFrienf()
@@ -224,7 +226,7 @@ namespace SmartQQ
             listBoxGroup.Items.Clear();
             for (int i = 0; i < group.result.gnamelist.Count; i++)
             {
-                listBoxGroup.Items.Add(group.result.gnamelist[i].name + ":" + group.result.gnamelist[i].gid);
+                listBoxGroup.Items.Add(group.result.gnamelist[i].gid + ":" + group.result.gnamelist[i].name);
             }
         }
         private void textBoxID_LostFocus(object sender, EventArgs e)
@@ -416,9 +418,8 @@ namespace SmartQQ
             HttpWebResponse res = req.GetResponse() as HttpWebResponse;
             reader = new StreamReader(res.GetResponseStream());
             String temp = reader.ReadToEnd();
-
-            timerHeart.Start();
-            HeartPackAction(temp);                      
+           
+            HeartPackAction(temp);       
         }
 
         private void label3_Click(object sender, EventArgs e)
@@ -446,10 +447,9 @@ namespace SmartQQ
         private void timerHeart_Tick(object sender, EventArgs e)
         {
             int n = 0;
-            timerHeart.Stop();
             n++;
-            if (n == 5) getFrienf();
-            else if (n == 10)
+            if (n == 7) getFrienf();
+            else if (n == 14)
             {
                 getGroup();
                 n = 0;
@@ -573,7 +573,7 @@ namespace SmartQQ
             public class paramValue
             {
                 //收到消息
-                public string content;
+                public List<object> content;
                 public string from_uin;
                 //群消息有send_uin，为群号
                 public string send_uin;
