@@ -34,64 +34,7 @@ namespace SmartQQ
         String p_skey, uin, skey, p_uin, ptwebqq, vfwebqq, psessionid, hash;
         public String HeartPackdata;
         int ClientID = 94659243;
-        private void textBoxID_LostFocus(object sender, EventArgs e)
-        {
-            String str1 = "https://ssl.ptlogin2.qq.com/check?pt_tea=1&uin=";
-            String str2 = "&appid=501004106&js_ver=10121&js_type=0&login_sig=&u1=http%3A%2F%2Fw.qq.com%2Fproxy.html&r=0.4053995015565306";
-            String tagUrl = str1 + textBoxID.Text + str2;
 
-            req = (HttpWebRequest)WebRequest.Create(tagUrl);
-            res = (HttpWebResponse)req.GetResponse();           
-            reader = new StreamReader(res.GetResponseStream());
-
-            pin = reader.ReadToEnd();
-
-            pin = pin.Replace("ptui_checkVC(", "");
-            pin = pin.Replace(");", "");
-            pin = pin.Replace("'", "");
-            string[] tmp = pin.Split(',');
-
-            pt_uin = tmp[2];
-
-            if (tmp[0] == "1")
-            {
-                CAPTCHA = true;
-
-                CaptchaCode = tmp[1];
-                GetCaptcha();
-
-                pictureBoxCAPTCHA.Visible = true;
-                textBoxCAPTCHA.Visible = true;
-                label3.Visible = true;
-            }
-            else
-            {
-                CAPTCHA = false;
-                pictureBoxCAPTCHA.Visible = false;
-                textBoxCAPTCHA.Visible = false;
-                label3.Visible = false;
-                textBoxCAPTCHA.Text = tmp[1];
-                ptvsession = tmp[3];
-            }
-
-        }
-        public void GetCaptcha()
-        {
-            textBoxCAPTCHA.Text = "";
-
-            String strimg1 = "https://ssl.captcha.qq.com/getimage?aid=501004106&r=0.005933324107900262&uin=";
-            String strimg2 = "&cap_cd=";
-            String strimg = strimg1 + textBoxID.Text + strimg2 + CaptchaCode;
-
-            req = (HttpWebRequest)WebRequest.Create(strimg);
-            req.CookieContainer = cookies;
-            res = (HttpWebResponse)req.GetResponse();
-
-            pictureBoxCAPTCHA.Image = Image.FromStream(res.GetResponseStream());
-
-            ptvsession = res.Cookies["verifysession"].Value;
-
-        }
 
         private void buttonLogIn_Click(object sender, EventArgs e)
         {
@@ -181,8 +124,81 @@ namespace SmartQQ
             textBoxCAPTCHA.Visible = false;
             textBoxCAPTCHA.Text = "";
         }
+        public void getFrienf()
+        {
+            String url = "http://s.web2.qq.com/api/get_user_friends2";
+            String sendData = string.Format("r={{\"vfwebqq\":\"{0}\",\"hash\":\"{1}\"}}", vfwebqq, this.hash);
+            String dat = PostHtml(url, "http://s.web2.qq.com/proxy.html?v=20130916001&callback=1&id=1", sendData, Encoding.UTF8, true);
 
+            JsonFriendModel user = (JsonFriendModel)JsonConvert.DeserializeObject(dat, typeof(JsonFriendModel));
 
+        }
+        public void getGroup()
+        {
+            String url = "http://s.web2.qq.com/api/get_group_name_list_mask2";
+            String sendData = string.Format("r={{\"vfwebqq\":\"{0}\",\"hash\":\"{1}\"}}", this.vfwebqq, this.hash);
+            String dat = PostHtml(url, "http://s.web2.qq.com/proxy.html?v=20130916001&callback=1&id=1", sendData, Encoding.UTF8, true);
+
+            JsonGroupModel group = (JsonGroupModel)JsonConvert.DeserializeObject(dat, typeof(JsonGroupModel));
+        }
+        private void textBoxID_LostFocus(object sender, EventArgs e)
+        {
+            String str1 = "https://ssl.ptlogin2.qq.com/check?pt_tea=1&uin=";
+            String str2 = "&appid=501004106&js_ver=10121&js_type=0&login_sig=&u1=http%3A%2F%2Fw.qq.com%2Fproxy.html&r=0.4053995015565306";
+            String tagUrl = str1 + textBoxID.Text + str2;
+
+            req = (HttpWebRequest)WebRequest.Create(tagUrl);
+            res = (HttpWebResponse)req.GetResponse();
+            reader = new StreamReader(res.GetResponseStream());
+
+            pin = reader.ReadToEnd();
+
+            pin = pin.Replace("ptui_checkVC(", "");
+            pin = pin.Replace(");", "");
+            pin = pin.Replace("'", "");
+            string[] tmp = pin.Split(',');
+
+            pt_uin = tmp[2];
+
+            if (tmp[0] == "1")
+            {
+                CAPTCHA = true;
+
+                CaptchaCode = tmp[1];
+                GetCaptcha();
+
+                pictureBoxCAPTCHA.Visible = true;
+                textBoxCAPTCHA.Visible = true;
+                label3.Visible = true;
+            }
+            else
+            {
+                CAPTCHA = false;
+                pictureBoxCAPTCHA.Visible = false;
+                textBoxCAPTCHA.Visible = false;
+                label3.Visible = false;
+                textBoxCAPTCHA.Text = tmp[1];
+                ptvsession = tmp[3];
+            }
+
+        }
+        public void GetCaptcha()
+        {
+            textBoxCAPTCHA.Text = "";
+
+            String strimg1 = "https://ssl.captcha.qq.com/getimage?aid=501004106&r=0.005933324107900262&uin=";
+            String strimg2 = "&cap_cd=";
+            String strimg = strimg1 + textBoxID.Text + strimg2 + CaptchaCode;
+
+            req = (HttpWebRequest)WebRequest.Create(strimg);
+            req.CookieContainer = cookies;
+            res = (HttpWebResponse)req.GetResponse();
+
+            pictureBoxCAPTCHA.Image = Image.FromStream(res.GetResponseStream());
+
+            ptvsession = res.Cookies["verifysession"].Value;
+
+        }
         //感谢QQBOT群（346167134） 杨小泡的热心帮助！
         internal static string HexString2Ascii(string hexString)
         {
@@ -253,7 +269,7 @@ namespace SmartQQ
             String sendData3 = ",\"psessionid\":\"";
             String sendData4 = "\",\"key\":\"\"}";
             HeartPackdata = sendData1 + ptwebqq + sendData2 + ClientID.ToString() + sendData3 + psessionid + sendData4;
-            
+
             Encoding encode = Encoding.UTF8;
             string Referer = "http://d.web2.qq.com/proxy.html?v=20130916001&callback=1&id=2";
 
@@ -274,7 +290,7 @@ namespace SmartQQ
 
             HttpWebRequest request = (HttpWebRequest)asyncResult.AsyncState;
             StreamWriter postDataWriter = new StreamWriter(request.EndGetRequestStream(asyncResult));
-            postDataWriter.Write(HeartPackdata);            
+            postDataWriter.Write(HeartPackdata);
             postDataWriter.Close();
             request.BeginGetResponse(new AsyncCallback(ResponesProceed), request);
         }
@@ -287,36 +303,13 @@ namespace SmartQQ
             String temp = reader.ReadToEnd();
             if (temp == "{\"retcode\":102,\"errmsg\":\"\"}\r\n")
                 ReInitTimerTimeOur();
-                
+
 
             MessageBox.Show(temp);
-        }
-        public void getFrienf()
-        {
-            String url = "http://s.web2.qq.com/api/get_user_friends2";
-            String sendData = string.Format("r={{\"vfwebqq\":\"{0}\",\"hash\":\"{1}\"}}", vfwebqq, this.hash);
-            String dat = PostHtml(url, "http://s.web2.qq.com/proxy.html?v=20130916001&callback=1&id=1", sendData, Encoding.UTF8, true);
-
-            JsonFriendModel user = (JsonFriendModel)JsonConvert.DeserializeObject(dat, typeof(JsonFriendModel));
-
-        }
-        public void getGroup()
-        {
-            String url = "http://s.web2.qq.com/api/get_group_name_list_mask2";
-            String sendData = string.Format("r={{\"vfwebqq\":\"{0}\",\"hash\":\"{1}\"}}", this.vfwebqq, this.hash);
-            String dat = PostHtml(url, "http://s.web2.qq.com/proxy.html?v=20130916001&callback=1&id=1", sendData, Encoding.UTF8, true);
-
-            JsonGroupModel group = (JsonGroupModel)JsonConvert.DeserializeObject(dat, typeof(JsonGroupModel));
         }
         private void label3_Click(object sender, EventArgs e)
         {
             GetCaptcha();
-        }
-        private void ReInitTimerTimeOur()
-        {
-            timerTimeOut.Stop();
-            timerTimeOut.Interval = 60000;
-            timerTimeOut.Start();
         }
         private void pictureBoxCAPTCHA_Click(object sender, EventArgs e)
         {
@@ -330,14 +323,18 @@ namespace SmartQQ
         {
             InitializeComponent();
         }
-
+        private void ReInitTimerTimeOur()
+        {
+            timerTimeOut.Stop();
+            timerTimeOut.Interval = 60000;
+            timerTimeOut.Start();
+        }
         private void timerHeart_Tick(object sender, EventArgs e)
         {
             timerHeart.Stop();
             HeartPack();
             timerHeart.Start();
         }
-
         private void timerTimeOut_Tick(object sender, EventArgs e)
         {
             timerHeart.Stop();
