@@ -59,7 +59,6 @@ namespace SmartQQ
 
                 CaptchaCode = tmp[1];
                 GetCaptcha();
-                this.Size = new Size(230, 220);
 
                 pictureBoxCAPTCHA.Visible = true;
                 textBoxCAPTCHA.Visible = true;
@@ -68,7 +67,6 @@ namespace SmartQQ
             else
             {
                 CAPTCHA = false;
-                this.Size = new Size(230, 160);
                 pictureBoxCAPTCHA.Visible = false;
                 textBoxCAPTCHA.Visible = false;
                 label3.Visible = false;
@@ -172,7 +170,16 @@ namespace SmartQQ
             getGroup();
 
             timerHeart.Enabled = true;
-            if(CAPTCHA)GetCaptcha();
+            timerTimeOut.Enabled = true;
+
+            textBoxID.Enabled = false;
+            textBoxPassword.Enabled = false;
+            buttonSend.Enabled = true;
+            buttonLogIn.Enabled = false;
+            label3.Visible = false;
+            pictureBoxCAPTCHA.Visible = false;
+            textBoxCAPTCHA.Visible = false;
+            textBoxCAPTCHA.Text = "";
         }
 
 
@@ -278,6 +285,10 @@ namespace SmartQQ
             HttpWebResponse res = req.GetResponse() as HttpWebResponse;
             reader = new StreamReader(res.GetResponseStream());
             String temp = reader.ReadToEnd();
+            if (temp == "{\"retcode\":102,\"errmsg\":\"\"}\r\n")
+                ReInitTimerTimeOur();
+                
+
             MessageBox.Show(temp);
         }
         public void getFrienf()
@@ -301,15 +312,19 @@ namespace SmartQQ
         {
             GetCaptcha();
         }
-
+        private void ReInitTimerTimeOur()
+        {
+            timerTimeOut.Stop();
+            timerTimeOut.Interval = 60000;
+            timerTimeOut.Start();
+        }
         private void pictureBoxCAPTCHA_Click(object sender, EventArgs e)
         {
             GetCaptcha();
         }
         private void FormLogin_Load(object sender, EventArgs e)
         {
-            this.Size = new Size(230, 160);
-            GetCaptcha();
+
         }
         public FormLogin()
         {
@@ -321,6 +336,22 @@ namespace SmartQQ
             timerHeart.Stop();
             HeartPack();
             timerHeart.Start();
+        }
+
+        private void timerTimeOut_Tick(object sender, EventArgs e)
+        {
+            timerHeart.Stop();
+            timerTimeOut.Stop();
+
+            textBoxID.Enabled = true;
+            textBoxPassword.Enabled = true;
+            buttonSend.Enabled = false;
+            buttonLogIn.Enabled = true;
+            label3.Visible = true;
+            pictureBoxCAPTCHA.Visible = true;
+            textBoxCAPTCHA.Visible = true;
+            MessageBox.Show("网络异常，请重新登录");
+            if (CAPTCHA) GetCaptcha();
         }
     }
     public class WindowObject : ObjectInstance
