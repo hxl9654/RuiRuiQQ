@@ -14,6 +14,7 @@ using System.Windows.Forms;
 using System.Security;
 using Jurassic;
 using Jurassic.Library;
+using Newtonsoft.Json;
 namespace SmartQQ
 {
 
@@ -284,14 +285,17 @@ namespace SmartQQ
             String url = "http://s.web2.qq.com/api/get_user_friends2";
             String sendData = string.Format("r={{\"vfwebqq\":\"{0}\",\"hash\":\"{1}\"}}", vfwebqq, this.hash);
             String dat = PostHtml(url, "http://s.web2.qq.com/proxy.html?v=20130916001&callback=1&id=1", sendData, Encoding.UTF8, true);
-            MessageBox.Show(dat); 
+
+            JsonFriendModel user = (JsonFriendModel)JsonConvert.DeserializeObject(dat, typeof(JsonFriendModel));
+
         }
         public void getGroup()
         {
             String url = "http://s.web2.qq.com/api/get_group_name_list_mask2";
             String sendData = string.Format("r={{\"vfwebqq\":\"{0}\",\"hash\":\"{1}\"}}", this.vfwebqq, this.hash);
             String dat = PostHtml(url, "http://s.web2.qq.com/proxy.html?v=20130916001&callback=1&id=1", sendData, Encoding.UTF8, true);
-            MessageBox.Show(dat);
+
+            JsonGroupModel group = (JsonGroupModel)JsonConvert.DeserializeObject(dat, typeof(JsonGroupModel));
         }
         private void label3_Click(object sender, EventArgs e)
         {
@@ -326,8 +330,65 @@ namespace SmartQQ
         {
             this.PopulateFunctions();
         }
-
-
     }
-    
+    //http://www.cnblogs.com/lianmin/p/4237723.html (有较大修改）
+    class JsonFriendModel
+    {
+        public int retcode ;
+        public paramResult result;
+        public class paramResult
+        {
+            /// 分组信息
+            public List<paramCategories> categories;
+            /// 好友汇总
+            public List<paramFriends> friends;
+            /// 好友信息
+            public List<paramInfo> info;
+            /// 备注
+            public List<paramMarkNames> marknames;
+            /// 分组
+            public class paramCategories
+            {
+                public int index;
+                public int sort;
+                public string name;
+            }
+            /// 好友汇总 
+            public class paramFriends
+            {
+                public int flag;
+                public string uin;
+                public int categories;
+            }
+            /// 好友信息
+            public class paramInfo
+            {
+                public int face;
+                public string nick;
+                public string uin;
+            }
+            /// 备注 
+            public class paramMarkNames
+            {
+                public string uin;
+                public string markname;
+            }
+        }
+    }
+    class JsonGroupModel
+    {
+        public int retcode;
+        public paramResult result;
+        public class paramResult
+        {
+            public List<paramGnamelist> gnamelist;
+            public class paramGnamelist
+            {
+                public string flag;
+                public string gid;
+                public string code;
+                public string name;
+            }
+        }
+    } 
 }

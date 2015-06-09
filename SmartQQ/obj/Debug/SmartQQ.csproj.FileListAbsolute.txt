@@ -11,3 +11,4 @@ E:\OneDrive\Dropbox\code\C#\SmartQQ\SmartQQ\obj\Debug\SmartQQ.FormLogin.resource
 E:\OneDrive\Dropbox\code\C#\SmartQQ\SmartQQ\obj\Debug\Interop.MSScriptControl.dll
 E:\OneDrive\Dropbox\code\C#\SmartQQ\SmartQQ\obj\Debug\SmartQQ.csproj.ResolveComReference.cache
 E:\OneDrive\Dropbox\code\C#\SmartQQ\SmartQQ\bin\Debug\Jurassic.dll
+E:\OneDrive\Dropbox\code\C#\SmartQQ\SmartQQ\bin\Debug\Newtonsoft.Json.dll
