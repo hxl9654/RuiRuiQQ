@@ -38,6 +38,12 @@ namespace SmartQQ
         int ClientID = 94659243;
         JsonGroupModel group;
         JsonFriendModel user;
+        struct GroupMember
+        {
+            public String gid;
+            public JsonGroupMemberModel Menber;
+        };
+        GroupMember[] groupmember = new GroupMember[100];
         private void buttonLogIn_Click(object sender, EventArgs e)
         {
             if (textBoxID.Text.Length == 0)
@@ -93,7 +99,8 @@ namespace SmartQQ
             url = tmp[2];
             if(url == "")
             {
-                buttonLogIn_Click(this, EventArgs.Empty);
+                MessageBox.Show("登录失败，请重试");
+                if (CAPTCHA) GetCaptcha();
                 return;
             }
             req = (HttpWebRequest)WebRequest.Create(url);
@@ -167,7 +174,11 @@ namespace SmartQQ
                 {
                     for (int j = 0; j < user.result.info.Count; j++)
                         if (user.result.info[j].uin == result.result[i].value.uin)
+                        {
                             listBoxLog.Items.Add(user.result.info[j].nick + "  " + result.result[i].value.status);
+                            break;
+                        }
+                            
                 }
                 else if (result.result[i].poll_type == "kick_message")
                 {
@@ -181,20 +192,33 @@ namespace SmartQQ
                         if (user.result.info[j].uin == result.result[i].value.from_uin)
                         {
                             textBoxResiveMessage.Text += (user.result.info[j].nick + "  " + GetRealQQ(user.result.info[j].uin) + Environment.NewLine + result.result[i].value.content[1].ToString() + Environment.NewLine);
+                            break;
                         }
                 }
                 else if (result.result[i].poll_type == "group_message")
                 {
+                    string gid;
+                    gid = result.result[i].value.from_uin;
                     for (int j = 0; j < group.result.gnamelist.Count; j++)
-                        if (group.result.gnamelist[j].gid == result.result[i].value.from_uin)
+                        if (group.result.gnamelist[j].gid == gid)
                         {
                             GName = group.result.gnamelist[j].name;
+                            break;
                         }
-                    for (int j = 0; j < user.result.info.Count; j++)
-                        if (user.result.info[j].uin == result.result[i].value.send_uin)
+                    for (int j = 0; ;j++ )
+                    {
+                        if (groupmember[j].gid == gid)
                         {
-                            textBoxResiveMessage.Text += (GName + "   " + user.result.info[j].nick + "  " + GetRealQQ(user.result.info[j].uin) + Environment.NewLine + result.result[i].value.content[1].ToString() + Environment.NewLine);
+                            for (int k = 0; k < groupmember[j].Menber.result.minfo.Count; k++)
+                                if (groupmember[j].Menber.result.minfo[k].uin == result.result[i].value.send_uin)
+                                {
+                                    textBoxResiveMessage.Text += (GName + "   " + groupmember[j].Menber.result.minfo[k].nick + "  " + GetRealQQ(groupmember[j].Menber.result.minfo[k].uin) + Environment.NewLine + result.result[i].value.content[1].ToString() + Environment.NewLine);
+                                    break;
+                                }
+                            break;
                         }
+                    }
+                        
                 }
                 ReInitTimerTimeOur();
                 textBoxLog.Text = temp;
@@ -214,7 +238,23 @@ namespace SmartQQ
                 listBoxFriend.Items.Add(user.result.info[i].uin+ ":" + GetRealQQ(user.result.info[i].uin) + ":" + user.result.info[i].nick );
             }
         }
-        
+        public JsonGroupMemberModel GetGroupMenber(string gcode)
+        {
+            string dat;
+            String url = "http://s.web2.qq.com/api/get_group_info_ext2?gcode=" + gcode + "&vfwebqq=" + vfwebqq + "&t=" + GetTimeStamp();
+
+            req = (HttpWebRequest)WebRequest.Create(url);
+            req.CookieContainer = cookies;
+            req.Referer = "http://d.web2.qq.com/proxy.html?v=20130916001&callback=1&id=2";
+            res = (HttpWebResponse)req.GetResponse();
+            reader = new StreamReader(res.GetResponseStream());
+
+            dat = reader.ReadToEnd();
+
+            textBoxLog.Text = dat;
+            JsonGroupMemberModel ans = (JsonGroupMemberModel)JsonConvert.DeserializeObject(dat, typeof(JsonGroupMemberModel));
+            return ans;
+        }
         public void getGroup()
         {
             String url = "http://s.web2.qq.com/api/get_group_name_list_mask2";
@@ -227,6 +267,8 @@ namespace SmartQQ
             for (int i = 0; i < group.result.gnamelist.Count; i++)
             {
                 listBoxGroup.Items.Add(group.result.gnamelist[i].gid + ":" + group.result.gnamelist[i].name);
+                groupmember[i].gid = group.result.gnamelist[i].gid;
+                groupmember[i].Menber = GetGroupMenber(group.result.gnamelist[i].code);               
             }
         }
         private void textBoxID_LostFocus(object sender, EventArgs e)
@@ -559,6 +601,24 @@ namespace SmartQQ
                 public string gid;
                 public string code;
                 public string name;
+            }
+        }
+    }
+    public class JsonGroupMemberModel
+    {
+        public int retcode;
+        public paramResult result;
+        public class paramResult
+        {
+            public List<paramMinfo> minfo;
+            public class paramMinfo
+            {
+                public string nick;
+                public string province;
+                public string gender;
+                public string uin;
+                public string country;
+                public string city;
             }
         }
     }
