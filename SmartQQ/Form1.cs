@@ -98,7 +98,6 @@ namespace SmartQQ
 
             string temp = HttpGet(url);
 
-            textBoxLog.Text = temp;
             //二次登录准备
             temp = temp.Replace("ptui_checkVC(", "");
             temp = temp.Replace(");", "");
@@ -545,7 +544,7 @@ namespace SmartQQ
             this.MsgId++;
             try
             {
-                string postData = "r={\"to\":" + uid;
+                string postData = "{\"to\":" + uid;
                 postData += ",\"content\":\"[\\\"" + content.Replace(Environment.NewLine, "\\\\n");
                 postData += "\\\",[\\\"font\\\",{\\\"name\\\":\\\"宋体\\\",\\\"size\\\":10,\\\"style\\\":[0,0,0],\\\"color\\\":\\\"000000\\\"}]]\",\"face\":585,\"clientid\":" + ClientID;
                 postData += ",\"msg_id\":" + MsgId;
@@ -554,6 +553,7 @@ namespace SmartQQ
 
                 string referer = "http://d.web2.qq.com/proxy.html?v=20130916001&callback=1&id=2";
                 string url = "http://d.web2.qq.com/channel/send_buddy_msg2";
+                postData = "r=" + HttpUtility.UrlEncode(postData);
 
                 string dat = HttpPost(url, referer, postData, Encoding.UTF8, false);
 
@@ -578,15 +578,17 @@ namespace SmartQQ
             this.MsgId++;
             try
             {
-                string postData = "r={\"group_uin\":" + gin;
-                postData += ",\"content\":\"[\\\"" + content.Replace(Environment.NewLine, "\\\\n");
-                postData += "\\\",[\\\"font\\\",{\\\"name\\\":\\\"宋体\\\",\\\"size\\\":10,\\\"style\\\":[0,0,0],\\\"color\\\":\\\"000000\\\"}]]\",\"face\":549,\"clientid\":" + ClientID;
-                postData += ",\"msg_id\":" + MsgId;
-                postData += ",\"psessionid\":\"" + psessionid;
-                postData += "\"}";
+                string postData = "{\"group_uin\":" + gin
+                    + ",\"content\":\"[\\\"" + content.Replace(Environment.NewLine, "\\\\n")
+                    + "\\\",[\\\"font\\\",{\\\"name\\\":\\\"宋体\\\",\\\"size\\\":10,\\\"style\\\":[0,0,0],\\\"color\\\":\\\"000000\\\"}]]\",\"face\":549,\"clientid\":" + ClientID
+                    + ",\"msg_id\":" + MsgId
+                    + ",\"psessionid\":\"" + psessionid
+                    + "\"}";
+                postData = "r=" + HttpUtility.UrlEncode(postData);
                
                 string referer = "http://d.web2.qq.com/proxy.html?v=20130916001&callback=1&id=2";
                 string url = "http://d.web2.qq.com/channel/send_qun_msg2";
+
                 string dat = HttpPost(url, referer, postData, Encoding.UTF8, false);
 
                 dat = dat.Replace("{\"retcode\":", "");
