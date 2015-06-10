@@ -179,6 +179,7 @@
             this.listBoxLog.Name = "listBoxLog";
             this.listBoxLog.Size = new System.Drawing.Size(192, 244);
             this.listBoxLog.TabIndex = 9;
+            this.listBoxLog.SelectedIndexChanged += new System.EventHandler(this.listBoxLog_SelectedIndexChanged);
             // 
             // textBoxResiveMessage
             // 
@@ -299,7 +300,8 @@
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupbox1);
             this.MaximizeBox = false;
-            this.MinimumSize = new System.Drawing.Size(774, 511);
+            this.MaximumSize = new System.Drawing.Size(850, 540);
+            this.MinimumSize = new System.Drawing.Size(850, 540);
             this.Name = "FormLogin";
             this.Text = "Smart QQ Robot";
             this.Load += new System.EventHandler(this.FormLogin_Load);

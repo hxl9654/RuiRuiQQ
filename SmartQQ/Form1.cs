@@ -3,19 +3,10 @@ using Jurassic.Library;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.IO;
-using System.Linq;
 using System.Net;
-using System.Security;
-using System.Security.Cryptography;
 using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Timers;
 using System.Web;
 using System.Windows.Forms;
 namespace SmartQQ
@@ -39,7 +30,7 @@ namespace SmartQQ
         int ClientID = 1659243;
         JsonGroupModel group;
         JsonFriendModel user;
-        bool IsGroupSelent = false;
+        bool IsGroupSelent = false, IsFriendSelent = false;
         bool DoNotChangeSelentGroupOrPeople = false;
         bool StopSendingHeartPack = false;
         struct GroupMember
@@ -682,6 +673,8 @@ namespace SmartQQ
         {
             if (textBoxSendMessage.Text.Equals(""))
                 return;
+            if (!(IsFriendSelent || IsGroupSelent))
+                return;
             StopSendingHeartPack = true;
             if(IsGroupSelent)
             {
@@ -699,7 +692,7 @@ namespace SmartQQ
                 textBoxResiveMessage.SelectionStart = textBoxResiveMessage.TextLength;
                 textBoxResiveMessage.ScrollToCaret();
             }
-            else if (listBoxFriend.SelectedItem != null)
+            else if (IsFriendSelent)
             {
                 string Nick = "";
                 string[] tmp = listBoxFriend.SelectedItem.ToString().Split(':');
@@ -723,6 +716,7 @@ namespace SmartQQ
         {
             if (DoNotChangeSelentGroupOrPeople) return;
             IsGroupSelent = false;
+            IsFriendSelent = true;
             DoNotChangeSelentGroupOrPeople = true;
             listBoxGroup.SelectedItem = (ListBox.SelectedObjectCollection)null;
             DoNotChangeSelentGroupOrPeople = false;
@@ -732,9 +726,15 @@ namespace SmartQQ
         {
             if (DoNotChangeSelentGroupOrPeople) return;
             IsGroupSelent = true;
+            IsFriendSelent = false;
             DoNotChangeSelentGroupOrPeople = true;
             listBoxFriend.SelectedItem = (ListBox.SelectedObjectCollection)null;
             DoNotChangeSelentGroupOrPeople = false;
+        }
+
+        private void listBoxLog_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            listBoxLog.SelectedIndex = listBoxLog.Items.Count - 1;
         }
     }
     public class WindowObject : ObjectInstance
