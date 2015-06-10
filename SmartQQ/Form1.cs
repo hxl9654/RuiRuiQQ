@@ -96,13 +96,7 @@ namespace SmartQQ
             String url7 = "login_sig=&pt_randsalt=0&pt_vcode_v1=0&pt_verifysession_v1=";
             String url = url1 + textBoxID.Text + url2 + key + url3 + textBoxCAPTCHA.Text + url4 + url5 + url6 + url7 + ptvsession;
 
-            req = (HttpWebRequest)WebRequest.Create(url);
-            req.CookieContainer = cookies;
-            res = (HttpWebResponse)req.GetResponse();
-            reader = new StreamReader(res.GetResponseStream());
-
-            String temp = reader.ReadToEnd();
-            res.Close();
+            string temp = HttpGet(url);
 
             textBoxLog.Text = temp;
             //二次登录准备
@@ -118,10 +112,7 @@ namespace SmartQQ
                 return;
             }
 
-            req = (HttpWebRequest)WebRequest.Create(url);
-            req.CookieContainer = cookies;
-            res = (HttpWebResponse)req.GetResponse();
-            res.Close();
+            HttpGet(url);
 
             Uri uri = new Uri("http://web2.qq.com/");
             ptwebqq = cookies.GetCookies(uri)["ptwebqq"].Value;
@@ -133,7 +124,7 @@ namespace SmartQQ
             //二次登录
             url = "http://d.web2.qq.com/channel/login2";
             url1 = string.Format("r={{\"ptwebqq\":\"{0}\",\"clientid\":{1},\"psessionid\":\"\",\"status\":\"online\"}}", this.ptwebqq, this.ClientID);
-            String dat = PostHtml(url, "http://d.web2.qq.com/proxy.html?v=20130916001&callback=1&id=2", url1, Encoding.UTF8, true);
+            String dat = HttpPost(url, "http://d.web2.qq.com/proxy.html?v=20130916001&callback=1&id=2", url1, Encoding.UTF8, true);
 
             textBoxLog.Text = dat;
             char[] t = new char[2];
@@ -245,7 +236,7 @@ namespace SmartQQ
         {
             String url = "http://s.web2.qq.com/api/get_user_friends2";
             String sendData = string.Format("r={{\"vfwebqq\":\"{0}\",\"hash\":\"{1}\"}}", vfwebqq, this.hash);
-            String dat = PostHtml(url, "http://s.web2.qq.com/proxy.html?v=20130916001&callback=1&id=1", sendData, Encoding.UTF8, true);
+            String dat = HttpPost(url, "http://s.web2.qq.com/proxy.html?v=20130916001&callback=1&id=1", sendData, Encoding.UTF8, true);
             textBoxLog.Text = dat;
 
             user = (JsonFriendModel)JsonConvert.DeserializeObject(dat, typeof(JsonFriendModel));
@@ -265,19 +256,9 @@ namespace SmartQQ
         }
         public JsonGroupMemberModel GetGroupMenber(string gcode)
         {
-            string dat;
             String url = "http://s.web2.qq.com/api/get_group_info_ext2?gcode=" + gcode + "&vfwebqq=" + vfwebqq + "&t=" + GetTimeStamp();
+            string dat = HttpGet(url);
 
-            req = (HttpWebRequest)WebRequest.Create(url);
-            req.CookieContainer = cookies;
-            req.Referer = "http://d.web2.qq.com/proxy.html?v=20130916001&callback=1&id=2";
-            res = (HttpWebResponse)req.GetResponse();
-            reader = new StreamReader(res.GetResponseStream());
-
-            dat = reader.ReadToEnd();
-            res.Close();
-
-            textBoxLog.Text = dat;
             JsonGroupMemberModel ans = (JsonGroupMemberModel)JsonConvert.DeserializeObject(dat, typeof(JsonGroupMemberModel));
             return ans;
         }
@@ -285,7 +266,7 @@ namespace SmartQQ
         {
             String url = "http://s.web2.qq.com/api/get_group_name_list_mask2";
             String sendData = string.Format("r={{\"vfwebqq\":\"{0}\",\"hash\":\"{1}\"}}", this.vfwebqq, this.hash);
-            String dat = PostHtml(url, "http://s.web2.qq.com/proxy.html?v=20130916001&callback=1&id=1", sendData, Encoding.UTF8, true);
+            String dat = HttpPost(url, "http://s.web2.qq.com/proxy.html?v=20130916001&callback=1&id=1", sendData, Encoding.UTF8, true);
             textBoxLog.Text = dat;
 
             group = (JsonGroupModel)JsonConvert.DeserializeObject(dat, typeof(JsonGroupModel));
@@ -299,19 +280,9 @@ namespace SmartQQ
         }
         public JsonFriendInfModel GetFriendInf(string uin)
         {        
-            string dat;
             String url = "http://s.web2.qq.com/api/get_friend_info2?tuin=" + uin + "&vfwebqq=" + vfwebqq +"&clientid="+ClientID+"&psessionid="+psessionid+ "&t=" + GetTimeStamp();
 
-            req = (HttpWebRequest)WebRequest.Create(url);
-            req.CookieContainer = cookies;
-            req.Referer = "http://d.web2.qq.com/proxy.html?v=20130916001&callback=1&id=2";
-            res = (HttpWebResponse)req.GetResponse();
-            reader = new StreamReader(res.GetResponseStream());
-
-            dat = reader.ReadToEnd();
-            res.Close();
-
-            textBoxLog.Text = dat;
+            string dat = HttpGet(url);
             JsonFriendInfModel ans = (JsonFriendInfModel)JsonConvert.DeserializeObject(dat, typeof(JsonFriendInfModel));
             return ans;
         }
@@ -319,20 +290,14 @@ namespace SmartQQ
         {
             String str1 = "https://ssl.ptlogin2.qq.com/check?pt_tea=1&uin=";
             String str2 = "&appid=501004106&js_ver=10121&js_type=0&login_sig=&u1=http%3A%2F%2Fw.qq.com%2Fproxy.html&r=0.4053995015565306";
-            String tagUrl = str1 + textBoxID.Text + str2;
+            String url = str1 + textBoxID.Text + str2;
 
-            req = (HttpWebRequest)WebRequest.Create(tagUrl);
-            res = (HttpWebResponse)req.GetResponse();
-            reader = new StreamReader(res.GetResponseStream());
+            string dat = HttpGet(url);
 
-            pin = reader.ReadToEnd();
-            res.Close();
-
-            textBoxLog.Text = pin;
-            pin = pin.Replace("ptui_checkVC(", "");
-            pin = pin.Replace(");", "");
-            pin = pin.Replace("'", "");
-            string[] tmp = pin.Split(',');
+            dat = dat.Replace("ptui_checkVC(", "");
+            dat = dat.Replace(");", "");
+            dat = dat.Replace("'", "");
+            string[] tmp = dat.Split(',');
 
             pt_uin = tmp[2];
 
@@ -379,28 +344,19 @@ namespace SmartQQ
         {
 
             String url = "http://s.web2.qq.com/api/get_friend_uin2?tuin=" + uin + "&type=1&vfwebqq=" + vfwebqq + "&t=" + GetTimeStamp();
-        
-            req = (HttpWebRequest)WebRequest.Create(url);
-            req.CookieContainer = cookies;
-            req.Referer = "http://d.web2.qq.com/proxy.html?v=20130916001&callback=1&id=2";
-            res = (HttpWebResponse)req.GetResponse();
-            reader = new StreamReader(res.GetResponseStream());
 
-            pin = reader.ReadToEnd();
-            res.Close();
+            string dat = HttpGet(url);
 
-            textBoxLog.Text = pin;
-
-            if (pin == "{\"retcode\":100101}")
+            if (dat == "{\"retcode\":100101}")
             {
                 return GetRealQQ(uin);
             }
-            pin = pin.Replace("{\"retcode\":0,\"result\":{\"uiuin\":\"\",\"account\":","");
-            pin = pin.Replace("}", "");
-            pin = pin.Replace("\"uin\":", "");
-            pin = pin.Replace("\r", "");
-            pin = pin.Replace("\n", "");
-            string[] tmp = pin.Split(',');
+            dat = dat.Replace("{\"retcode\":0,\"result\":{\"uiuin\":\"\",\"account\":", "");
+            dat = dat.Replace("}", "");
+            dat = dat.Replace("\"uin\":", "");
+            dat = dat.Replace("\r", "");
+            dat = dat.Replace("\n", "");
+            string[] tmp = dat.Split(',');
 
             return tmp[0];
         }
@@ -435,8 +391,23 @@ namespace SmartQQ
             var ret = scriptEngine.CallGlobalFunction<string>("getEncryption", password, token, bits, 0);
             return ret;
         }
+        public string HttpGet(string url)
+        {
+            string dat;
+            req = (HttpWebRequest)WebRequest.Create(url);
+            req.CookieContainer = cookies;
+            req.Referer = "http://d.web2.qq.com/proxy.html?v=20130916001&callback=1&id=2";
+            res = (HttpWebResponse)req.GetResponse();
+            reader = new StreamReader(res.GetResponseStream());
+
+            dat = reader.ReadToEnd();
+            res.Close();
+
+            textBoxLog.Text = dat;
+            return dat;
+        }
         //http://www.itokit.com/2012/0721/74607.html
-        public string PostHtml(string url, string Referer, string data, Encoding encode, bool SaveCookie)
+        public string HttpPost(string url, string Referer, string data, Encoding encode, bool SaveCookie)
         {          
             HttpWebRequest req = WebRequest.Create(url) as HttpWebRequest;
             req.CookieContainer = this.cookies;
@@ -584,7 +555,7 @@ namespace SmartQQ
                 string referer = "http://d.web2.qq.com/proxy.html?v=20130916001&callback=1&id=2";
                 string url = "http://d.web2.qq.com/channel/send_buddy_msg2";
 
-                string dat = PostHtml(url, referer, postData, Encoding.UTF8, false);
+                string dat = HttpPost(url, referer, postData, Encoding.UTF8, false);
 
                 dat = dat.Replace("{\"retcode\":", "");
                 dat = dat.Replace("\"result\":\"", "");
@@ -616,7 +587,7 @@ namespace SmartQQ
                
                 string referer = "http://d.web2.qq.com/proxy.html?v=20130916001&callback=1&id=2";
                 string url = "http://d.web2.qq.com/channel/send_qun_msg2";
-                string dat = PostHtml(url, referer, postData, Encoding.UTF8, false);
+                string dat = HttpPost(url, referer, postData, Encoding.UTF8, false);
 
                 dat = dat.Replace("{\"retcode\":", "");
                 dat = dat.Replace("\"result\":\"", "");
