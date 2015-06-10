@@ -54,7 +54,7 @@ namespace SmartQQ
             public JsonFriendInfModel Inf;
         };
         FriendInf[] friendinf = new FriendInf[1000];
-
+        int friendinfMaxIndex = 0;
         private int MsgId = 76523245;
         private void buttonLogIn_Click(object sender, EventArgs e)
         {
@@ -196,7 +196,8 @@ namespace SmartQQ
                 }
                 else if (result.result[i].poll_type == "message")
                 {
-                    for (int j = 0; j < user.result.info.Count; j++)
+                    int j;                    
+                    for (j = 0; j < user.result.info.Count; j++)
                         if (user.result.info[j].uin == result.result[i].value.from_uin)
                         {
                             textBoxResiveMessage.Text += (user.result.info[j].nick + "  " + GetRealQQ(user.result.info[j].uin) + Environment.NewLine + result.result[i].value.content[1].ToString() + Environment.NewLine + Environment.NewLine);
@@ -204,11 +205,24 @@ namespace SmartQQ
                             textBoxResiveMessage.ScrollToCaret();
                             break;
                         }
+                    if(j == user.result.info.Count)
+                    {
+                        getFrienf();
+                        for (j = 0; j < user.result.info.Count; j++)
+                            if (user.result.info[j].uin == result.result[i].value.from_uin)
+                            {
+                                textBoxResiveMessage.Text += (user.result.info[j].nick + "  " + GetRealQQ(user.result.info[j].uin) + Environment.NewLine + result.result[i].value.content[1].ToString() + Environment.NewLine + Environment.NewLine);
+                                textBoxResiveMessage.SelectionStart = textBoxResiveMessage.TextLength;
+                                textBoxResiveMessage.ScrollToCaret();
+                                break;
+                            }
+                    }
+                    ActionWhenResivedMessage(result.result[i].value.from_uin, result.result[i].value.content[1].ToString());
                 }
                 else if (result.result[i].poll_type == "group_message")
-                {
+                {                    
                     string gid;
-                    gid = result.result[i].value.from_uin;
+                    gid = result.result[i].value.from_uin;                   
                     for (int j = 0; j < group.result.gnamelist.Count; j++)
                         if (group.result.gnamelist[j].gid == gid)
                         {
@@ -230,10 +244,50 @@ namespace SmartQQ
                             break;
                         }
                     }
+                    ActionWhenResivedGroupMessage(gid, result.result[i].value.content[1].ToString());
                         
                 }
                 textBoxLog.Text = temp;
             }               
+        }
+        private void ActionWhenResivedGroupMessage(string gid, string message)
+        {
+            string MessageToSend;
+            MessageToSend = "可爱的小睿睿收到了消息：" + Environment.NewLine + message;
+            MessageToGroup(gid, MessageToSend);
+        }
+        private void ActionWhenResivedMessage(string uin, string message)
+        {
+            int i;
+            string SenderName = "";
+            string Gender = "";
+            for (i = 0; i <= friendinfMaxIndex; i++)
+                if (friendinf[i].uin == uin)
+                {
+                    SenderName = friendinf[i].Inf.result.nick;
+                    Gender = friendinf[i].Inf.result.gender;
+                    break;
+                }
+            if (i > friendinfMaxIndex)
+            {
+                getFrienf();
+                for (i = 0; i <= friendinfMaxIndex; i++)
+                    if (friendinf[i].uin == uin)
+                    {
+                        SenderName = friendinf[i].Inf.result.nick;
+                        Gender = friendinf[i].Inf.result.gender;
+                        break;
+                    }
+            }
+            if (Gender == "female")
+                Gender = "大美女 ";
+            else if (Gender == "male")
+                Gender = "大帅哥 ";
+            else
+                Gender = " ";
+            string MessageToSend;
+            MessageToSend = "可爱的小睿睿收到了" + Gender + SenderName + " 的消息：" + Environment.NewLine + message;
+            MessageToFriend(uin, MessageToSend);
         }
         public void getFrienf()
         {
@@ -249,6 +303,8 @@ namespace SmartQQ
                 string gender;
                 friendinf[i].uin = user.result.info[i].uin;
                 friendinf[i].Inf = GetFriendInf(user.result.info[i].uin);
+                if (friendinfMaxIndex < i)
+                    friendinfMaxIndex = i;
                 if (friendinf[i].Inf.result.gender.Equals("female"))
                     gender = "妹纸";
                 else if (friendinf[i].Inf.result.gender.Equals("male"))
@@ -405,13 +461,14 @@ namespace SmartQQ
 
             dat = reader.ReadToEnd();
             res.Close();
-
+            req.Abort();
             textBoxLog.Text = dat;
             return dat;
         }
         //http://www.itokit.com/2012/0721/74607.html
         public string HttpPost(string url, string Referer, string data, Encoding encode, bool SaveCookie)
-        {          
+        {
+            System.GC.Collect();
             HttpWebRequest req = WebRequest.Create(url) as HttpWebRequest;
             req.CookieContainer = this.cookies;
             req.ContentType = "application/x-www-form-urlencoded";
@@ -437,13 +494,16 @@ namespace SmartQQ
                 this.cookies.GetCookies(req.RequestUri);
             }
             StreamReader SR = new StreamReader(hwr.GetResponseStream(), encode);
-
-            return SR.ReadToEnd();
+            string dat = SR.ReadToEnd();
+            hwr.Close();
+            req.Abort();
+            return dat;
 
 
         }
         public void HeartPack()
         {
+            System.GC.Collect();
             String url = "http://d.web2.qq.com/channel/poll2";
             String sendData1 = "r= {\"ptwebqq\":\"";
             String sendData2 = "\",\"clientid\":";
@@ -483,7 +543,7 @@ namespace SmartQQ
             reader = new StreamReader(res.GetResponseStream());
             String temp = reader.ReadToEnd();
             res.Close();
-            
+            req.Abort();
             HeartPackAction(temp);       
         }
         private void pictureBoxCAPTCHA_Click(object sender, EventArgs e)
@@ -493,7 +553,7 @@ namespace SmartQQ
         private void FormLogin_Load(object sender, EventArgs e)
         {
             Control.CheckForIllegalCrossThreadCalls = false;
-            System.Net.ServicePointManager.DefaultConnectionLimit = 50;
+            System.Net.ServicePointManager.DefaultConnectionLimit = 500;
         }
         public FormLogin()
         {
@@ -501,14 +561,14 @@ namespace SmartQQ
         }
         private void timerHeart_Tick(object sender, EventArgs e)
         {
-            int n = 0;
+            /*int n = 0;
             n++;
             if (n % 10 == 0) getFrienf();
             else if (n == 35)
             {
                 getGroup();
                 n = 0;
-            }
+            }*/
             if(!StopSendingHeartPack)HeartPack();          
         }
         public void ReLogin()
