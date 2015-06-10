@@ -38,7 +38,6 @@
             this.textBoxCAPTCHA = new System.Windows.Forms.TextBox();
             this.pictureBoxCAPTCHA = new System.Windows.Forms.PictureBox();
             this.timerHeart = new System.Windows.Forms.Timer(this.components);
-            this.timerTimeOut = new System.Windows.Forms.Timer(this.components);
             this.groupbox1 = new System.Windows.Forms.GroupBox();
             this.buttonLogout = new System.Windows.Forms.Button();
             this.listBoxLog = new System.Windows.Forms.ListBox();
@@ -142,11 +141,6 @@
             // 
             this.timerHeart.Interval = 1000;
             this.timerHeart.Tick += new System.EventHandler(this.timerHeart_Tick);
-            // 
-            // timerTimeOut
-            // 
-            this.timerTimeOut.Interval = 60000;
-            this.timerTimeOut.Tick += new System.EventHandler(this.timerTimeOut_Tick);
             // 
             // groupbox1
             // 
@@ -333,7 +327,6 @@
         private System.Windows.Forms.TextBox textBoxCAPTCHA;
         private System.Windows.Forms.PictureBox pictureBoxCAPTCHA;
         private System.Windows.Forms.Timer timerHeart;
-        private System.Windows.Forms.Timer timerTimeOut;
         private System.Windows.Forms.GroupBox groupbox1;
         private System.Windows.Forms.ListBox listBoxLog;
         private System.Windows.Forms.TextBox textBoxResiveMessage;

@@ -1,4 +1,7 @@
-﻿using System;
+﻿using Jurassic;
+using Jurassic.Library;
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -6,17 +9,15 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Security;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
+using System.Timers;
 using System.Web;
 using System.Windows.Forms;
-using System.Security;
-using Jurassic;
-using Jurassic.Library;
-using Newtonsoft.Json;
-using System.Threading;
-using System.Timers;
 namespace SmartQQ
 {
 
@@ -35,15 +36,26 @@ namespace SmartQQ
         String CaptchaCode;
         String p_skey, uin, skey, p_uin, ptwebqq, vfwebqq, psessionid, hash;
         public String HeartPackdata;
-        int ClientID = 94659243;
+        int ClientID = 1659243;
         JsonGroupModel group;
         JsonFriendModel user;
+        bool IsGroupSelent = false;
+        bool DoNotChangeSelentGroupOrPeople = false;
+        bool StopSendingHeartPack = false;
         struct GroupMember
         {
             public String gid;
             public JsonGroupMemberModel Menber;
         };
         GroupMember[] groupmember = new GroupMember[100];
+        struct FriendInf
+        {
+            public String uin;
+            public JsonFriendInfModel Inf;
+        };
+        FriendInf[] friendinf = new FriendInf[1000];
+
+        private int MsgId = 76523245;
         private void buttonLogIn_Click(object sender, EventArgs e)
         {
             if (textBoxID.Text.Length == 0)
@@ -90,6 +102,8 @@ namespace SmartQQ
             reader = new StreamReader(res.GetResponseStream());
 
             String temp = reader.ReadToEnd();
+            res.Close();
+
             textBoxLog.Text = temp;
             //二次登录准备
             temp = temp.Replace("ptui_checkVC(", "");
@@ -103,9 +117,11 @@ namespace SmartQQ
                 if (CAPTCHA) GetCaptcha();
                 return;
             }
+
             req = (HttpWebRequest)WebRequest.Create(url);
             req.CookieContainer = cookies;
             res = (HttpWebResponse)req.GetResponse();
+            res.Close();
 
             Uri uri = new Uri("http://web2.qq.com/");
             ptwebqq = cookies.GetCookies(uri)["ptwebqq"].Value;
@@ -137,9 +153,7 @@ namespace SmartQQ
 
             listBoxLog.Items.Add("账号" + textBoxID.Text + "登录成功");
             timerHeart.Enabled = true;
-            timerTimeOut.Enabled = true;
             timerHeart.Start();
-            timerTimeOut.Start();
 
             textBoxID.Enabled = false;
             textBoxPassword.Enabled = false;
@@ -157,16 +171,20 @@ namespace SmartQQ
             if (temp == "{\"retcode\":121,\"t\":\"0\"}\r\n")
             {
                 ReLogin();
+                textBoxLog.Text = temp;
                 MessageBox.Show("账号在其他地点登录，被迫退出");
                 return;
             }
             else if (temp == "{\"retcode\":102,\"errmsg\":\"\"}\r\n" || temp == "{\"retcode\":0,\"result\":\"ok\"}\r\n")
             {
-                ReInitTimerTimeOur();
+                textBoxLog.Text = temp;
                 return;
             }
             else if (temp == "{\"retcode\":108,\"errmsg\":\"\"}\r\n")
+            {
+                textBoxLog.Text = temp;
                 return;
+            }               
             JsonHeartPackResponse result = (JsonHeartPackResponse)JsonConvert.DeserializeObject(temp, typeof(JsonHeartPackResponse));
             for (int i = 0; i < result.result.Count; i++ )
             {
@@ -220,7 +238,6 @@ namespace SmartQQ
                     }
                         
                 }
-                ReInitTimerTimeOur();
                 textBoxLog.Text = temp;
             }               
         }
@@ -235,7 +252,15 @@ namespace SmartQQ
             listBoxFriend.Items.Clear();
             for(int i=0;i<user.result.info.Count;i++)
             {
-                listBoxFriend.Items.Add(user.result.info[i].uin+ ":" + GetRealQQ(user.result.info[i].uin) + ":" + user.result.info[i].nick );
+                string gender;
+                friendinf[i].uin = user.result.info[i].uin;
+                friendinf[i].Inf = GetFriendInf(user.result.info[i].uin);
+                if (friendinf[i].Inf.result.gender.Equals("female"))
+                    gender = "妹纸";
+                else if (friendinf[i].Inf.result.gender.Equals("male"))
+                    gender = "汉子";
+                else gender = "未知";
+                listBoxFriend.Items.Add(user.result.info[i].uin + ":" + GetRealQQ(user.result.info[i].uin) + ":" + user.result.info[i].nick + ":" + gender);
             }
         }
         public JsonGroupMemberModel GetGroupMenber(string gcode)
@@ -250,6 +275,7 @@ namespace SmartQQ
             reader = new StreamReader(res.GetResponseStream());
 
             dat = reader.ReadToEnd();
+            res.Close();
 
             textBoxLog.Text = dat;
             JsonGroupMemberModel ans = (JsonGroupMemberModel)JsonConvert.DeserializeObject(dat, typeof(JsonGroupMemberModel));
@@ -271,6 +297,24 @@ namespace SmartQQ
                 groupmember[i].Menber = GetGroupMenber(group.result.gnamelist[i].code);               
             }
         }
+        public JsonFriendInfModel GetFriendInf(string uin)
+        {        
+            string dat;
+            String url = "http://s.web2.qq.com/api/get_friend_info2?tuin=" + uin + "&vfwebqq=" + vfwebqq +"&clientid="+ClientID+"&psessionid="+psessionid+ "&t=" + GetTimeStamp();
+
+            req = (HttpWebRequest)WebRequest.Create(url);
+            req.CookieContainer = cookies;
+            req.Referer = "http://d.web2.qq.com/proxy.html?v=20130916001&callback=1&id=2";
+            res = (HttpWebResponse)req.GetResponse();
+            reader = new StreamReader(res.GetResponseStream());
+
+            dat = reader.ReadToEnd();
+            res.Close();
+
+            textBoxLog.Text = dat;
+            JsonFriendInfModel ans = (JsonFriendInfModel)JsonConvert.DeserializeObject(dat, typeof(JsonFriendInfModel));
+            return ans;
+        }
         private void textBoxID_LostFocus(object sender, EventArgs e)
         {
             String str1 = "https://ssl.ptlogin2.qq.com/check?pt_tea=1&uin=";
@@ -282,6 +326,7 @@ namespace SmartQQ
             reader = new StreamReader(res.GetResponseStream());
 
             pin = reader.ReadToEnd();
+            res.Close();
 
             textBoxLog.Text = pin;
             pin = pin.Replace("ptui_checkVC(", "");
@@ -328,7 +373,7 @@ namespace SmartQQ
             pictureBoxCAPTCHA.Image = Image.FromStream(res.GetResponseStream());
 
             ptvsession = res.Cookies["verifysession"].Value;
-
+            res.Close();
         }
         String GetRealQQ(string uin)
         {
@@ -342,6 +387,7 @@ namespace SmartQQ
             reader = new StreamReader(res.GetResponseStream());
 
             pin = reader.ReadToEnd();
+            res.Close();
 
             textBoxLog.Text = pin;
 
@@ -391,7 +437,7 @@ namespace SmartQQ
         }
         //http://www.itokit.com/2012/0721/74607.html
         public string PostHtml(string url, string Referer, string data, Encoding encode, bool SaveCookie)
-        {
+        {          
             HttpWebRequest req = WebRequest.Create(url) as HttpWebRequest;
             req.CookieContainer = this.cookies;
             req.ContentType = "application/x-www-form-urlencoded";
@@ -403,22 +449,24 @@ namespace SmartQQ
                 req.Referer = Referer;
             byte[] mybyte = Encoding.Default.GetBytes(data);
             req.ContentLength = mybyte.Length;
-            using (Stream stream = req.GetRequestStream())
+
+            Stream stream = req.GetRequestStream();
+            stream.Write(mybyte, 0, mybyte.Length);
+            
+
+            HttpWebResponse hwr = req.GetResponse() as HttpWebResponse;
+            stream.Close();
+
+            if (SaveCookie)
             {
-                stream.Write(mybyte, 0, mybyte.Length);
+                this.CookieCollection = hwr.Cookies;
+                this.cookies.GetCookies(req.RequestUri);
             }
-            using (HttpWebResponse hwr = req.GetResponse() as HttpWebResponse)
-            {
-                if (SaveCookie)
-                {
-                    this.CookieCollection = hwr.Cookies;
-                    this.cookies.GetCookies(req.RequestUri);
-                }
-                using (StreamReader SR = new StreamReader(hwr.GetResponseStream(), encode))
-                {
-                    return SR.ReadToEnd();
-                }
-            }
+            StreamReader SR = new StreamReader(hwr.GetResponseStream(), encode);
+
+            return SR.ReadToEnd();
+
+
         }
         public void HeartPack()
         {
@@ -460,13 +508,9 @@ namespace SmartQQ
             HttpWebResponse res = req.GetResponse() as HttpWebResponse;
             reader = new StreamReader(res.GetResponseStream());
             String temp = reader.ReadToEnd();
-           
+            res.Close();
+            
             HeartPackAction(temp);       
-        }
-
-        private void label3_Click(object sender, EventArgs e)
-        {
-            GetCaptcha();
         }
         private void pictureBoxCAPTCHA_Click(object sender, EventArgs e)
         {
@@ -475,40 +519,27 @@ namespace SmartQQ
         private void FormLogin_Load(object sender, EventArgs e)
         {
             Control.CheckForIllegalCrossThreadCalls = false;
+            System.Net.ServicePointManager.DefaultConnectionLimit = 50;
         }
         public FormLogin()
         {
             InitializeComponent();
         }
-        private void ReInitTimerTimeOur()
-        {
-            timerTimeOut.Stop();
-            timerTimeOut.Interval = 60000;
-            timerTimeOut.Start();
-        }
         private void timerHeart_Tick(object sender, EventArgs e)
         {
             int n = 0;
             n++;
-            if (n == 7) getFrienf();
-            else if (n == 14)
+            if (n % 10 == 0) getFrienf();
+            else if (n == 35)
             {
                 getGroup();
                 n = 0;
             }
-            HeartPack();          
-        }
-        private void timerTimeOut_Tick(object sender, EventArgs e)
-        {
-
-            ReLogin();
-            MessageBox.Show("网络异常，请重新登录");
-            
+            if(!StopSendingHeartPack)HeartPack();          
         }
         public void ReLogin()
         {
             timerHeart.Stop();
-            timerTimeOut.Stop();
             listBoxFriend.Items.Clear();
             listBoxGroup.Items.Clear();
             textBoxID.Enabled = true;
@@ -534,7 +565,109 @@ namespace SmartQQ
             ret = Convert.ToInt64(ts.TotalMilliseconds).ToString();
 
             return ret;
-        }  
+        }
+
+        //http://www.cnblogs.com/lianmin/p/4257421.html
+        /// 发送好友消息
+        public bool MessageToFriend(string uid, string content)
+        {
+            this.MsgId++;
+            try
+            {
+                string postData = "r={\"to\":" + uid;
+                postData += ",\"content\":\"[\\\"" + content.Replace(Environment.NewLine, "\\\\n");
+                postData += "\\\",[\\\"font\\\",{\\\"name\\\":\\\"宋体\\\",\\\"size\\\":10,\\\"style\\\":[0,0,0],\\\"color\\\":\\\"000000\\\"}]]\",\"face\":585,\"clientid\":" + ClientID;
+                postData += ",\"msg_id\":" + MsgId;
+                postData += ",\"psessionid\":\"" + psessionid;
+                postData += "\"}";
+
+                string referer = "http://d.web2.qq.com/proxy.html?v=20130916001&callback=1&id=2";
+                string url = "http://d.web2.qq.com/channel/send_buddy_msg2";
+
+                string dat = PostHtml(url, referer, postData, Encoding.UTF8, false);
+
+                dat = dat.Replace("{\"retcode\":", "");
+                dat = dat.Replace("\"result\":\"", "");
+                dat = dat.Replace("\"}", "");
+                string[] tmp = dat.Split(',');               
+                if (tmp[0] == "0" && tmp[0] == "ok")
+                    return true;
+                else
+                    return false;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        /// 发送群消息
+        public bool MessageToGroup(string gin, string content)
+        {
+            this.MsgId++;
+            try
+            {
+                string postData = "r={\"group_uin\":" + gin;
+                postData += ",\"content\":\"[\\\"" + content.Replace(Environment.NewLine, "\\\\n");
+                postData += "\\\",[\\\"font\\\",{\\\"name\\\":\\\"宋体\\\",\\\"size\\\":10,\\\"style\\\":[0,0,0],\\\"color\\\":\\\"000000\\\"}]]\",\"face\":549,\"clientid\":" + ClientID;
+                postData += ",\"msg_id\":" + MsgId;
+                postData += ",\"psessionid\":\"" + psessionid;
+                postData += "\"}";
+               
+                string referer = "http://d.web2.qq.com/proxy.html?v=20130916001&callback=1&id=2";
+                string url = "http://d.web2.qq.com/channel/send_qun_msg2";
+                string dat = PostHtml(url, referer, postData, Encoding.UTF8, false);
+
+                dat = dat.Replace("{\"retcode\":", "");
+                dat = dat.Replace("\"result\":\"", "");
+                dat = dat.Replace("\"}", "");
+                string[] tmp = dat.Split(',');
+                if (tmp[0] == "0" && tmp[0] == "ok")
+                    return true;
+                else
+                    return false;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        private void buttonSend_Click(object sender, EventArgs e)
+        {
+            StopSendingHeartPack = true;
+            if(IsGroupSelent)
+            {
+                string[] tmp = listBoxGroup.SelectedItem.ToString().Split(':');
+                MessageToGroup(tmp[0], textBoxSendMessage.Text);               
+            }
+            else if (listBoxFriend.SelectedItem != null)
+            {
+                string[] tmp = listBoxFriend.SelectedItem.ToString().Split(':');
+                MessageToFriend(tmp[0], textBoxSendMessage.Text);     
+                
+            }
+            StopSendingHeartPack = false;
+            textBoxSendMessage.Text = "";
+        }
+
+        private void listBoxFriend_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (DoNotChangeSelentGroupOrPeople) return;
+            IsGroupSelent = false;
+            DoNotChangeSelentGroupOrPeople = true;
+            listBoxGroup.SelectedItem = (ListBox.SelectedObjectCollection)null;
+            DoNotChangeSelentGroupOrPeople = false;
+        }
+
+        private void listBoxGroup_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (DoNotChangeSelentGroupOrPeople) return;
+            IsGroupSelent = true;
+            DoNotChangeSelentGroupOrPeople = true;
+            listBoxFriend.SelectedItem = (ListBox.SelectedObjectCollection)null;
+            DoNotChangeSelentGroupOrPeople = false;
+        }
     }
     public class WindowObject : ObjectInstance
     {
@@ -601,6 +734,36 @@ namespace SmartQQ
                 public string gid;
                 public string code;
                 public string name;
+            }
+        }
+    }
+    public class JsonFriendInfModel
+    {
+        public int retcode;
+        public paramResult result;
+        public class paramResult
+        {
+            public paramBirthday birthday;
+            public string occupation;
+            public string phone;
+            public string college;
+            public int constel;
+            public int blood;
+            public string homepage;
+            public int stat;
+            public string city;
+            public string personal;
+            public string nick;
+            public int shengxiao;
+            public string email;
+            public string province;
+            public string gender;
+            public string mobile;
+            public class paramBirthday
+            {
+                public int month;
+                public int year;
+                public int day;
             }
         }
     }
