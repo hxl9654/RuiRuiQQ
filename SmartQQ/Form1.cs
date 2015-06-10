@@ -253,7 +253,8 @@ namespace SmartQQ
         private void ActionWhenResivedGroupMessage(string gid, string message)
         {
             string MessageToSend;
-            MessageToSend = "可爱的小睿睿收到了消息：" + Environment.NewLine + message;
+            //MessageToSend = "可爱的小睿睿收到了消息：" + Environment.NewLine + message;
+            MessageToSend = GetXiaoHuangJi(message);
             MessageToGroup(gid, MessageToSend);
         }
         private void ActionWhenResivedMessage(string uin, string message)
@@ -344,6 +345,13 @@ namespace SmartQQ
             string dat = HttpGet(url);
             JsonFriendInfModel ans = (JsonFriendInfModel)JsonConvert.DeserializeObject(dat, typeof(JsonFriendInfModel));
             return ans;
+        }
+        public string GetXiaoHuangJi(string msg)
+        {
+            string url = "http://www.xiaohuangji.com/ajax.php";
+            string postdata = "para=" + HttpUtility.UrlEncode(msg);
+            string MsgGet = HttpPost(url, "http://www.xiaohuangji.com/", postdata, Encoding.UTF8, false);
+            return MsgGet;
         }
         private void textBoxID_LostFocus(object sender, EventArgs e)
         {
