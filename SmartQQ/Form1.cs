@@ -34,7 +34,7 @@ namespace SmartQQ
         HttpWebResponse res = null;
         StreamReader reader = null;
         String CaptchaCode;
-        String p_skey, uin, skey, p_uin, ptwebqq, vfwebqq, psessionid, hash;
+        String p_skey, MyUin, skey, p_uin, ptwebqq, vfwebqq, psessionid, hash;
         public String HeartPackdata;
         int ClientID = 1659243;
         JsonGroupModel group;
@@ -116,7 +116,7 @@ namespace SmartQQ
             Uri uri = new Uri("http://web2.qq.com/");
             ptwebqq = cookies.GetCookies(uri)["ptwebqq"].Value;
             p_skey = cookies.GetCookies(uri)["p_skey"].Value;
-            uin = cookies.GetCookies(uri)["uin"].Value;
+            MyUin = cookies.GetCookies(uri)["uin"].Value;
             skey = cookies.GetCookies(uri)["skey"].Value;
             p_uin = cookies.GetCookies(uri)["p_uin"].Value;
 
@@ -199,7 +199,9 @@ namespace SmartQQ
                     for (int j = 0; j < user.result.info.Count; j++)
                         if (user.result.info[j].uin == result.result[i].value.from_uin)
                         {
-                            textBoxResiveMessage.Text += (user.result.info[j].nick + "  " + GetRealQQ(user.result.info[j].uin) + Environment.NewLine + result.result[i].value.content[1].ToString() + Environment.NewLine);
+                            textBoxResiveMessage.Text += (user.result.info[j].nick + "  " + GetRealQQ(user.result.info[j].uin) + Environment.NewLine + result.result[i].value.content[1].ToString() + Environment.NewLine + Environment.NewLine);
+                            textBoxResiveMessage.SelectionStart = textBoxResiveMessage.TextLength;
+                            textBoxResiveMessage.ScrollToCaret();
                             break;
                         }
                 }
@@ -220,7 +222,9 @@ namespace SmartQQ
                             for (int k = 0; k < groupmember[j].Menber.result.minfo.Count; k++)
                                 if (groupmember[j].Menber.result.minfo[k].uin == result.result[i].value.send_uin)
                                 {
-                                    textBoxResiveMessage.Text += (GName + "   " + groupmember[j].Menber.result.minfo[k].nick + "  " + GetRealQQ(groupmember[j].Menber.result.minfo[k].uin) + Environment.NewLine + result.result[i].value.content[1].ToString() + Environment.NewLine);
+                                    textBoxResiveMessage.Text += (GName + "   " + groupmember[j].Menber.result.minfo[k].nick + "  " + GetRealQQ(groupmember[j].Menber.result.minfo[k].uin) + Environment.NewLine + result.result[i].value.content[1].ToString() + Environment.NewLine + Environment.NewLine);
+                                    textBoxResiveMessage.SelectionStart = textBoxResiveMessage.TextLength;
+                                    textBoxResiveMessage.ScrollToCaret();
                                     break;
                                 }
                             break;
@@ -608,17 +612,40 @@ namespace SmartQQ
 
         private void buttonSend_Click(object sender, EventArgs e)
         {
+            if (textBoxSendMessage.Text.Equals(""))
+                return;
             StopSendingHeartPack = true;
             if(IsGroupSelent)
             {
+                string GName = "";
                 string[] tmp = listBoxGroup.SelectedItem.ToString().Split(':');
-                MessageToGroup(tmp[0], textBoxSendMessage.Text);               
+                MessageToGroup(tmp[0], textBoxSendMessage.Text); 
+
+                for (int i = 0; i < group.result.gnamelist.Count; i++)
+                    if (group.result.gnamelist[i].gid == tmp[0])
+                        {
+                            GName = group.result.gnamelist[i].name;
+                            break;
+                        }
+                textBoxResiveMessage.Text += ("发送至   " + GName + Environment.NewLine + textBoxSendMessage.Text + Environment.NewLine + Environment.NewLine);
+                textBoxResiveMessage.SelectionStart = textBoxResiveMessage.TextLength;
+                textBoxResiveMessage.ScrollToCaret();
             }
             else if (listBoxFriend.SelectedItem != null)
             {
+                string Nick = "";
                 string[] tmp = listBoxFriend.SelectedItem.ToString().Split(':');
-                MessageToFriend(tmp[0], textBoxSendMessage.Text);     
-                
+                MessageToFriend(tmp[0], textBoxSendMessage.Text);
+
+                for (int i = 0; i < user.result.info.Count; i++)
+                    if (user.result.info[i].uin == tmp[0])
+                    {
+                        Nick = user.result.info[i].nick;
+                        break;
+                    }
+                textBoxResiveMessage.Text += ("发送至   " + Nick + "   " + GetRealQQ(tmp[0]) + Environment.NewLine + textBoxSendMessage.Text + Environment.NewLine + Environment.NewLine);
+                textBoxResiveMessage.SelectionStart = textBoxResiveMessage.TextLength;
+                textBoxResiveMessage.ScrollToCaret();
             }
             StopSendingHeartPack = false;
             textBoxSendMessage.Text = "";
