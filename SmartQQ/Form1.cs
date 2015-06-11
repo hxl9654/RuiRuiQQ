@@ -255,64 +255,145 @@ namespace SmartQQ
                 textBoxLog.Text = temp;
             }               
         }
-        private void ActionWhenResivedGroupMessage(string gid, string message)
+        private string[] Answer(string message)
         {
-            string MessageToSend;
-            //MessageToSend = "可爱的小睿睿收到了消息：" + Environment.NewLine + message;
-            if(message.Contains("学习"))
+            string[] MessageToSend = new string[20];
+            for (int i = 0; i < 20; i++)
+                MessageToSend[i] = "";
+            bool MsgSendFlag = false;
+            if (message.Contains("学习"))
             {
                 string[] tmp = message.Split('^');
-                if (tmp[0].Equals("学习") && tmp.Length == 3) 
+                if (tmp[0].Equals("学习") && tmp.Length == 3)
                 {
                     string result = AIStudy(tmp[1], tmp[2]);
                     if (result.Equals("Success"))
                     {
-                        MessageToSend = "小睿睿记住了～～" + Environment.NewLine + "主人说" + tmp[1] + "时，小睿睿应该回答" + tmp[2];
+                        MessageToSend[0] = "嗯嗯～小睿睿记住了～～" + Environment.NewLine + "主人说  " + tmp[1] + "  时，小睿睿应该回答  " + tmp[2];
                     }
                     else if (result.Equals("Already"))
                     {
-                        MessageToSend = "小睿睿已经知道了" + Environment.NewLine + "主人说" + tmp[1] + "时，小睿睿应该回答" + tmp[2];
+                        MessageToSend[0] = "小睿睿知道了啦～" + Environment.NewLine + "主人说  " + tmp[1] + "  时，小睿睿应该回答  " + tmp[2];
                     }
                     else if (result.Equals("DisableStudy"))
                     {
-                        MessageToSend = "当前学习功能未开启";
+                        MessageToSend[0] = "当前学习功能未开启";
                     }
                     else
                     {
-                        MessageToSend = "小睿睿出错了，也许主人卖个萌就好了～～";
-                    }                    
-                    MessageToGroup(gid, MessageToSend);
-                    return;
+                        MessageToSend[0] = "小睿睿出错了，也许主人卖个萌就好了～～";
+                    }
+                    return MessageToSend;
                 }
-            }
-            if (message.Contains("小黄鸡"))
+                
+            }            
+            MessageToSend[0] = AIGet(message);
+            if (!MessageToSend[0].Equals(""))
             {
-                string[] tmp = message.Split('^');
-                if (tmp[0].Equals("小黄鸡"))
+                return MessageToSend;
+            }
+            string[] tmp1 = message.Split("@#$(),，.。:：;；“”～！#（）%？?》《、· \r\n\"".ToCharArray());
+            int j = 0;
+            bool RepeatFlag = false;
+            for (int i = 0; i < tmp1.Length && i < 10; i++)
+            {
+                for (int k = 0; k < i; k++)
+                    if (tmp1[k].Equals(tmp1[i]))
+                        RepeatFlag = true;
+                if(RepeatFlag)
                 {
-                    message = message.Replace("小黄鸡^", "");
-                    MessageToSend = GetXiaoHuangJi(message);                    
-                    MessageToGroup(gid, MessageToSend);
-                    return;
+                    RepeatFlag = false;
+                    continue;
+                }
+                if (!tmp1[i].Equals(""))
+                {
+                    MessageToSend[j] = AIGet(tmp1[i]);
+                    j++;
+                    MsgSendFlag = true;
                 }
             }
-            MessageToSend = AIGet(message);
-            if (MessageToSend.Equals("词库中没有这句话"))
+
+            if (!MsgSendFlag)
             {
                 string XiaoHuangJiMsg = GetXiaoHuangJi(message);
                 if (XiaoHuangJiMsg.Length > 1)
-                    MessageToSend = "隔壁小黄鸡说：" + XiaoHuangJiMsg;
-                else return;
+                {
+                    MessageToSend[0] = "隔壁小黄鸡说：" + XiaoHuangJiMsg;
+                    return MessageToSend;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            return MessageToSend;
+        }
+        private void ActionWhenResivedGroupMessage(string gid, string message)
+        {
+            string[] MessageToSendArray = Answer(message);
+            string MessageToSend = "";
+            for (int i = 0; i < 10; i++)
+            {
+                if (!MessageToSendArray[i].Equals(""))
+                {
+                    MessageToSend += MessageToSendArray[i] + Environment.NewLine;
+                    MessageToSendArray[i] = "";
+                }
             }
             MessageToGroup(gid, MessageToSend);
         }
+        private void ActionWhenResivedMessage(string uin, string message)
+        {
+            string[] MessageToSendArray = Answer(message);
+            string MessageToSend = "";
+            for (int i = 0; i < 10; i++)
+            {
+                if (!MessageToSendArray[i].Equals(""))
+                {
+                    MessageToSend += MessageToSendArray[i] + Environment.NewLine;
+                    MessageToSendArray[i] = "";
+                }
+            }
+            if (MessageToSend.Equals(""))
+            {
+                int i;
+                string SenderName = "";
+                string Gender = "";
+                for (i = 0; i <= friendinfMaxIndex; i++)
+                    if (friendinf[i].uin == uin)
+                    {
+                        SenderName = friendinf[i].Inf.result.nick;
+                        Gender = friendinf[i].Inf.result.gender;
+                        break;
+                    }
+                if (i > friendinfMaxIndex)
+                {
+                    getFrienf();
+                    for (i = 0; i <= friendinfMaxIndex; i++)
+                        if (friendinf[i].uin == uin)
+                        {
+                            SenderName = friendinf[i].Inf.result.nick;
+                            Gender = friendinf[i].Inf.result.gender;
+                            break;
+                        }
+                }
+                if (Gender == "female")
+                    Gender = "大美女 ";
+                else if (Gender == "male")
+                    Gender = "大帅哥 ";
+                else
+                    Gender = " ";
+                MessageToFriend(uin, Gender + SenderName + ",小睿睿听不懂你在说什么呢。。。教教我吧～～" + Environment.NewLine + "格式 学习^语句^设定的回复");
+            }
+            else MessageToFriend(uin, MessageToSend);
 
+        }
         private string AIGet(string message)
         {
-            String url = "http://smartqq.hxlxz.com/gettalk.php?source=" + message;
-            string temp = HttpGet(url);
+           String url = "http://smartqq.hxlxz.com/gettalk.php?source=" + message;
+           string temp = HttpGet(url);
            if (temp.Contains("None"))
-                temp = "词库中没有这句话";
+                temp = "";
             return temp;
         }
 
@@ -326,39 +407,7 @@ namespace SmartQQ
             string temp = HttpGet(url);
             return temp;
         }
-        private void ActionWhenResivedMessage(string uin, string message)
-        {
-            int i;
-            string SenderName = "";
-            string Gender = "";
-            for (i = 0; i <= friendinfMaxIndex; i++)
-                if (friendinf[i].uin == uin)
-                {
-                    SenderName = friendinf[i].Inf.result.nick;
-                    Gender = friendinf[i].Inf.result.gender;
-                    break;
-                }
-            if (i > friendinfMaxIndex)
-            {
-                getFrienf();
-                for (i = 0; i <= friendinfMaxIndex; i++)
-                    if (friendinf[i].uin == uin)
-                    {
-                        SenderName = friendinf[i].Inf.result.nick;
-                        Gender = friendinf[i].Inf.result.gender;
-                        break;
-                    }
-            }
-            if (Gender == "female")
-                Gender = "大美女 ";
-            else if (Gender == "male")
-                Gender = "大帅哥 ";
-            else
-                Gender = " ";
-            string MessageToSend;
-            MessageToSend = "可爱的小睿睿收到了" + Gender + SenderName + " 的消息：" + Environment.NewLine + message;
-            MessageToFriend(uin, MessageToSend);
-        }
+        
         public void getFrienf()
         {
             String url = "http://s.web2.qq.com/api/get_user_friends2";
@@ -629,8 +678,22 @@ namespace SmartQQ
         }
         private void FormLogin_Load(object sender, EventArgs e)
         {
+            bool NoPass = false;
             Control.CheckForIllegalCrossThreadCalls = false;
             System.Net.ServicePointManager.DefaultConnectionLimit = 500;
+            try
+            {
+                streamreader = new StreamReader("C:\\qqpw.txt", Encoding.Default);
+            }
+            catch (System.IO.FileNotFoundException)
+            {
+                NoPass = true;
+            }
+            if (!NoPass)
+            {
+                textBoxPassword.Text = streamreader.ReadLine();
+            }
+                
         }
         public FormLogin()
         {

@@ -88,7 +88,6 @@
             this.textBoxPassword.PasswordChar = '*';
             this.textBoxPassword.Size = new System.Drawing.Size(136, 21);
             this.textBoxPassword.TabIndex = 2;
-            this.textBoxPassword.Text = "qwgg9654";
             // 
             // label1
             // 
