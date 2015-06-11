@@ -297,6 +297,13 @@ namespace SmartQQ
                 }
             }
             MessageToSend = AIGet(message);
+            if (MessageToSend.Equals("词库中没有这句话"))
+            {
+                string XiaoHuangJiMsg = GetXiaoHuangJi(message);
+                if (XiaoHuangJiMsg.Length > 1)
+                    MessageToSend = "隔壁小黄鸡说：" + XiaoHuangJiMsg;
+                else return;
+            }
             MessageToGroup(gid, MessageToSend);
         }
 
