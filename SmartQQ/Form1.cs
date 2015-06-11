@@ -378,12 +378,12 @@ namespace SmartQQ
                         }
                 }
                 if (Gender == "female")
-                    Gender = "大美女 ";
+                    Gender = "姐姐 ";
                 else if (Gender == "male")
-                    Gender = "大帅哥 ";
+                    Gender = "哥哥 ";
                 else
                     Gender = " ";
-                MessageToFriend(uin, Gender + SenderName + ",小睿睿听不懂你在说什么呢。。。教教我吧～～" + Environment.NewLine + "格式 学习^语句^设定的回复");
+                MessageToFriend(uin, SenderName + Gender + "～ 小睿睿听不懂你在说什么呢。。。教教我吧～～" + Environment.NewLine + "格式 学习^语句^设定的回复");
             }
             else MessageToFriend(uin, MessageToSend);
 
