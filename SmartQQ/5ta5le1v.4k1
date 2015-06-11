@@ -265,15 +265,15 @@ namespace SmartQQ
                 if (tmp[0].Equals("学习") && tmp.Length == 3) 
                 {
                     string result = AIStudy(tmp[1], tmp[2]);
-                    if (result.Equals("Success"))
+                    if(result.Contains("Success"))
                     {
                         MessageToSend = "小睿睿记住了～～" + Environment.NewLine + "主人说" + tmp[1] + "时，小睿睿应该回答" + tmp[2];
                     }
-                    else if (result.Equals("Already"))
+                    else if (result.Contains("Already"))
                     {
                         MessageToSend = "小睿睿已经知道了" + Environment.NewLine + "主人说" + tmp[1] + "时，小睿睿应该回答" + tmp[2];
                     }
-                    else if (result.Equals("DisableStudy"))
+                    else if (result.Contains("DisableStudy"))
                     {
                         MessageToSend = "当前学习功能未开启";
                     }
@@ -285,26 +285,25 @@ namespace SmartQQ
                     return;
                 }
             }
-            if (message.Contains("小黄鸡"))
+            if (message.Contains("测试"))
             {
                 string[] tmp = message.Split('^');
-                if (tmp[0].Equals("小黄鸡"))
+                if (tmp[0].Equals("测试") && tmp.Length == 2)
                 {
-                    message = message.Replace("小黄鸡^", "");
-                    MessageToSend = GetXiaoHuangJi(message);                    
+                    MessageToSend = AIGet(message.Replace("测试^", ""));
                     MessageToGroup(gid, MessageToSend);
                     return;
                 }
             }
-            MessageToSend = AIGet(message);
+            MessageToSend = GetXiaoHuangJi(message);
             MessageToGroup(gid, MessageToSend);
         }
 
-        private string AIGet(string message)
+        private string AIGet(string source)
         {
-            String url = "http://smartqq.hxlxz.com/gettalk.php?source=" + message;
+            String url = "http://smartqq.hxlxz.com/gettalk.php?source=" + source;
             string temp = HttpGet(url);
-           if (temp.Contains("None"))
+            if (temp.Contains("None"))
                 temp = "词库中没有这句话";
             return temp;
         }

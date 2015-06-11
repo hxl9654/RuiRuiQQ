@@ -12,3 +12,8 @@ E:\OneDrive\Dropbox\code\C#\SmartQQ\SmartQQ\obj\Debug\Interop.MSScriptControl.dl
 E:\OneDrive\Dropbox\code\C#\SmartQQ\SmartQQ\obj\Debug\SmartQQ.csproj.ResolveComReference.cache
 E:\OneDrive\Dropbox\code\C#\SmartQQ\SmartQQ\bin\Debug\Jurassic.dll
 E:\OneDrive\Dropbox\code\C#\SmartQQ\SmartQQ\bin\Debug\Newtonsoft.Json.dll
+E:\OneDrive\Dropbox\code\C#\SmartQQ\SmartQQ\bin\Debug\MySql.Data.dll
+E:\OneDrive\Dropbox\code\C#\SmartQQ\SmartQQ\bin\Debug\MySql.Data.Entity.EF5.dll
+E:\OneDrive\Dropbox\code\C#\SmartQQ\SmartQQ\bin\Debug\MySql.Data.Entity.EF6.dll
+E:\OneDrive\Dropbox\code\C#\SmartQQ\SmartQQ\bin\Debug\MySql.Fabric.Plugin.dll
+E:\OneDrive\Dropbox\code\C#\SmartQQ\SmartQQ\bin\Debug\MySql.Web.dll
