@@ -176,13 +176,14 @@ namespace SmartQQ
             {
                 if (result.result[i].poll_type == "buddies_status_change")
                 {
-                    for (int j = 0; j < user.result.info.Count; j++)
+                    /*for (int j = 0; j < user.result.info.Count; j++)
                         if (user.result.info[j].uin == result.result[i].value.uin)
                         {
                             listBoxLog.Items.Insert(0,user.result.info[j].nick + "  " + result.result[i].value.status);
                             break;
                         }
-                            
+                    */
+                    return;
                 }
                 else if (result.result[i].poll_type == "kick_message")
                 {
@@ -887,6 +888,11 @@ namespace SmartQQ
             DoNotChangeSelentGroupOrPeople = true;
             listBoxFriend.SelectedItem = (ListBox.SelectedObjectCollection)null;
             DoNotChangeSelentGroupOrPeople = false;
+        }
+
+        private void listBoxLog_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            textBoxLog.Text = listBoxLog.Items[listBoxLog.SelectedIndex].ToString();
         }
     }
     public class WindowObject : ObjectInstance

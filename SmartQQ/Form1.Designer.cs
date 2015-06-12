@@ -178,6 +178,7 @@
             this.listBoxLog.Name = "listBoxLog";
             this.listBoxLog.Size = new System.Drawing.Size(192, 244);
             this.listBoxLog.TabIndex = 9;
+            this.listBoxLog.SelectedIndexChanged += new System.EventHandler(this.listBoxLog_SelectedIndexChanged);
             // 
             // textBoxResiveMessage
             // 
