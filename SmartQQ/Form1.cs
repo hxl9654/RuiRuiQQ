@@ -35,6 +35,7 @@ namespace SmartQQ
         bool StopSendingHeartPack = false;
         string StudyPassword="";
         bool DisableStudy = false;
+        int AmountOfRunningPosting = 0;
         StreamReader streamreader;
         struct GroupMember
         {
@@ -135,7 +136,7 @@ namespace SmartQQ
             getFrienf();
             getGroup();
 
-            listBoxLog.Items.Add("账号" + textBoxID.Text + "登录成功");
+            listBoxLog.Items.Insert(0,"账号" + textBoxID.Text + "登录成功");
             timerHeart.Enabled = true;
             timerHeart.Start();
 
@@ -163,23 +164,23 @@ namespace SmartQQ
         private void HeartPackAction(string temp)
         {
             string GName="";
+            string MessageFromUin="";            
+            textBoxLog.Text = temp;
             if (temp == "{\"retcode\":121,\"t\":\"0\"}\r\n")
             {
-                ReLogin();
-                textBoxLog.Text = temp;
+                ReLogin();                
                 MessageBox.Show("账号在其他地点登录，被迫退出");
                 return;
             }
             else if (temp == "{\"retcode\":102,\"errmsg\":\"\"}\r\n" || temp == "{\"retcode\":0,\"result\":\"ok\"}\r\n")
             {
-                textBoxLog.Text = temp;
                 return;
             }
             else if (temp == "{\"retcode\":108,\"errmsg\":\"\"}\r\n")
             {
-                textBoxLog.Text = temp;
                 return;
-            }               
+            }
+            listBoxLog.Items.Insert(0,temp);
             JsonHeartPackResponse result = (JsonHeartPackResponse)JsonConvert.DeserializeObject(temp, typeof(JsonHeartPackResponse));
             for (int i = 0; i < result.result.Count; i++ )
             {
@@ -188,7 +189,7 @@ namespace SmartQQ
                     for (int j = 0; j < user.result.info.Count; j++)
                         if (user.result.info[j].uin == result.result[i].value.uin)
                         {
-                            listBoxLog.Items.Add(user.result.info[j].nick + "  " + result.result[i].value.status);
+                            listBoxLog.Items.Insert(0,user.result.info[j].nick + "  " + result.result[i].value.status);
                             break;
                         }
                             
@@ -241,7 +242,8 @@ namespace SmartQQ
                             for (int k = 0; k < groupmember[j].Menber.result.minfo.Count; k++)
                                 if (groupmember[j].Menber.result.minfo[k].uin == result.result[i].value.send_uin)
                                 {
-                                    textBoxResiveMessage.Text += (GName + "   " + groupmember[j].Menber.result.minfo[k].nick + "  " + GetRealQQ(groupmember[j].Menber.result.minfo[k].uin) + Environment.NewLine + result.result[i].value.content[1].ToString() + Environment.NewLine + Environment.NewLine);
+                                    MessageFromUin = GetRealQQ(groupmember[j].Menber.result.minfo[k].uin);
+                                    textBoxResiveMessage.Text += (GName + "   " + groupmember[j].Menber.result.minfo[k].nick + "  " + MessageFromUin + Environment.NewLine + result.result[i].value.content[1].ToString() + Environment.NewLine + Environment.NewLine);
                                     textBoxResiveMessage.SelectionStart = textBoxResiveMessage.TextLength;
                                     textBoxResiveMessage.ScrollToCaret();
                                     break;
@@ -249,13 +251,14 @@ namespace SmartQQ
                             break;
                         }
                     }
-                    ActionWhenResivedGroupMessage(gid, result.result[i].value.content[1].ToString());
-                        
+                    ActionWhenResivedGroupMessage(gid, result.result[i].value.content[1].ToString(), MessageFromUin);
+                    
+
                 }
                 textBoxLog.Text = temp;
             }               
         }
-        private string[] Answer(string message)
+        private string[] Answer(string message, string QQNum)
         {
             string[] MessageToSend = new string[20];
             for (int i = 0; i < 20; i++)
@@ -266,14 +269,14 @@ namespace SmartQQ
                 string[] tmp = message.Split('^');
                 if (tmp[0].Equals("学习") && tmp.Length == 3)
                 {
-                    string result = AIStudy(tmp[1], tmp[2]);
+                    string result = AIStudy(tmp[1], tmp[2], QQNum);
                     if (result.Equals("Success"))
                     {
-                        MessageToSend[0] = "嗯嗯～小睿睿记住了～～" + Environment.NewLine + "主人说  " + tmp[1] + "  时，小睿睿应该回答  " + tmp[2];
+                        MessageToSend[0] = "嗯嗯～小睿睿记住了～～" + Environment.NewLine + "主人说 " + tmp[1] + " 时，小睿睿应该回答 " + tmp[2];
                     }
                     else if (result.Equals("Already"))
                     {
-                        MessageToSend[0] = "小睿睿知道了啦～" + Environment.NewLine + "主人说  " + tmp[1] + "  时，小睿睿应该回答  " + tmp[2];
+                        MessageToSend[0] = "小睿睿知道了啦～" + Environment.NewLine + "主人说 " + tmp[1] + " 时，小睿睿应该回答 " + tmp[2];
                     }
                     else if (result.Equals("DisableStudy"))
                     {
@@ -286,13 +289,13 @@ namespace SmartQQ
                     return MessageToSend;
                 }
                 
-            }            
-            MessageToSend[0] = AIGet(message);
+            }
+            MessageToSend[0] = AIGet(message, QQNum);
             if (!MessageToSend[0].Equals(""))
             {
                 return MessageToSend;
             }
-            string[] tmp1 = message.Split("@#$(),，.。:：;；“”～！#（）%？?》《、· \r\n\"".ToCharArray());
+            string[] tmp1 = message.Split("@#$(),，.。:：;；“”～~！!#（）%？?》《、· \r\n\"啊么吧呀恩嗯了呢很".ToCharArray());
             int j = 0;
             bool RepeatFlag = false;
             for (int i = 0; i < tmp1.Length && i < 10; i++)
@@ -307,7 +310,7 @@ namespace SmartQQ
                 }
                 if (!tmp1[i].Equals(""))
                 {
-                    MessageToSend[j] = AIGet(tmp1[i]);
+                    MessageToSend[j] = AIGet(tmp1[i], QQNum);
                     j++;
                     MsgSendFlag = true;
                 }
@@ -328,9 +331,9 @@ namespace SmartQQ
             }
             return MessageToSend;
         }
-        private void ActionWhenResivedGroupMessage(string gid, string message)
+        private void ActionWhenResivedGroupMessage(string gid, string message, string uin)
         {
-            string[] MessageToSendArray = Answer(message);
+            string[] MessageToSendArray = Answer(message, GetRealQQ(uin));
             string MessageToSend = "";
             for (int i = 0; i < 10; i++)
             {
@@ -344,7 +347,7 @@ namespace SmartQQ
         }
         private void ActionWhenResivedMessage(string uin, string message)
         {
-            string[] MessageToSendArray = Answer(message);
+            string[] MessageToSendArray = Answer(message, GetRealQQ(uin));
             string MessageToSend = "";
             for (int i = 0; i < 10; i++)
             {
@@ -388,22 +391,23 @@ namespace SmartQQ
             else MessageToFriend(uin, MessageToSend);
 
         }
-        private string AIGet(string message)
+        private string AIGet(string message, string QQNum)
         {
-           String url = "http://smartqq.hxlxz.com/gettalk.php?source=" + message;
-           string temp = HttpGet(url);
-           if (temp.Contains("None"))
+            String url = "http://smartqq.hxlxz.com/gettalk.php?source=" + message + "&qqnum=" + QQNum;
+            string temp = HttpGet(url);
+            if (temp.Contains("None"))
                 temp = "";
             return temp;
         }
 
-        private string AIStudy(string source, string aim)
+        private string AIStudy(string source, string aim, string QQNum)
         {
+            listBoxLog.Items.Insert(0,"学习 " + source + " " + aim);
             if (DisableStudy)
             {
                 return "DisableStudy";
             }
-            String url = "http://smartqq.hxlxz.com/addtalk.php?password=" + StudyPassword + "&source=" + source + "&aim=" + aim;
+            String url = "http://smartqq.hxlxz.com/addtalk.php?password=" + StudyPassword + "&source=" + source + "&aim=" + aim + "&qqnum=" + QQNum;
             string temp = HttpGet(url);
             return temp;
         }
@@ -589,12 +593,15 @@ namespace SmartQQ
             res.Close();
             req.Abort();
             textBoxLog.Text = dat;
+            listBoxLog.Items.Insert(0,dat);
             return dat;
         }
         //http://www.itokit.com/2012/0721/74607.html
         public string HttpPost(string url, string Referer, string data, Encoding encode, bool SaveCookie)
         {
-            System.GC.Collect();
+            if(AmountOfRunningPosting == 0)
+                System.GC.Collect();
+            AmountOfRunningPosting++;
             HttpWebRequest req = WebRequest.Create(url) as HttpWebRequest;
             req.CookieContainer = this.cookies;
             req.ContentType = "application/x-www-form-urlencoded";
@@ -623,9 +630,10 @@ namespace SmartQQ
             string dat = SR.ReadToEnd();
             hwr.Close();
             req.Abort();
+            textBoxLog.Text = dat;
+            listBoxLog.Items.Insert(0,dat);
+            AmountOfRunningPosting--;
             return dat;
-
-
         }
         public void HeartPack()
         {
@@ -725,7 +733,7 @@ namespace SmartQQ
             pictureBoxCAPTCHA.Visible = true;
             textBoxCAPTCHA.Visible = true;
             if (CAPTCHA) GetCaptcha();
-            listBoxLog.Items.Add("账号" + textBoxID.Text + "已登出");
+            listBoxLog.Items.Insert(0,"账号" + textBoxID.Text + "已登出");
         }
 
         private void buttonLogout_Click(object sender, EventArgs e)
@@ -871,11 +879,6 @@ namespace SmartQQ
             DoNotChangeSelentGroupOrPeople = true;
             listBoxFriend.SelectedItem = (ListBox.SelectedObjectCollection)null;
             DoNotChangeSelentGroupOrPeople = false;
-        }
-
-        private void listBoxLog_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            listBoxLog.SelectedIndex = listBoxLog.Items.Count - 1;
         }
     }
     public class WindowObject : ObjectInstance

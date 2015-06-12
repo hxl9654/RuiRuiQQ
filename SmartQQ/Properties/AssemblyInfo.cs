@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // 有关程序集的常规信息通过以下
 // 特性集控制。更改这些特性值可修改
 // 与程序集关联的信息。
-[assembly: AssemblyTitle("SmartQQ")]
+[assembly: AssemblyTitle("RuiRuiQQRobot")]
 [assembly: AssemblyDescription("小睿睿聊天机器人")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("何相龙")]
-[assembly: AssemblyProduct("SmartQQ")]
+[assembly: AssemblyProduct("RuiRuiQQRobot")]
 [assembly: AssemblyCopyright("Copyright ©  2015")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

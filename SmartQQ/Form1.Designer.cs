@@ -139,7 +139,7 @@
             // 
             // timerHeart
             // 
-            this.timerHeart.Interval = 1000;
+            this.timerHeart.Interval = 500;
             this.timerHeart.Tick += new System.EventHandler(this.timerHeart_Tick);
             // 
             // groupbox1
@@ -179,13 +179,13 @@
             this.listBoxLog.Name = "listBoxLog";
             this.listBoxLog.Size = new System.Drawing.Size(192, 244);
             this.listBoxLog.TabIndex = 9;
-            this.listBoxLog.SelectedIndexChanged += new System.EventHandler(this.listBoxLog_SelectedIndexChanged);
             // 
             // textBoxResiveMessage
             // 
             this.textBoxResiveMessage.AcceptsTab = true;
             this.textBoxResiveMessage.BackColor = System.Drawing.SystemColors.Window;
             this.textBoxResiveMessage.Location = new System.Drawing.Point(6, 17);
+            this.textBoxResiveMessage.MaxLength = 327670000;
             this.textBoxResiveMessage.Multiline = true;
             this.textBoxResiveMessage.Name = "textBoxResiveMessage";
             this.textBoxResiveMessage.ReadOnly = true;
