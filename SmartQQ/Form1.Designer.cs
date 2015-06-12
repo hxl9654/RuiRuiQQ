@@ -78,7 +78,6 @@
             this.textBoxID.Name = "textBoxID";
             this.textBoxID.Size = new System.Drawing.Size(136, 21);
             this.textBoxID.TabIndex = 1;
-            this.textBoxID.Text = "3286028350";
             this.textBoxID.LostFocus += new System.EventHandler(this.textBoxID_LostFocus);
             // 
             // textBoxPassword

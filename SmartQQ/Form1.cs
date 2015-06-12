@@ -33,7 +33,8 @@ namespace SmartQQ
         bool IsGroupSelent = false, IsFriendSelent = false;
         bool DoNotChangeSelentGroupOrPeople = false;
         bool StopSendingHeartPack = false;
-        string StudyPassword="";
+        string StudyPassword = "";
+        string DicServer = "";
         bool DisableStudy = false;
         int AmountOfRunningPosting = 0;
         StreamReader streamreader;
@@ -149,17 +150,6 @@ namespace SmartQQ
             pictureBoxCAPTCHA.Visible = false;
             textBoxCAPTCHA.Visible = false;
             textBoxCAPTCHA.Text = "";
-            
-            try
-            {
-                streamreader = new StreamReader("C:\\smartqqstudypw.txt", Encoding.Default);
-            }
-            catch(System.IO.FileNotFoundException)
-            {
-                DisableStudy = true;
-            }
-            if (!DisableStudy)
-                StudyPassword = streamreader.ReadLine();
         }
         private void HeartPackAction(string temp)
         {
@@ -202,6 +192,8 @@ namespace SmartQQ
                 }
                 else if (result.result[i].poll_type == "message")
                 {
+                    String message = result.result[i].value.content[1].ToString();
+                    message.Replace("\\\\n", Environment.NewLine);
                     int j;                    
                     for (j = 0; j < user.result.info.Count; j++)
                         if (user.result.info[j].uin == result.result[i].value.from_uin)
@@ -223,10 +215,12 @@ namespace SmartQQ
                                 break;
                             }
                     }
-                    ActionWhenResivedMessage(result.result[i].value.from_uin, result.result[i].value.content[1].ToString());
+                    ActionWhenResivedMessage(result.result[i].value.from_uin, message);
                 }
                 else if (result.result[i].poll_type == "group_message")
-                {                    
+                {
+                    String message = result.result[i].value.content[1].ToString();
+                    message.Replace("\\\\n", Environment.NewLine);
                     string gid;
                     gid = result.result[i].value.from_uin;                   
                     for (int j = 0; j < group.result.gnamelist.Count; j++)
@@ -251,7 +245,7 @@ namespace SmartQQ
                             break;
                         }
                     }
-                    ActionWhenResivedGroupMessage(gid, result.result[i].value.content[1].ToString(), MessageFromUin);
+                    ActionWhenResivedGroupMessage(gid, message, MessageFromUin);
                     
 
                 }
@@ -343,7 +337,7 @@ namespace SmartQQ
                     MessageToSendArray[i] = "";
                 }
             }
-            MessageToGroup(gid, MessageToSend);
+            SendMessageToGroup(gid, MessageToSend);
         }
         private void ActionWhenResivedMessage(string uin, string message)
         {
@@ -386,14 +380,14 @@ namespace SmartQQ
                     Gender = "哥哥 ";
                 else
                     Gender = " ";
-                MessageToFriend(uin, SenderName + Gender + "～ 小睿睿听不懂你在说什么呢。。。教教我吧～～" + Environment.NewLine + "格式 学习^语句^设定的回复");
+                SendMessageToFriend(uin, SenderName + Gender + "～ 小睿睿听不懂你在说什么呢。。。教教我吧～～" + Environment.NewLine + "格式 学习^语句^设定的回复");
             }
-            else MessageToFriend(uin, MessageToSend);
+            else SendMessageToFriend(uin, MessageToSend);
 
         }
         private string AIGet(string message, string QQNum)
         {
-            String url = "http://smartqq.hxlxz.com/gettalk.php?source=" + message + "&qqnum=" + QQNum;
+            String url = DicServer+"gettalk.php?source=" + message + "&qqnum=" + QQNum;
             string temp = HttpGet(url);
             if (temp.Contains("None"))
                 temp = "";
@@ -407,7 +401,7 @@ namespace SmartQQ
             {
                 return "DisableStudy";
             }
-            String url = "http://smartqq.hxlxz.com/addtalk.php?password=" + StudyPassword + "&source=" + source + "&aim=" + aim + "&qqnum=" + QQNum;
+            String url = DicServer+"addtalk.php?password=" + StudyPassword + "&source=" + source + "&aim=" + aim + "&qqnum=" + QQNum;
             string temp = HttpGet(url);
             return temp;
         }
@@ -686,22 +680,44 @@ namespace SmartQQ
         }
         private void FormLogin_Load(object sender, EventArgs e)
         {
-            bool NoPass = false;
+            bool NoFile = false;
+            byte[] byData = new byte[1000];
+            char[] charData = new char[1000];
             Control.CheckForIllegalCrossThreadCalls = false;
             System.Net.ServicePointManager.DefaultConnectionLimit = 500;
             try
             {
-                streamreader = new StreamReader("C:\\qqpw.txt", Encoding.Default);
+                FileStream file = new FileStream(Environment.CurrentDirectory + "\\RuiRuiRobot.conf", FileMode.Open);
+                file.Seek(0, SeekOrigin.Begin);
+                file.Read(byData, 0, 1000); 
+                Decoder decoder = Encoding.Default.GetDecoder();
+                decoder.GetChars(byData, 0, byData.Length, charData, 0);
+                file.Close();
             }
             catch (System.IO.FileNotFoundException)
             {
-                NoPass = true;
+                NoFile = true;
             }
-            if (!NoPass)
+            if(!NoFile)
             {
-                textBoxPassword.Text = streamreader.ReadLine();
+                string tmp = "";
+                for (int i = 0; i < charData.Length; i++)
+                    tmp += charData[i];
+                tmp += '\0';
+                //tmp.Replace(Environment.NewLine, "");
+                //tmp.Replace(" ", "");
+                JosnConfigFileModel dat = (JosnConfigFileModel)JsonConvert.DeserializeObject(tmp, typeof(JosnConfigFileModel));
+                textBoxID.Text = dat.QQNum;
+                textBoxPassword.Text = dat.QQPassword;
+                StudyPassword = dat.DicPassword;
+                DicServer = dat.DicServer;
             }
-                
+            else
+            {
+                DicServer = "http://smartqq.hxlxz.com/";
+                DisableStudy = true; 
+            }
+               
         }
         public FormLogin()
         {
@@ -709,14 +725,6 @@ namespace SmartQQ
         }
         private void timerHeart_Tick(object sender, EventArgs e)
         {
-            /*int n = 0;
-            n++;
-            if (n % 10 == 0) getFrienf();
-            else if (n == 35)
-            {
-                getGroup();
-                n = 0;
-            }*/
             if(!StopSendingHeartPack)HeartPack();          
         }
         public void ReLogin()
@@ -751,7 +759,7 @@ namespace SmartQQ
 
         //http://www.cnblogs.com/lianmin/p/4257421.html
         /// 发送好友消息
-        public bool MessageToFriend(string uid, string content)
+        public bool SendMessageToFriend(string uid, string content)
         {
             this.MsgId++;
             try
@@ -785,7 +793,7 @@ namespace SmartQQ
         }
 
         /// 发送群消息
-        public bool MessageToGroup(string gin, string content)
+        public bool SendMessageToGroup(string gin, string content)
         {
             this.MsgId++;
             try
@@ -829,7 +837,7 @@ namespace SmartQQ
             {
                 string GName = "";
                 string[] tmp = listBoxGroup.SelectedItem.ToString().Split(':');
-                MessageToGroup(tmp[0], textBoxSendMessage.Text); 
+                SendMessageToGroup(tmp[0], textBoxSendMessage.Text); 
 
                 for (int i = 0; i < group.result.gnamelist.Count; i++)
                     if (group.result.gnamelist[i].gid == tmp[0])
@@ -845,7 +853,7 @@ namespace SmartQQ
             {
                 string Nick = "";
                 string[] tmp = listBoxFriend.SelectedItem.ToString().Split(':');
-                MessageToFriend(tmp[0], textBoxSendMessage.Text);
+                SendMessageToFriend(tmp[0], textBoxSendMessage.Text);
 
                 for (int i = 0; i < user.result.info.Count; i++)
                     if (user.result.info[i].uin == tmp[0])
@@ -1020,5 +1028,12 @@ namespace SmartQQ
                 public string reason;
             }
         }
-    } 
+    }
+    class JosnConfigFileModel
+    {
+        public String DicServer;
+        public String DicPassword;
+        public String QQNum;
+        public String QQPassword;
+    }
 }
