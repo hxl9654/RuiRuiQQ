@@ -59,9 +59,9 @@ namespace SmartQQ
                 MessageBox.Show("账号不能为空");
                 return;
             }
-            for (int i = 0; i < textBoxID.Text.Length; i++ )
+            for (int i = 0; i < textBoxID.Text.Length; i++)
             {
-                if(textBoxID.Text.ToCharArray()[i] < '0' || textBoxID.Text.ToCharArray()[i] > '9')
+                if (textBoxID.Text.ToCharArray()[i] < '0' || textBoxID.Text.ToCharArray()[i] > '9')
                 {
                     MessageBox.Show("账号只能为数字");
                     return;
@@ -100,7 +100,7 @@ namespace SmartQQ
             temp = temp.Replace("'", "");
             string[] tmp = temp.Split(',');
             url = tmp[2];
-            if(url == "")
+            if (url == "")
             {
                 MessageBox.Show("登录失败，请重试");
                 if (CAPTCHA) GetCaptcha();
@@ -123,8 +123,8 @@ namespace SmartQQ
 
             textBoxLog.Text = dat;
             char[] t = new char[2];
-            t[0]=':';
-            t[1]=',';
+            t[0] = ':';
+            t[1] = ',';
             dat = dat.Replace("{", "");
             dat = dat.Replace("}", "");
             dat = dat.Replace("\"", "");
@@ -133,11 +133,11 @@ namespace SmartQQ
             vfwebqq = tmp[14];
             psessionid = tmp[16];
 
-            hash = GetHash(textBoxID.Text,ptwebqq);
+            hash = GetHash(textBoxID.Text, ptwebqq);
             getFrienf();
             getGroup();
 
-            listBoxLog.Items.Insert(0,"账号" + textBoxID.Text + "登录成功");
+            listBoxLog.Items.Insert(0, "账号" + textBoxID.Text + "登录成功");
             timerHeart.Enabled = true;
             timerHeart.Start();
 
@@ -153,12 +153,12 @@ namespace SmartQQ
         }
         private void HeartPackAction(string temp)
         {
-            string GName="";
-            string MessageFromUin="";            
+            string GName = "";
+            string MessageFromUin = "";
             textBoxLog.Text = temp;
             if (temp == "{\"retcode\":121,\"t\":\"0\"}\r\n")
             {
-                ReLogin();                
+                ReLogin();
                 MessageBox.Show("账号在其他地点登录，被迫退出");
                 return;
             }
@@ -170,9 +170,9 @@ namespace SmartQQ
             {
                 return;
             }
-            listBoxLog.Items.Insert(0,temp);
+            listBoxLog.Items.Insert(0, temp);
             JsonHeartPackResponse result = (JsonHeartPackResponse)JsonConvert.DeserializeObject(temp, typeof(JsonHeartPackResponse));
-            for (int i = 0; i < result.result.Count; i++ )
+            for (int i = 0; i < result.result.Count; i++)
             {
                 if (result.result[i].poll_type == "buddies_status_change")
                 {
@@ -195,7 +195,7 @@ namespace SmartQQ
                 {
                     String message = result.result[i].value.content[1].ToString();
                     message.Replace("\\\\n", Environment.NewLine);
-                    int j;                    
+                    int j;
                     for (j = 0; j < user.result.info.Count; j++)
                         if (user.result.info[j].uin == result.result[i].value.from_uin)
                         {
@@ -204,7 +204,7 @@ namespace SmartQQ
                             textBoxResiveMessage.ScrollToCaret();
                             break;
                         }
-                    if(j == user.result.info.Count)
+                    if (j == user.result.info.Count)
                     {
                         getFrienf();
                         for (j = 0; j < user.result.info.Count; j++)
@@ -223,14 +223,14 @@ namespace SmartQQ
                     String message = result.result[i].value.content[1].ToString();
                     message.Replace("\\\\n", Environment.NewLine);
                     string gid;
-                    gid = result.result[i].value.from_uin;                   
+                    gid = result.result[i].value.from_uin;
                     for (int j = 0; j < group.result.gnamelist.Count; j++)
                         if (group.result.gnamelist[j].gid == gid)
                         {
                             GName = group.result.gnamelist[j].name;
                             break;
                         }
-                    for (int j = 0; ;j++ )
+                    for (int j = 0; ; j++)
                     {
                         if (groupmember[j].gid == gid)
                         {
@@ -247,11 +247,11 @@ namespace SmartQQ
                         }
                     }
                     ActionWhenResivedGroupMessage(gid, message, MessageFromUin);
-                    
+
 
                 }
                 textBoxLog.Text = temp;
-            }               
+            }
         }
         private string[] Answer(string message, string QQNum)
         {
@@ -283,14 +283,14 @@ namespace SmartQQ
                     }
                     return MessageToSend;
                 }
-                
+
             }
             MessageToSend[0] = AIGet(message, QQNum);
             if (!MessageToSend[0].Equals(""))
             {
                 return MessageToSend;
             }
-            string[] tmp1 = message.Split("@#$(),，.。:：;；“”～~！!#（）%？?》《、· \r\n\"啊么吧呀恩嗯了呢很".ToCharArray());
+            string[] tmp1 = message.Split("@#$(),，.。:：;；“”～~！!#（）%？?》《、· \r\n\"啊是么吧呀恩嗯了呢很吗".ToCharArray());
             int j = 0;
             bool RepeatFlag = false;
             for (int i = 0; i < tmp1.Length && i < 10; i++)
@@ -298,7 +298,7 @@ namespace SmartQQ
                 for (int k = 0; k < i; k++)
                     if (tmp1[k].Equals(tmp1[i]))
                         RepeatFlag = true;
-                if(RepeatFlag)
+                if (RepeatFlag)
                 {
                     RepeatFlag = false;
                     continue;
@@ -388,7 +388,7 @@ namespace SmartQQ
         }
         private string AIGet(string message, string QQNum)
         {
-            String url = DicServer+"gettalk.php?source=" + message + "&qqnum=" + QQNum;
+            String url = DicServer + "gettalk.php?source=" + message + "&qqnum=" + QQNum;
             string temp = HttpGet(url);
             if (temp.Contains("None"))
                 temp = "";
@@ -397,16 +397,16 @@ namespace SmartQQ
 
         private string AIStudy(string source, string aim, string QQNum)
         {
-            listBoxLog.Items.Insert(0,"学习 " + source + " " + aim);
+            listBoxLog.Items.Insert(0, "学习 " + source + " " + aim);
             if (DisableStudy)
             {
                 return "DisableStudy";
             }
-            String url = DicServer+"addtalk.php?password=" + StudyPassword + "&source=" + source + "&aim=" + aim + "&qqnum=" + QQNum;
+            String url = DicServer + "addtalk.php?password=" + StudyPassword + "&source=" + source + "&aim=" + aim + "&qqnum=" + QQNum;
             string temp = HttpGet(url);
             return temp;
         }
-        
+
         public void getFrienf()
         {
             String url = "http://s.web2.qq.com/api/get_user_friends2";
@@ -416,7 +416,7 @@ namespace SmartQQ
 
             user = (JsonFriendModel)JsonConvert.DeserializeObject(dat, typeof(JsonFriendModel));
             listBoxFriend.Items.Clear();
-            for(int i=0;i<user.result.info.Count;i++)
+            for (int i = 0; i < user.result.info.Count; i++)
             {
                 string gender;
                 friendinf[i].uin = user.result.info[i].uin;
@@ -452,12 +452,12 @@ namespace SmartQQ
             {
                 listBoxGroup.Items.Add(group.result.gnamelist[i].gid + ":" + group.result.gnamelist[i].name);
                 groupmember[i].gid = group.result.gnamelist[i].gid;
-                groupmember[i].Menber = GetGroupMenber(group.result.gnamelist[i].code);               
+                groupmember[i].Menber = GetGroupMenber(group.result.gnamelist[i].code);
             }
         }
         public JsonFriendInfModel GetFriendInf(string uin)
-        {        
-            String url = "http://s.web2.qq.com/api/get_friend_info2?tuin=" + uin + "&vfwebqq=" + vfwebqq +"&clientid="+ClientID+"&psessionid="+psessionid+ "&t=" + GetTimeStamp();
+        {
+            String url = "http://s.web2.qq.com/api/get_friend_info2?tuin=" + uin + "&vfwebqq=" + vfwebqq + "&clientid=" + ClientID + "&psessionid=" + psessionid + "&t=" + GetTimeStamp();
 
             string dat = HttpGet(url);
             JsonFriendInfModel ans = (JsonFriendInfModel)JsonConvert.DeserializeObject(dat, typeof(JsonFriendInfModel));
@@ -467,7 +467,7 @@ namespace SmartQQ
         {
             string url = "http://www.xiaohuangji.com/ajax.php";
             string postdata = "para=" + HttpUtility.UrlEncode(msg);
-            string MsgGet = HttpPost(url, "http://www.xiaohuangji.com/", postdata, Encoding.UTF8, false);
+            string MsgGet = HttpPost(url, "http://www.xiaohuangji.com/", postdata, Encoding.UTF8, false, 1000);
             return MsgGet;
         }
         private void textBoxID_LostFocus(object sender, EventArgs e)
@@ -575,11 +575,12 @@ namespace SmartQQ
             var ret = scriptEngine.CallGlobalFunction<string>("getEncryption", password, token, bits, 0);
             return ret;
         }
-        public string HttpGet(string url)
+        public string HttpGet(string url, int timeout = 0)
         {
             string dat;
             req = (HttpWebRequest)WebRequest.Create(url);
             req.CookieContainer = cookies;
+            req.Timeout = timeout;
             req.Referer = "http://d.web2.qq.com/proxy.html?v=20130916001&callback=1&id=2";
             res = (HttpWebResponse)req.GetResponse();
             reader = new StreamReader(res.GetResponseStream());
@@ -588,13 +589,13 @@ namespace SmartQQ
             res.Close();
             req.Abort();
             textBoxLog.Text = dat;
-            listBoxLog.Items.Insert(0,dat);
+            listBoxLog.Items.Insert(0, dat);
             return dat;
         }
         //http://www.itokit.com/2012/0721/74607.html
-        public string HttpPost(string url, string Referer, string data, Encoding encode, bool SaveCookie)
+        public string HttpPost(string url, string Referer, string data, Encoding encode, bool SaveCookie, int timeout = 0)
         {
-            if(AmountOfRunningPosting == 0)
+            if (AmountOfRunningPosting == 0)
                 System.GC.Collect();
             AmountOfRunningPosting++;
             HttpWebRequest req = WebRequest.Create(url) as HttpWebRequest;
@@ -603,6 +604,7 @@ namespace SmartQQ
             req.Method = "POST";
             req.UserAgent = "Mozilla/5.0 (Windows NT 5.1; rv:30.0) Gecko/20100101 Firefox/30.0";
             req.Proxy = null;
+            req.Timeout = timeout;
             req.ProtocolVersion = HttpVersion.Version10;
             if (!string.IsNullOrEmpty(Referer))
                 req.Referer = Referer;
@@ -611,7 +613,7 @@ namespace SmartQQ
 
             Stream stream = req.GetRequestStream();
             stream.Write(mybyte, 0, mybyte.Length);
-            
+
 
             HttpWebResponse hwr = req.GetResponse() as HttpWebResponse;
             stream.Close();
@@ -626,7 +628,7 @@ namespace SmartQQ
             hwr.Close();
             req.Abort();
             textBoxLog.Text = dat;
-            listBoxLog.Items.Insert(0,dat);
+            listBoxLog.Items.Insert(0, dat);
             AmountOfRunningPosting--;
             return dat;
         }
@@ -673,7 +675,7 @@ namespace SmartQQ
             String temp = reader.ReadToEnd();
             res.Close();
             req.Abort();
-            HeartPackAction(temp);       
+            HeartPackAction(temp);
         }
         private void pictureBoxCAPTCHA_Click(object sender, EventArgs e)
         {
@@ -690,7 +692,7 @@ namespace SmartQQ
             {
                 FileStream file = new FileStream(Environment.CurrentDirectory + "\\RuiRuiRobot.conf", FileMode.Open);
                 file.Seek(0, SeekOrigin.Begin);
-                file.Read(byData, 0, 1000); 
+                file.Read(byData, 0, 1000);
                 Decoder decoder = Encoding.Default.GetDecoder();
                 decoder.GetChars(byData, 0, byData.Length, charData, 0);
                 file.Close();
@@ -699,7 +701,7 @@ namespace SmartQQ
             {
                 NoFile = true;
             }
-            if(!NoFile)
+            if (!NoFile)
             {
                 string tmp = "";
                 for (int i = 0; i < charData.Length; i++)
@@ -716,9 +718,9 @@ namespace SmartQQ
             else
             {
                 DicServer = "http://smartqq.hxlxz.com/";
-                DisableStudy = true; 
+                DisableStudy = true;
             }
-               
+
         }
         public FormLogin()
         {
@@ -726,7 +728,7 @@ namespace SmartQQ
         }
         private void timerHeart_Tick(object sender, EventArgs e)
         {
-            if(!StopSendingHeartPack)HeartPack();          
+            if (!StopSendingHeartPack) HeartPack();
         }
         public void ReLogin()
         {
@@ -742,7 +744,7 @@ namespace SmartQQ
             pictureBoxCAPTCHA.Visible = true;
             textBoxCAPTCHA.Visible = true;
             if (CAPTCHA) GetCaptcha();
-            listBoxLog.Items.Insert(0,"账号" + textBoxID.Text + "已登出");
+            listBoxLog.Items.Insert(0, "账号" + textBoxID.Text + "已登出");
         }
 
         private void buttonLogout_Click(object sender, EventArgs e)
@@ -781,7 +783,7 @@ namespace SmartQQ
                 dat = dat.Replace("{\"retcode\":", "");
                 dat = dat.Replace("\"result\":\"", "");
                 dat = dat.Replace("\"}", "");
-                string[] tmp = dat.Split(',');               
+                string[] tmp = dat.Split(',');
                 if (tmp[0] == "0" && tmp[0] == "ok")
                     return true;
                 else
@@ -806,7 +808,7 @@ namespace SmartQQ
                     + ",\"psessionid\":\"" + psessionid
                     + "\"}";
                 postData = "r=" + HttpUtility.UrlEncode(postData);
-               
+
                 string referer = "http://d.web2.qq.com/proxy.html?v=20130916001&callback=1&id=2";
                 string url = "http://d.web2.qq.com/channel/send_qun_msg2";
 
@@ -834,18 +836,18 @@ namespace SmartQQ
             if (!(IsFriendSelent || IsGroupSelent))
                 return;
             StopSendingHeartPack = true;
-            if(IsGroupSelent)
+            if (IsGroupSelent)
             {
                 string GName = "";
                 string[] tmp = listBoxGroup.SelectedItem.ToString().Split(':');
-                SendMessageToGroup(tmp[0], textBoxSendMessage.Text); 
+                SendMessageToGroup(tmp[0], textBoxSendMessage.Text);
 
                 for (int i = 0; i < group.result.gnamelist.Count; i++)
                     if (group.result.gnamelist[i].gid == tmp[0])
-                        {
-                            GName = group.result.gnamelist[i].name;
-                            break;
-                        }
+                    {
+                        GName = group.result.gnamelist[i].name;
+                        break;
+                    }
                 textBoxResiveMessage.Text += ("发送至   " + GName + Environment.NewLine + textBoxSendMessage.Text + Environment.NewLine + Environment.NewLine);
                 textBoxResiveMessage.SelectionStart = textBoxResiveMessage.TextLength;
                 textBoxResiveMessage.ScrollToCaret();
@@ -906,7 +908,7 @@ namespace SmartQQ
     //http://www.cnblogs.com/lianmin/p/4237723.html (有较大修改）
     class JsonFriendModel
     {
-        public int retcode ;
+        public int retcode;
         public paramResult result;
         public class paramResult
         {
