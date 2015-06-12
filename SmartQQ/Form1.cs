@@ -467,7 +467,7 @@ namespace SmartQQ
         {
             string url = "http://www.xiaohuangji.com/ajax.php";
             string postdata = "para=" + HttpUtility.UrlEncode(msg);
-            string MsgGet = HttpPost(url, "http://www.xiaohuangji.com/", postdata, Encoding.UTF8, false, 1000);
+            string MsgGet = HttpPost(url, "http://www.xiaohuangji.com/", postdata, Encoding.UTF8, false, 10000);
             return MsgGet;
         }
         private void textBoxID_LostFocus(object sender, EventArgs e)
@@ -575,14 +575,21 @@ namespace SmartQQ
             var ret = scriptEngine.CallGlobalFunction<string>("getEncryption", password, token, bits, 0);
             return ret;
         }
-        public string HttpGet(string url, int timeout = 0)
+        public string HttpGet(string url, int timeout = 100000)
         {
             string dat;
             req = (HttpWebRequest)WebRequest.Create(url);
             req.CookieContainer = cookies;
             req.Timeout = timeout;
             req.Referer = "http://d.web2.qq.com/proxy.html?v=20130916001&callback=1&id=2";
-            res = (HttpWebResponse)req.GetResponse();
+            try
+            {
+                res = (HttpWebResponse)req.GetResponse();
+            }
+            catch(HttpException)
+            {
+                return "";
+            }
             reader = new StreamReader(res.GetResponseStream());
 
             dat = reader.ReadToEnd();
@@ -593,8 +600,9 @@ namespace SmartQQ
             return dat;
         }
         //http://www.itokit.com/2012/0721/74607.html
-        public string HttpPost(string url, string Referer, string data, Encoding encode, bool SaveCookie, int timeout = 0)
+        public string HttpPost(string url, string Referer, string data, Encoding encode, bool SaveCookie, int timeout = 100000)
         {
+            string dat = "";
             if (AmountOfRunningPosting == 0)
                 System.GC.Collect();
             AmountOfRunningPosting++;
@@ -610,23 +618,29 @@ namespace SmartQQ
                 req.Referer = Referer;
             byte[] mybyte = Encoding.Default.GetBytes(data);
             req.ContentLength = mybyte.Length;
-
-            Stream stream = req.GetRequestStream();
-            stream.Write(mybyte, 0, mybyte.Length);
-
-
-            HttpWebResponse hwr = req.GetResponse() as HttpWebResponse;
-            stream.Close();
-
-            if (SaveCookie)
+            try
             {
-                this.CookieCollection = hwr.Cookies;
-                this.cookies.GetCookies(req.RequestUri);
+                Stream stream = req.GetRequestStream();
+                stream.Write(mybyte, 0, mybyte.Length);
+
+
+                HttpWebResponse hwr = req.GetResponse() as HttpWebResponse;
+                stream.Close();
+                if (SaveCookie)
+                {
+                    this.CookieCollection = hwr.Cookies;
+                    this.cookies.GetCookies(req.RequestUri);
+                }
+                StreamReader SR = new StreamReader(hwr.GetResponseStream(), encode);
+                dat = SR.ReadToEnd();
+                hwr.Close();
+                req.Abort();
+            }            
+            catch(HttpException)
+            {
+                return "";
             }
-            StreamReader SR = new StreamReader(hwr.GetResponseStream(), encode);
-            string dat = SR.ReadToEnd();
-            hwr.Close();
-            req.Abort();
+            
             textBoxLog.Text = dat;
             listBoxLog.Items.Insert(0, dat);
             AmountOfRunningPosting--;
