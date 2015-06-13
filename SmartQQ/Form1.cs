@@ -159,7 +159,7 @@ namespace SmartQQ
             if (temp == "{\"retcode\":121,\"t\":\"0\"}\r\n")
             {
                 ReLogin();
-                MessageBox.Show("账号在其他地点登录，被迫退出");
+                //MessageBox.Show("账号在其他地点登录，被迫退出");
                 return;
             }
             else if (temp == "{\"retcode\":102,\"errmsg\":\"\"}\r\n" || temp == "{\"retcode\":0,\"result\":\"ok\"}\r\n")
@@ -188,7 +188,8 @@ namespace SmartQQ
                 else if (result.result[i].poll_type == "kick_message")
                 {
                     ReLogin();
-                    MessageBox.Show(result.result[i].value.reason);
+                    listBoxLog.Items.Add(result.result[i].value.reason);
+                    //MessageBox.Show(result.result[i].value.reason);
                     return;
                 }
                 else if (result.result[i].poll_type == "message")
@@ -261,8 +262,17 @@ namespace SmartQQ
             bool MsgSendFlag = false;
             if (message.Contains("学习"))
             {
+                bool StudyFlag = true;
                 string[] tmp = message.Split('^');
-                if (tmp[0].Equals("学习") && tmp.Length == 3)
+                if ((!tmp[0].Equals("学习")) || tmp.Length != 3)
+                {
+                    tmp = message.Split('&');
+                    if ((!tmp[0].Equals("学习")) || tmp.Length != 3)
+                    {
+                        StudyFlag = false;
+                    }
+                }
+                if(StudyFlag)
                 {
                     string result = AIStudy(tmp[1], tmp[2], QQNum);
                     if (result.Equals("Success"))
@@ -282,8 +292,7 @@ namespace SmartQQ
                         MessageToSend[0] = "小睿睿出错了，也许主人卖个萌就好了～～";
                     }
                     return MessageToSend;
-                }
-
+                }                
             }
             MessageToSend[0] = AIGet(message, QQNum);
             if (!MessageToSend[0].Equals(""))
@@ -472,6 +481,8 @@ namespace SmartQQ
         }
         private void textBoxID_LostFocus(object sender, EventArgs e)
         {
+            if (textBoxID.Text.Length == 0)
+                return;
             String str1 = "https://ssl.ptlogin2.qq.com/check?pt_tea=1&uin=";
             String str2 = "&appid=501004106&js_ver=10121&js_type=0&login_sig=&u1=http%3A%2F%2Fw.qq.com%2Fproxy.html&r=0.4053995015565306";
             String url = str1 + textBoxID.Text + str2;
@@ -734,7 +745,12 @@ namespace SmartQQ
                 DicServer = "http://smartqq.hxlxz.com/";
                 DisableStudy = true;
             }
-
+            if (textBoxID.Text.Length > 0)
+            {
+                GetCaptcha();
+                if (!textBoxCAPTCHA.Text.Equals(""))
+                    buttonLogIn_Click(this, EventArgs.Empty);
+            }
         }
         public FormLogin()
         {
@@ -745,6 +761,12 @@ namespace SmartQQ
             if (!StopSendingHeartPack) HeartPack();
         }
         public void ReLogin()
+        {
+            LogOut();
+            if(!textBoxCAPTCHA.Text.Equals(""))
+                buttonLogIn_Click(this, EventArgs.Empty);
+        }
+        public void LogOut()
         {
             timerHeart.Stop();
             listBoxFriend.Items.Clear();
@@ -760,10 +782,9 @@ namespace SmartQQ
             if (CAPTCHA) GetCaptcha();
             listBoxLog.Items.Insert(0, "账号" + textBoxID.Text + "已登出");
         }
-
         private void buttonLogout_Click(object sender, EventArgs e)
         {
-            ReLogin();
+            LogOut();
         }
         public static string GetTimeStamp()
         {
@@ -909,6 +930,10 @@ namespace SmartQQ
         private void listBoxLog_SelectedIndexChanged(object sender, EventArgs e)
         {
             textBoxLog.Text = listBoxLog.Items[listBoxLog.SelectedIndex].ToString();
+        }
+        private void listBoxLog_DoubleClick(object sender, EventArgs e)
+        {
+            Clipboard.SetDataObject(listBoxLog.Items[listBoxLog.SelectedIndex].ToString());
         }
     }
     public class WindowObject : ObjectInstance
