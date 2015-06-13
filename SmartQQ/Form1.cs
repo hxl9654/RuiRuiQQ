@@ -9,35 +9,58 @@ using System.Net;
 using System.Text;
 using System.Web;
 using System.Windows.Forms;
+// *   This program is free software: you can redistribute it and/or modify
+// *   it under the terms of the GNU General Public License as published by
+// *   the Free Software Foundation, either version 3 of the License, or
+// *   (at your option) any later version.
+// *
+// *   This program is distributed in the hope that it will be useful,
+// *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+// *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// *   GNU General Public License for more details.
+// *
+// *   You should have received a copy of the GNU General Public License
+// *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+// *
+// * @author     Xianglong He
+// * @copyright  Copyright (c) 2015 Xianglong He. (http://tec.hxlxz.com)
+// * @license    http://www.gnu.org/licenses/     GPL v3
+// * @version    1.0
+// * @discribe   RuiRuiQQRobot服务端
+// * 本软件作者是何相龙，使用GPL v3许可证进行授权。
 namespace SmartQQ
 {
 
     public partial class FormLogin : Form
     {
+        //网络通信相关
         CookieContainer cookies = new CookieContainer();
         CookieCollection CookieCollection = new CookieCollection();
         CookieContainer CookieContainer = new CookieContainer();
-        String ptvsession = "";
-        bool CAPTCHA = false;
-        string pin = string.Empty;
-        String pt_uin = "";
-        HttpWebRequest req = null;
-        HttpWebResponse res = null;
-        StreamReader reader = null;
-        String CaptchaCode;
-        String p_skey, MyUin, skey, p_uin, ptwebqq, vfwebqq, psessionid, hash;
+
         public String HeartPackdata;
-        int ClientID = 1659243;
-        JsonGroupModel group;
-        JsonFriendModel user;
-        bool IsGroupSelent = false, IsFriendSelent = false;
-        bool DoNotChangeSelentGroupOrPeople = false;
         bool StopSendingHeartPack = false;
+        int AmountOfRunningPosting = 0;
+        //系统配置相关
+        private int MsgId;
+        private int ClientID;
         string StudyPassword = "";
         string DicServer = "";
         bool DisableStudy = false;
-        int AmountOfRunningPosting = 0;
-        StreamReader streamreader;
+        //通信参数相关
+        String ptvsession = "";
+        String p_skey, MyUin, skey, p_uin, ptwebqq, vfwebqq, psessionid, hash;
+        String pt_uin = "";
+        //多个函数要用到的变量
+        bool CAPTCHA = false;
+        string pin = string.Empty;       
+        String CaptchaCode;
+        
+        bool IsGroupSelent = false, IsFriendSelent = false;
+        bool DoNotChangeSelentGroupOrPeople = false;
+        //数据存储相关
+        JsonGroupModel group;
+        JsonFriendModel user;
         struct GroupMember
         {
             public String gid;
@@ -51,7 +74,7 @@ namespace SmartQQ
         };
         FriendInf[] friendinf = new FriendInf[1000];
         int friendinfMaxIndex = 0;
-        private int MsgId = 76523245;
+
         private void buttonLogIn_Click(object sender, EventArgs e)
         {
             if (textBoxID.Text.Length == 0)
@@ -526,9 +549,9 @@ namespace SmartQQ
             String strimg2 = "&cap_cd=";
             String strimg = strimg1 + textBoxID.Text + strimg2 + CaptchaCode;
 
-            req = (HttpWebRequest)WebRequest.Create(strimg);
+            HttpWebRequest req = (HttpWebRequest)WebRequest.Create(strimg);
             req.CookieContainer = cookies;
-            res = (HttpWebResponse)req.GetResponse();
+            HttpWebResponse res = (HttpWebResponse)req.GetResponse();
 
             pictureBoxCAPTCHA.Image = Image.FromStream(res.GetResponseStream());
 
@@ -589,7 +612,8 @@ namespace SmartQQ
         public string HttpGet(string url, int timeout = 100000)
         {
             string dat;
-            req = (HttpWebRequest)WebRequest.Create(url);
+            HttpWebRequest req = (HttpWebRequest)WebRequest.Create(url); 
+            HttpWebResponse res = null;
             req.CookieContainer = cookies;
             req.Timeout = timeout;
             req.Referer = "http://d.web2.qq.com/proxy.html?v=20130916001&callback=1&id=2";
@@ -601,7 +625,7 @@ namespace SmartQQ
             {
                 return "";
             }
-            reader = new StreamReader(res.GetResponseStream());
+            StreamReader reader = new StreamReader(res.GetResponseStream());
 
             dat = reader.ReadToEnd();
             res.Close();
@@ -713,6 +737,8 @@ namespace SmartQQ
             char[] charData = new char[1000];
             Control.CheckForIllegalCrossThreadCalls = false;
             System.Net.ServicePointManager.DefaultConnectionLimit = 500;
+            Random rd = new Random();
+            MsgId = rd.Next(10000000, 50000000);
             try
             {
                 FileStream file = new FileStream(Environment.CurrentDirectory + "\\RuiRuiRobot.conf", FileMode.Open);
@@ -739,11 +765,13 @@ namespace SmartQQ
                 textBoxPassword.Text = dat.QQPassword;
                 StudyPassword = dat.DicPassword;
                 DicServer = dat.DicServer;
+                ClientID = dat.ClientID;
             }
             else
             {
                 DicServer = "http://smartqq.hxlxz.com/";
                 DisableStudy = true;
+                ClientID = 123456;
             }
             if (textBoxID.Text.Length > 0)
             {
@@ -1082,5 +1110,6 @@ namespace SmartQQ
         public String DicPassword;
         public String QQNum;
         public String QQPassword;
+        public int ClientID;
     }
 }
