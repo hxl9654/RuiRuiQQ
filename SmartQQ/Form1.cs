@@ -963,6 +963,14 @@ namespace SmartQQ
         {
             Clipboard.SetDataObject(listBoxLog.Items[listBoxLog.SelectedIndex].ToString());
         }
+        private void listBoxFriend_DoubleClick(object sender, EventArgs e)
+        {
+            Clipboard.SetDataObject(listBoxFriend.Items[listBoxFriend.SelectedIndex].ToString());
+        }
+        private void listBoxGroup_DoubleClick(object sender, EventArgs e)
+        {
+            Clipboard.SetDataObject(listBoxGroup.Items[listBoxGroup.SelectedIndex].ToString());
+        }
     }
     public class WindowObject : ObjectInstance
     {

@@ -222,6 +222,7 @@
             this.listBoxFriend.Size = new System.Drawing.Size(248, 244);
             this.listBoxFriend.TabIndex = 9;
             this.listBoxFriend.SelectedIndexChanged += new System.EventHandler(this.listBoxFriend_SelectedIndexChanged);
+            this.listBoxFriend.DoubleClick += new System.EventHandler(this.listBoxFriend_DoubleClick);
             // 
             // groupBox4
             // 
@@ -242,6 +243,7 @@
             this.listBoxGroup.Size = new System.Drawing.Size(252, 148);
             this.listBoxGroup.TabIndex = 9;
             this.listBoxGroup.SelectedIndexChanged += new System.EventHandler(this.listBoxGroup_SelectedIndexChanged);
+            this.listBoxGroup.DoubleClick += new System.EventHandler(this.listBoxGroup_DoubleClick);
             // 
             // groupBox5
             // 
