@@ -771,7 +771,7 @@ namespace SmartQQ
             {
                 DicServer = "http://smartqq.hxlxz.com/";
                 DisableStudy = true;
-                ClientID = 123456;
+                ClientID = rd.Next(1000000, 9999999); ;
             }
             if (textBoxID.Text.Length > 0)
             {
