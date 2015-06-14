@@ -318,7 +318,7 @@ namespace SmartQQ
                     }
                     else if(result.Equals("IDDisabled"))
                     {
-                        MessageToSend[0] = "账号" + QQNum + "被禁止使用学习功能，详询管理员";
+                        MessageToSend[0] = "小睿睿拒绝学习这句话，原因是：" + Environment.NewLine + "妈麻说，" + QQNum + "是坏人，小睿睿不能听他的话，详询管理员。";
                     }
                     else if (result.Equals("Waitting"))
                     {
@@ -326,7 +326,7 @@ namespace SmartQQ
                     }
                     else if (result.Equals("ForbiddenWord"))
                     {
-                        MessageToSend[0] = "根据相关法律法规和政策，账号" + QQNum + "提交的学习内容包含敏感词，详询管理员";
+                        MessageToSend[0] = "小睿睿拒绝学习这句话，原因是：" + Environment.NewLine + "根据相关法律法规和政策，账号" + QQNum + "提交的学习内容包含敏感词，详询管理员";
                     }
                     else
                     {
@@ -340,7 +340,7 @@ namespace SmartQQ
             {
                 return MessageToSend;
             }
-            string[] tmp1 = message.Split("@#$(),，.。:：;^&；“”～~！!#（）%？?》《、· \r\n\"啊是的么吧呀恩嗯了呢很吗".ToCharArray());
+            string[] tmp1 = message.Split("@#$(),，.。:：;^&；“”～~！!#（）%？?》《、· \r\n\"".ToCharArray());
             int j = 0;
             bool RepeatFlag = false;
             for (int i = 0; i < tmp1.Length && i < 10; i++)
@@ -360,13 +360,45 @@ namespace SmartQQ
                     MsgSendFlag = true;
                 }
             }
+            if (!MsgSendFlag)
+            {
+                string[] tmp2 = message.Split("@#$(),，.。:：;^&；“”～~！!#（）%？?》《、· \r\n\"啊是的么吧呀恩嗯了呢很吗".ToCharArray());
+                j = 0;
+                RepeatFlag = false;
+                for (int i = 0; i < tmp2.Length && i < 10; i++)
+                {
+                    for (int k = 0; k < i; k++)
+                        if (tmp2[k].Equals(tmp2[i]))
+                            RepeatFlag = true;
+                    for (int k = 0; k < tmp1.Length; k++)
+                        if (tmp1[k].Equals(tmp2[i]))
+                            RepeatFlag = true;
 
+                    if (RepeatFlag)
+                    {
+                        RepeatFlag = false;
+                        continue;
+                    }
+                    if (!tmp2[i].Equals(""))
+                    {
+                        MessageToSend[j] = AIGet(tmp2[i], QQNum);
+                        j++;
+                        MsgSendFlag = true;
+                    }
+                }
+            }
+            
+            
             if (!MsgSendFlag)
             {
                 string XiaoHuangJiMsg = GetXiaoHuangJi(message);
                 if (XiaoHuangJiMsg.Length > 1)
                 {
+                    for (int i = 0; i < Badwords.Length; i++)
+                        if (XiaoHuangJiMsg.Contains(Badwords[i]))
+                            return null;
                     MessageToSend[0] = "隔壁小黄鸡说：" + XiaoHuangJiMsg;
+                    
                     return MessageToSend;
                 }
                 else
@@ -382,7 +414,7 @@ namespace SmartQQ
             string MessageToSend = "";
             for (int i = 0; i < 10; i++)
             {
-                if (!MessageToSendArray[i].Equals(""))
+                if ((!MessageToSendArray[i].Equals("")) && (!MessageToSendArray[i].Equals("None3")))
                 {
                     MessageToSend += MessageToSendArray[i] + Environment.NewLine;
                     MessageToSendArray[i] = "";
@@ -398,6 +430,8 @@ namespace SmartQQ
             {
                 if (!MessageToSendArray[i].Equals(""))
                 {
+                    if (MessageToSendArray[i].Equals("None3"))
+                        MessageToSendArray[i] = "这句话仍在等待审核哟～～如果要大量添加语库，可以向管理员申请白名单的～";
                     MessageToSend += MessageToSendArray[i] + Environment.NewLine;
                     MessageToSendArray[i] = "";
                 }
@@ -440,7 +474,7 @@ namespace SmartQQ
         {
             String url = DicServer + "gettalk.php?source=" + message + "&qqnum=" + QQNum;
             string temp = HttpGet(url);
-            if (temp.Contains("None"))
+            if (temp.Equals("None1") || temp.Equals("None2") || temp.Equals("None4"))
                 temp = "";
             return temp;
         }
