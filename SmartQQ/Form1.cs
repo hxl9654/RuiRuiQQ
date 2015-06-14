@@ -74,7 +74,7 @@ namespace SmartQQ
         };
         FriendInf[] friendinf = new FriendInf[1000];
         int friendinfMaxIndex = 0;
-
+        string[] Badwords;
         private void buttonLogIn_Click(object sender, EventArgs e)
         {
             if (textBoxID.Text.Length == 0)
@@ -173,6 +173,7 @@ namespace SmartQQ
             pictureBoxCAPTCHA.Visible = false;
             textBoxCAPTCHA.Visible = false;
             textBoxCAPTCHA.Text = "";
+            this.AcceptButton = this.buttonSend;
         }
         private void HeartPackAction(string temp)
         {
@@ -245,7 +246,7 @@ namespace SmartQQ
                 else if (result.result[i].poll_type == "group_message")
                 {
                     String message = result.result[i].value.content[1].ToString();
-                    message.Replace("\\\\n", Environment.NewLine);
+                    message.Replace("\n", Environment.NewLine);
                     string gid;
                     gid = result.result[i].value.from_uin;
                     for (int j = 0; j < group.result.gnamelist.Count; j++)
@@ -297,7 +298,12 @@ namespace SmartQQ
                 }
                 if(StudyFlag)
                 {
-                    string result = AIStudy(tmp[1], tmp[2], QQNum);
+                    string result="";
+                    for (int i = 0; i < Badwords.Length; i++)
+                        if (tmp[1].Contains(Badwords[i]) || tmp[2].Contains(Badwords[i]))
+                            result = "ForbiddenWord";
+                    if (result.Equals(""))
+                        result = AIStudy(tmp[1], tmp[2], QQNum);
                     if (result.Equals("Success"))
                     {
                         MessageToSend[0] = "嗯嗯～小睿睿记住了～～" + Environment.NewLine + "主人说 " + tmp[1] + " 时，小睿睿应该回答 " + tmp[2];
@@ -309,6 +315,18 @@ namespace SmartQQ
                     else if (result.Equals("DisableStudy"))
                     {
                         MessageToSend[0] = "当前学习功能未开启";
+                    }
+                    else if(result.Equals("IDDisabled"))
+                    {
+                        MessageToSend[0] = "账号" + QQNum + "被禁止使用学习功能，详询管理员";
+                    }
+                    else if (result.Equals("Waitting"))
+                    {
+                        MessageToSend[0] = "账号" + QQNum + "提交的学习请求已记录，等待审核";
+                    }
+                    else if (result.Equals("ForbiddenWord"))
+                    {
+                        MessageToSend[0] = "根据相关法律法规和政策，账号" + QQNum + "提交的学习内容包含敏感词，详询管理员";
                     }
                     else
                     {
@@ -322,7 +340,7 @@ namespace SmartQQ
             {
                 return MessageToSend;
             }
-            string[] tmp1 = message.Split("@#$(),，.。:：;；“”～~！!#（）%？?》《、· \r\n\"啊是么吧呀恩嗯了呢很吗".ToCharArray());
+            string[] tmp1 = message.Split("@#$(),，.。:：;^&；“”～~！!#（）%？?》《、· \r\n\"啊是的么吧呀恩嗯了呢很吗".ToCharArray());
             int j = 0;
             bool RepeatFlag = false;
             for (int i = 0; i < tmp1.Length && i < 10; i++)
@@ -360,7 +378,7 @@ namespace SmartQQ
         }
         private void ActionWhenResivedGroupMessage(string gid, string message, string uin)
         {
-            string[] MessageToSendArray = Answer(message, GetRealQQ(uin));
+            string[] MessageToSendArray = Answer(message, uin);
             string MessageToSend = "";
             for (int i = 0; i < 10; i++)
             {
@@ -733,8 +751,8 @@ namespace SmartQQ
         private void FormLogin_Load(object sender, EventArgs e)
         {
             bool NoFile = false;
-            byte[] byData = new byte[1000];
-            char[] charData = new char[1000];
+            byte[] byData = new byte[20000];
+            char[] charData = new char[20000];
             Control.CheckForIllegalCrossThreadCalls = false;
             System.Net.ServicePointManager.DefaultConnectionLimit = 500;
             Random rd = new Random();
@@ -779,6 +797,29 @@ namespace SmartQQ
                 if (!textBoxCAPTCHA.Text.Equals(""))
                     buttonLogIn_Click(this, EventArgs.Empty);
             }
+            NoFile = false;
+            try
+            {
+                FileStream file = new FileStream(Environment.CurrentDirectory + "\\badwords.txt", FileMode.Open);
+                file.Seek(0, SeekOrigin.Begin);
+                file.Read(byData, 0, 20000);
+                Decoder decoder = Encoding.UTF8.GetDecoder();
+                decoder.GetChars(byData, 0, byData.Length, charData, 0);
+                file.Close();
+            }
+            catch (System.IO.FileNotFoundException)
+            {
+                NoFile = true;
+            }
+            if (!NoFile)
+            {
+                string tmp = "";
+                for (int i = 0; i < charData.Length; i++)
+                    if (charData[i] != '\0') tmp += charData[i];
+                //tmp.Replace(Environment.NewLine, "|");
+                Badwords = tmp.Split('|');
+            }
+            else Badwords = new string[0];
         }
         public FormLogin()
         {
