@@ -322,7 +322,7 @@ namespace SmartQQ
                     }
                     else if (result.Equals("Waitting"))
                     {
-                        MessageToSend[0] = "账号" + QQNum + "提交的学习请求已记录，等待审核";
+                        MessageToSend[0] = "小睿睿记下了" + QQNum + "提交的学习请求，不过小睿睿还得去问问语文老师呢～～";
                     }
                     else if (result.Equals("ForbiddenWord"))
                     {
@@ -816,7 +816,6 @@ namespace SmartQQ
                 string tmp = "";
                 for (int i = 0; i < charData.Length; i++)
                     if (charData[i] != '\0') tmp += charData[i];
-                //tmp.Replace(Environment.NewLine, "|");
                 Badwords = tmp.Split('|');
             }
             else Badwords = new string[0];
@@ -868,6 +867,8 @@ namespace SmartQQ
         /// 发送好友消息
         public bool SendMessageToFriend(string uid, string content)
         {
+            if (content.Equals(""))
+                return false;
             this.MsgId++;
             try
             {
@@ -902,6 +903,8 @@ namespace SmartQQ
         /// 发送群消息
         public bool SendMessageToGroup(string gin, string content)
         {
+            if (content.Equals(""))
+                return false;
             this.MsgId++;
             try
             {
