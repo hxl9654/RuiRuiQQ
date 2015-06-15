@@ -47,6 +47,7 @@ namespace SmartQQ
         string StudyPassword = "";
         string DicServer = "";
         bool DisableStudy = false;
+        bool DisableWeather = false;
         //通信参数相关
         String ptvsession = "";
         String p_skey, MyUin, skey, p_uin, ptwebqq, vfwebqq, psessionid, hash;
@@ -61,6 +62,7 @@ namespace SmartQQ
         //数据存储相关
         JsonGroupModel group;
         JsonFriendModel user;
+        JsonWeatherCityCodeModel citycode;
         struct GroupMember
         {
             public String gid;
@@ -219,7 +221,7 @@ namespace SmartQQ
                 else if (result.result[i].poll_type == "message")
                 {
                     String message = result.result[i].value.content[1].ToString();
-                    message.Replace("\\\\n", Environment.NewLine);
+                    message = message.Replace("\\\\n", Environment.NewLine);
                     int j;
                     for (j = 0; j < user.result.info.Count; j++)
                         if (user.result.info[j].uin == result.result[i].value.from_uin)
@@ -246,7 +248,7 @@ namespace SmartQQ
                 else if (result.result[i].poll_type == "group_message")
                 {
                     String message = result.result[i].value.content[1].ToString();
-                    message.Replace("\n", Environment.NewLine);
+                    message = message.Replace("\n", Environment.NewLine);
                     string gid;
                     gid = result.result[i].value.from_uin;
                     for (int j = 0; j < group.result.gnamelist.Count; j++)
@@ -287,19 +289,29 @@ namespace SmartQQ
             if (message.Contains("汇率"))
             {
                 bool ExchangeRateFlag = true;
-                string[] tmp = message.Split('^');
+                string[] tmp = message.Split('&');
                 if ((!tmp[0].Equals("汇率")) || tmp.Length != 3)
                 {
-                    tmp = message.Split('&');
-                    if ((!tmp[0].Equals("汇率")) || tmp.Length != 3)
-                    {
-                        ExchangeRateFlag = false;
-                    }
+                    ExchangeRateFlag = false;
                 }
                 if (ExchangeRateFlag)
                 {
                     MessageToSend[0] = GetExchangeRate(tmp[1], tmp[2]);
                     return MessageToSend;                       
+                }
+            }
+            if (message.Contains("天气") && DisableWeather == false) 
+            {
+                bool WeatherFlag = true;
+                string[] tmp = message.Split('&');
+                if ((!tmp[0].Equals("天气")) || tmp.Length != 2)
+                {
+                    WeatherFlag = false;
+                }
+                if (WeatherFlag)
+                {
+                    MessageToSend[0] = GetWeather(tmp[1]);
+                    return MessageToSend;
                 }
             }
             if (message.Contains("学习"))
@@ -414,6 +426,47 @@ namespace SmartQQ
                 }
             }
             return MessageToSend;
+        }
+
+        private string GetWeather(string city)
+        {
+            bool FlagProvinceFound = false;
+            bool FlagCityFound = false;
+            string citycodestring = "";
+            city = city.Replace("省", "");
+            city = city.Replace("市", "");
+            city = city.Replace(" ", "");
+            city = city.Replace("\r", "");
+            city = city.Replace("\n", "");
+            for (int i = 0; i < citycode.citycodes.Count; i++) 
+            {
+                if (citycode.citycodes[i].province.Equals(city)) 
+                    FlagProvinceFound = true;
+                for (int j = 0; j < citycode.citycodes[i].cities.Count; j++)
+                {
+                    if(citycode.citycodes[i].cities[j].city.Equals(city))
+                    {
+                        citycodestring = citycode.citycodes[i].cities[j].code;
+                        FlagCityFound = true;
+                        break;
+                    }
+                }
+                if (FlagCityFound)
+                    break;
+            }
+            if (FlagCityFound)
+            {
+                string url = "http://www.weather.com.cn/adat/cityinfo/" + citycodestring + ".html";
+                string temp = HttpGet(url);
+                JsonWeatherModel weather = (JsonWeatherModel)JsonConvert.DeserializeObject(temp, typeof(JsonWeatherModel));
+                string ans = "根据中国天气网于" + weather.weatherinfo.ptime + "发布的气象预报，" + weather.weatherinfo.city + "今天" + weather.weatherinfo.weather + "最低温度" + weather.weatherinfo.temp2 + ",最高温度" + weather.weatherinfo.temp1 + "。";
+                return ans;
+            }
+            else if (FlagProvinceFound)
+            {
+                return "查询天气时，请指定具体的城市，而不是省份。";
+            }
+            else return "未查询到指定城市 " + city + " 的天气信息";
         }
 
         private string GetStudyFlagInfo(string result, string QQNum, string tmp1, string tmp2)
@@ -845,8 +898,8 @@ namespace SmartQQ
         private void FormLogin_Load(object sender, EventArgs e)
         {
             bool NoFile = false;
-            byte[] byData = new byte[20000];
-            char[] charData = new char[20000];
+            byte[] byData = new byte[100000];
+            char[] charData = new char[100000];
             Control.CheckForIllegalCrossThreadCalls = false;
             System.Net.ServicePointManager.DefaultConnectionLimit = 500;
             Random rd = new Random();
@@ -913,6 +966,28 @@ namespace SmartQQ
                 Badwords = tmp.Split('|');
             }
             else Badwords = new string[0];
+            NoFile = false;
+            try
+            {
+                FileStream file = new FileStream(Environment.CurrentDirectory + "\\cityweathercode.txt", FileMode.Open);
+                file.Seek(0, SeekOrigin.Begin);
+                file.Read(byData, 0, 100000);
+                Decoder decoder = Encoding.UTF8.GetDecoder();
+                decoder.GetChars(byData, 0, byData.Length, charData, 0);
+                file.Close();
+            }
+            catch (System.IO.FileNotFoundException)
+            {
+                NoFile = true;
+            }
+            if (!NoFile)
+            {
+                string tmp = "";
+                for (int i = 0; i < charData.Length; i++)
+                    if (charData[i] != '\0') tmp += charData[i];
+                citycode = (JsonWeatherCityCodeModel)JsonConvert.DeserializeObject(tmp, typeof(JsonWeatherCityCodeModel));
+            }
+            else DisableWeather = true;
         }
         public FormLogin()
         {
