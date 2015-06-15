@@ -305,51 +305,40 @@ namespace SmartQQ
             if (message.Contains("学习"))
             {
                 bool StudyFlag = true;
+                bool SuperStudy = false;
                 string[] tmp = message.Split('^');
                 if ((!tmp[0].Equals("学习")) || tmp.Length != 3)
                 {
+                    if ((tmp[0].Equals("特权学习")) && tmp.Length == 3)
+                    {
+                        SuperStudy = true;
+                    }
                     tmp = message.Split('&');
                     if ((!tmp[0].Equals("学习")) || tmp.Length != 3)
                     {
                         StudyFlag = false;
-                    }
+                        if((tmp[0].Equals("特权学习")) && tmp.Length == 3)
+                        {
+                            SuperStudy = true;
+                        }
+                    }                    
+                }
+                if (SuperStudy)
+                {
+                    string result = "";
+                    result = AIStudy(tmp[1], tmp[2], QQNum, true);
+                    MessageToSend[0] = GetStudyFlagInfo(result, QQNum, tmp[1], tmp[2]);
+                    return MessageToSend;
                 }
                 if(StudyFlag)
                 {
-                    string result="";
+                    string result = "";
                     for (int i = 0; i < Badwords.Length; i++)
                         if (tmp[1].Contains(Badwords[i]) || tmp[2].Contains(Badwords[i]))
                             result = "ForbiddenWord";
                     if (result.Equals(""))
-                        result = AIStudy(tmp[1], tmp[2], QQNum);
-                    if (result.Equals("Success"))
-                    {
-                        MessageToSend[0] = "嗯嗯～小睿睿记住了～～" + Environment.NewLine + "主人说 " + tmp[1] + " 时，小睿睿应该回答 " + tmp[2];
-                    }
-                    else if (result.Equals("Already"))
-                    {
-                        MessageToSend[0] = "小睿睿知道了啦～" + Environment.NewLine + "主人说 " + tmp[1] + " 时，小睿睿应该回答 " + tmp[2];
-                    }
-                    else if (result.Equals("DisableStudy"))
-                    {
-                        MessageToSend[0] = "当前学习功能未开启";
-                    }
-                    else if(result.Equals("IDDisabled"))
-                    {
-                        MessageToSend[0] = "小睿睿拒绝学习这句话，原因是：" + Environment.NewLine + "妈麻说，" + QQNum + "是坏人，小睿睿不能听他的话，详询管理员。";
-                    }
-                    else if (result.Equals("Waitting"))
-                    {
-                        MessageToSend[0] = "小睿睿记下了" + QQNum + "提交的学习请求，不过小睿睿还得去问问语文老师呢～～";
-                    }
-                    else if (result.Equals("ForbiddenWord"))
-                    {
-                        MessageToSend[0] = "小睿睿拒绝学习这句话，原因是：" + Environment.NewLine + "根据相关法律法规和政策，账号" + QQNum + "提交的学习内容包含敏感词，详询管理员";
-                    }
-                    else
-                    {
-                        MessageToSend[0] = "小睿睿出错了，也许主人卖个萌就好了～～";
-                    }
+                        result = AIStudy(tmp[1], tmp[2], QQNum, false);
+                    MessageToSend[0] = GetStudyFlagInfo(result, QQNum,tmp[1],tmp[2]);                    
                     return MessageToSend;
                 }                
             }
@@ -425,6 +414,46 @@ namespace SmartQQ
                 }
             }
             return MessageToSend;
+        }
+
+        private string GetStudyFlagInfo(string result, string QQNum, string tmp1, string tmp2)
+        {
+            if (result.Equals("Success"))
+            {
+                return "嗯嗯～小睿睿记住了～～" + Environment.NewLine + "主人说 " + tmp1 + " 时，小睿睿应该回答 " + tmp2;
+            }
+            else if (result.Equals("Already"))
+            {
+                return "小睿睿知道了啦～" + Environment.NewLine + "主人说 " + tmp1 + " 时，小睿睿应该回答 " + tmp2;
+            }
+            else if (result.Equals("DisableStudy"))
+            {
+                return "当前学习功能未开启";
+            }
+            else if (result.Equals("IDDisabled"))
+            {
+                return "小睿睿拒绝学习这句话，原因是：" + Environment.NewLine + "妈麻说，" + QQNum + "是坏人，小睿睿不能听他的话，详询管理员。";
+            }
+            else if (result.Equals("Waitting"))
+            {
+                return "小睿睿记下了" + QQNum + "提交的学习请求，不过小睿睿还得去问问语文老师呢～～";
+            }
+            else if (result.Equals("ForbiddenWord"))
+            {
+                return "小睿睿拒绝学习这句话，原因是：" + Environment.NewLine + "根据相关法律法规和政策，账号" + QQNum + "提交的学习内容包含敏感词，详询管理员";
+            }
+            else if (result.Equals("Forbidden"))
+            {
+                return "小睿睿拒绝学习这句话，原因是：" + Environment.NewLine + "账号" + QQNum + "提交的学习内容被屏蔽，详询管理员";
+            }
+            else if (result.Equals("NotSuper"))
+            {
+                return "小睿睿拒绝学习这句话，原因是：" + Environment.NewLine + "账号" + QQNum + "不是特权用户，不能使用特权学习命令。";
+            }
+            else
+            {
+                return "小睿睿出错了，也许主人卖个萌就好了～～";
+            }
         }
 
         private string GetExchangeRate(string p1, string p2)
@@ -507,7 +536,7 @@ namespace SmartQQ
             return temp;
         }
 
-        private string AIStudy(string source, string aim, string QQNum)
+        private string AIStudy(string source, string aim, string QQNum, bool superstudy = false)
         {
             listBoxLog.Items.Insert(0, "学习 " + source + " " + aim);
             if (DisableStudy)
@@ -515,6 +544,9 @@ namespace SmartQQ
                 return "DisableStudy";
             }
             String url = DicServer + "addtalk.php?password=" + StudyPassword + "&source=" + source + "&aim=" + aim + "&qqnum=" + QQNum;
+            if (superstudy)
+                url = url + "&superstudy=true";
+            else url = url + "&superstudy=false";
             string temp = HttpGet(url);
             return temp;
         }
@@ -1085,155 +1117,5 @@ namespace SmartQQ
         {
             this.PopulateFunctions();
         }
-    }
-    //http://www.cnblogs.com/lianmin/p/4237723.html (有较大修改）
-    class JsonFriendModel
-    {
-        public int retcode;
-        public paramResult result;
-        public class paramResult
-        {
-            /// 分组信息
-            public List<paramCategories> categories;
-            /// 好友汇总
-            public List<paramFriends> friends;
-            /// 好友信息
-            public List<paramInfo> info;
-            /// 备注
-            public List<paramMarkNames> marknames;
-            /// 分组
-            public class paramCategories
-            {
-                public int index;
-                public int sort;
-                public string name;
-            }
-            /// 好友汇总 
-            public class paramFriends
-            {
-                public int flag;
-                public string uin;
-                public int categories;
-            }
-            /// 好友信息
-            public class paramInfo
-            {
-                public int face;
-                public string nick;
-                public string uin;
-            }
-            /// 备注 
-            public class paramMarkNames
-            {
-                public string uin;
-                public string markname;
-            }
-        }
-    }
-    class JsonGroupModel
-    {
-        public int retcode;
-        public paramResult result;
-        public class paramResult
-        {
-            public List<paramGnamelist> gnamelist;
-            public class paramGnamelist
-            {
-                public string flag;
-                public string gid;
-                public string code;
-                public string name;
-            }
-        }
-    }
-    public class JsonFriendInfModel
-    {
-        public int retcode;
-        public paramResult result;
-        public class paramResult
-        {
-            public paramBirthday birthday;
-            public string occupation;
-            public string phone;
-            public string college;
-            public int constel;
-            public int blood;
-            public string homepage;
-            public int stat;
-            public string city;
-            public string personal;
-            public string nick;
-            public int shengxiao;
-            public string email;
-            public string province;
-            public string gender;
-            public string mobile;
-            public class paramBirthday
-            {
-                public int month;
-                public int year;
-                public int day;
-            }
-        }
-    }
-    public class JsonGroupMemberModel
-    {
-        public int retcode;
-        public paramResult result;
-        public class paramResult
-        {
-            public List<paramMinfo> minfo;
-            public class paramMinfo
-            {
-                public string nick;
-                public string province;
-                public string gender;
-                public string uin;
-                public string country;
-                public string city;
-            }
-        }
-    }
-    class JsonHeartPackResponse
-    {
-        public int retcode;
-        public List<paramResult> result;
-        public class paramResult
-        {
-            public String poll_type;
-            public paramValue value;
-            public class paramValue
-            {
-                //收到消息
-                public List<object> content;
-                public string from_uin;
-                //群消息有send_uin，为群号
-                public string send_uin;
-
-                //上线提示
-                public string uin;
-                public string status;
-                //异地登录
-                public string reason;
-            }
-        }
-    }
-    class JosnConfigFileModel
-    {
-        public String DicServer;
-        public String DicPassword;
-        public String QQNum;
-        public String QQPassword;
-        public int ClientID;
-    }
-    class JsonExchangeRateModel
-    {
-        public bool success;
-        public string error;
-        public paramTicker ticker;
-        public class paramTicker
-        {
-            public String price;
-        }
-    }
+    } 
 }
