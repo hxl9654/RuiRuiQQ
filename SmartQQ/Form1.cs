@@ -284,6 +284,24 @@ namespace SmartQQ
             for (int i = 0; i < 20; i++)
                 MessageToSend[i] = "";
             bool MsgSendFlag = false;
+            if (message.Contains("汇率"))
+            {
+                bool ExchangeRateFlag = true;
+                string[] tmp = message.Split('^');
+                if ((!tmp[0].Equals("汇率")) || tmp.Length != 3)
+                {
+                    tmp = message.Split('&');
+                    if ((!tmp[0].Equals("汇率")) || tmp.Length != 3)
+                    {
+                        ExchangeRateFlag = false;
+                    }
+                }
+                if (ExchangeRateFlag)
+                {
+                    MessageToSend[0] = GetExchangeRate(tmp[1], tmp[2]);
+                    return MessageToSend;                       
+                }
+            }
             if (message.Contains("学习"))
             {
                 bool StudyFlag = true;
@@ -407,6 +425,16 @@ namespace SmartQQ
                 }
             }
             return MessageToSend;
+        }
+
+        private string GetExchangeRate(string p1, string p2)
+        {
+            string url = "https://www.cryptonator.com/api/ticker/" + p1 + "-" + p2;
+            string temp = HttpGet(url);
+            JsonExchangeRateModel ExchangeRate = (JsonExchangeRateModel)JsonConvert.DeserializeObject(temp, typeof(JsonExchangeRateModel));
+            if (ExchangeRate.success == true)
+                return p1 + "-" + p2 + "的汇率是：" + ExchangeRate.ticker.price;
+            else return "Error:" + ExchangeRate.error;
         }
         private void ActionWhenResivedGroupMessage(string gid, string message, string uin)
         {
@@ -1197,5 +1225,15 @@ namespace SmartQQ
         public String QQNum;
         public String QQPassword;
         public int ClientID;
+    }
+    class JsonExchangeRateModel
+    {
+        public bool success;
+        public string error;
+        public paramTicker ticker;
+        public class paramTicker
+        {
+            public String price;
+        }
     }
 }
