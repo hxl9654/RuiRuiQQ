@@ -63,12 +63,12 @@ namespace SmartQQ
         JsonGroupModel group;
         JsonFriendModel user;
         JsonWeatherCityCodeModel citycode;
-        struct GroupMember
+        struct GroupInf
         {
             public String gid;
-            public JsonGroupMemberModel Menber;
+            public JsonGroupInfoModel inf;
         };
-        GroupMember[] groupmember = new GroupMember[100];
+        GroupInf[] groupinfo = new GroupInf[100];
         struct FriendInf
         {
             public String uin;
@@ -202,13 +202,6 @@ namespace SmartQQ
             {
                 if (result.result[i].poll_type == "buddies_status_change")
                 {
-                    /*for (int j = 0; j < user.result.info.Count; j++)
-                        if (user.result.info[j].uin == result.result[i].value.uin)
-                        {
-                            listBoxLog.Items.Insert(0,user.result.info[j].nick + "  " + result.result[i].value.status);
-                            break;
-                        }
-                    */
                     return;
                 }
                 else if (result.result[i].poll_type == "kick_message")
@@ -259,13 +252,13 @@ namespace SmartQQ
                         }
                     for (int j = 0; ; j++)
                     {
-                        if (groupmember[j].gid == gid)
+                        if (groupinfo[j].gid == gid)
                         {
-                            for (int k = 0; k < groupmember[j].Menber.result.minfo.Count; k++)
-                                if (groupmember[j].Menber.result.minfo[k].uin == result.result[i].value.send_uin)
+                            for (int k = 0; k < groupinfo[j].inf.result.minfo.Count; k++)
+                                if (groupinfo[j].inf.result.minfo[k].uin == result.result[i].value.send_uin)
                                 {
-                                    MessageFromUin = GetRealQQ(groupmember[j].Menber.result.minfo[k].uin);
-                                    textBoxResiveMessage.Text += (GName + "   " + groupmember[j].Menber.result.minfo[k].nick + "  " + MessageFromUin + Environment.NewLine + result.result[i].value.content[1].ToString() + Environment.NewLine + Environment.NewLine);
+                                    MessageFromUin = groupinfo[j].inf.result.minfo[k].uin;
+                                    textBoxResiveMessage.Text += (GName + "   " + groupinfo[j].inf.result.minfo[k].nick + "  " + GetRealQQ(MessageFromUin) + Environment.NewLine + result.result[i].value.content[1].ToString() + Environment.NewLine + Environment.NewLine);
                                     textBoxResiveMessage.SelectionStart = textBoxResiveMessage.TextLength;
                                     textBoxResiveMessage.ScrollToCaret();
                                     break;
@@ -280,12 +273,45 @@ namespace SmartQQ
                 textBoxLog.Text = temp;
             }
         }
-        private string[] Answer(string message, string QQNum)
+        private string[] Answer(string message, string uin, string gid)
         {
             string[] MessageToSend = new string[20];
+            string QQNum = GetRealQQ(uin);
             for (int i = 0; i < 20; i++)
                 MessageToSend[i] = "";
             bool MsgSendFlag = false;
+            if(!gid.Equals(""))
+            {
+                if (message.Contains("群管理"))
+                {
+                    bool GroupManageFlag = true;
+                    string adminuin = "";
+                    string[] tmp = message.Split('&');
+                    if ((!tmp[0].Equals("群管理")) || tmp.Length != 2)
+                    {
+                        GroupManageFlag = false;
+                    }
+                    if (GroupManageFlag)
+                    {
+                        for (int i = 0; i < groupinfo.Length;i++ )
+                        {
+                            if (groupinfo[i].gid == gid)
+                            {
+                                adminuin = groupinfo[i].inf.result.ginfo.owner;
+                                break;
+                            }                               
+                        }
+                        if (!uin.Equals(adminuin))
+                            MessageToSend[0] = "账号" + GetRealQQ(uin) + "不是群主，无权进行此操作";
+                        else
+                        {
+                            if (tmp[1].Equals("关闭机器人"))
+                                ;
+                        }
+                        return MessageToSend;
+                    }
+                }
+            }
             if (message.Contains("汇率"))
             {
                 bool ExchangeRateFlag = true;
@@ -304,13 +330,16 @@ namespace SmartQQ
             {
                 bool WeatherFlag = true;
                 string[] tmp = message.Split('&');
-                if ((!tmp[0].Equals("天气")) || tmp.Length != 2)
+                if ((!tmp[0].Equals("天气")) || (tmp.Length != 2 && tmp.Length != 3)) 
                 {
                     WeatherFlag = false;
                 }
                 if (WeatherFlag)
                 {
-                    MessageToSend[0] = GetWeather(tmp[1]);
+                    if (tmp.Length == 2)
+                        MessageToSend[0] = GetWeather(tmp[1], "");
+                    else
+                        MessageToSend[0] = GetWeather(tmp[1], tmp[2]);
                     return MessageToSend;
                 }
             }
@@ -364,9 +393,11 @@ namespace SmartQQ
             bool RepeatFlag = false;
             for (int i = 0; i < tmp1.Length && i < 10; i++)
             {
+                if (tmp1[i].Equals(message))
+                    continue;
                 for (int k = 0; k < i; k++)
                     if (tmp1[k].Equals(tmp1[i]))
-                        RepeatFlag = true;
+                        RepeatFlag = true;               
                 if (RepeatFlag)
                 {
                     RepeatFlag = false;
@@ -386,6 +417,8 @@ namespace SmartQQ
                 RepeatFlag = false;
                 for (int i = 0; i < tmp2.Length && i < 10; i++)
                 {
+                    if (tmp1[i].Equals(message))
+                        continue;
                     for (int k = 0; k < i; k++)
                         if (tmp2[k].Equals(tmp2[i]))
                             RepeatFlag = true;
@@ -428,7 +461,7 @@ namespace SmartQQ
             return MessageToSend;
         }
 
-        private string GetWeather(string city)
+        private string GetWeather(string city,string target)
         {
             bool FlagProvinceFound = false;
             bool FlagCityFound = false;
@@ -438,6 +471,11 @@ namespace SmartQQ
             city = city.Replace(" ", "");
             city = city.Replace("\r", "");
             city = city.Replace("\n", "");
+
+            target = target.Replace(" ", "");
+            target = target.Replace("\r", "");
+            target = target.Replace("\n", "");
+
             for (int i = 0; i < citycode.citycodes.Count; i++) 
             {
                 if (citycode.citycodes[i].province.Equals(city)) 
@@ -456,10 +494,41 @@ namespace SmartQQ
             }
             if (FlagCityFound)
             {
-                string url = "http://www.weather.com.cn/adat/cityinfo/" + citycodestring + ".html";
+                string ans="";
+                string url = "http://m.weather.com.cn/atad/" + citycodestring + ".html";
                 string temp = HttpGet(url);
                 JsonWeatherModel weather = (JsonWeatherModel)JsonConvert.DeserializeObject(temp, typeof(JsonWeatherModel));
-                string ans = "根据中国天气网于" + weather.weatherinfo.ptime + "发布的气象预报，" + weather.weatherinfo.city + "今天" + weather.weatherinfo.weather + "最低温度" + weather.weatherinfo.temp2 + ",最高温度" + weather.weatherinfo.temp1 + "。";
+                if (target.Equals("五天") || target.Equals("5天") || target.Equals("五日") || target.Equals("5日"))
+                {
+                    string[] week = {"星期一","星期二","星期三","星期四","星期五","星期六","星期日"};
+                    int WeekIndex = 0;
+                    for (int i = 0; i < 7;i++ )
+                        if(weather.weatherinfo.week.Equals(week[i]))
+                        {
+                            WeekIndex = i;
+                            break;
+                        } 
+                    ans = "根据中国天气网于今天" + weather.weatherinfo.fchh + "时发布的气象预报，" + weather.weatherinfo.city + "的气象信息如下：" + Environment.NewLine;
+                    ans = ans + "今天" + weather.weatherinfo.weather1 + "，气温" + weather.weatherinfo.temp1 + "，风力：" + weather.weatherinfo.wind1 + "。" + Environment.NewLine;
+                    ans = ans + "明天" + weather.weatherinfo.weather2 + "，气温" + weather.weatherinfo.temp2 + "，风力：" + weather.weatherinfo.wind2 + "。" + Environment.NewLine;
+                    ans = ans + "后天" + weather.weatherinfo.weather3 + "，气温" + weather.weatherinfo.temp3 + "，风力：" + weather.weatherinfo.wind3 + "。" + Environment.NewLine;
+                    ans = ans + week[(WeekIndex + 3) % 7] + weather.weatherinfo.weather4 + "，气温" + weather.weatherinfo.temp4 + "，风力：" + weather.weatherinfo.wind4 + "。" + Environment.NewLine;
+                    ans = ans + week[(WeekIndex + 4) % 7] + weather.weatherinfo.weather5 + "，气温" + weather.weatherinfo.temp5 + "，风力：" + weather.weatherinfo.wind5 + "。" + Environment.NewLine;
+                    ans = ans + week[(WeekIndex + 5) % 7] + weather.weatherinfo.weather6 + "，气温" + weather.weatherinfo.temp6 + "，风力：" + weather.weatherinfo.wind6 + "。";
+                }
+                else if (target.Equals("指数"))
+                {
+                    ans = "根据中国天气网于今天" + weather.weatherinfo.fchh + "时发布的气象预报，" + weather.weatherinfo.city + "的气象指数如下：" + Environment.NewLine;
+                    ans = ans + "天气指数：" + weather.weatherinfo.index + "，穿衣指数：" + weather.weatherinfo.index_d + "。" + Environment.NewLine;
+                    ans = ans + "紫外线指数：" + weather.weatherinfo.index_uv + "，洗车指数：" + weather.weatherinfo.index_xc + "，晾晒指数：" + weather.weatherinfo.index_ls + "，旅游指数：" + weather.weatherinfo.index_tr + "。" + Environment.NewLine;
+                    ans = ans + "晨练指数：" + weather.weatherinfo.index_cl + "，过敏指数：" + weather.weatherinfo.index_ag + "，舒适指数：" + weather.weatherinfo.index_co + "。";
+                }
+                else
+                {
+                    ans = "根据中国天气网于今天" + weather.weatherinfo.fchh + "时发布的气象预报，" + weather.weatherinfo.city + "：" + Environment.NewLine;
+                    ans = ans + "今天" + weather.weatherinfo.weather1 + "，气温" + weather.weatherinfo.temp1 + "，风力：" + weather.weatherinfo.wind1 + "。" + Environment.NewLine;
+                    ans = ans + "明天" + weather.weatherinfo.weather2 + "，气温" + weather.weatherinfo.temp2 + "，风力：" + weather.weatherinfo.wind2 + "。";
+                }
                 return ans;
             }
             else if (FlagProvinceFound)
@@ -520,7 +589,7 @@ namespace SmartQQ
         }
         private void ActionWhenResivedGroupMessage(string gid, string message, string uin)
         {
-            string[] MessageToSendArray = Answer(message, uin);
+            string[] MessageToSendArray = Answer(message, uin, gid);
             string MessageToSend = "";
             for (int i = 0; i < 10; i++)
             {
@@ -534,7 +603,7 @@ namespace SmartQQ
         }
         private void ActionWhenResivedMessage(string uin, string message)
         {
-            string[] MessageToSendArray = Answer(message, GetRealQQ(uin));
+            string[] MessageToSendArray = Answer(message, uin, "");
             string MessageToSend = "";
             for (int i = 0; i < 10; i++)
             {
@@ -628,12 +697,12 @@ namespace SmartQQ
                 listBoxFriend.Items.Add(user.result.info[i].uin + ":" + GetRealQQ(user.result.info[i].uin) + ":" + user.result.info[i].nick + ":" + gender);
             }
         }
-        public JsonGroupMemberModel GetGroupMenber(string gcode)
+        public JsonGroupInfoModel GetGroupInfo(string gcode)
         {
             String url = "http://s.web2.qq.com/api/get_group_info_ext2?gcode=" + gcode + "&vfwebqq=" + vfwebqq + "&t=" + GetTimeStamp();
             string dat = HttpGet(url);
 
-            JsonGroupMemberModel ans = (JsonGroupMemberModel)JsonConvert.DeserializeObject(dat, typeof(JsonGroupMemberModel));
+            JsonGroupInfoModel ans = (JsonGroupInfoModel)JsonConvert.DeserializeObject(dat, typeof(JsonGroupInfoModel));
             return ans;
         }
         public void getGroup()
@@ -648,8 +717,8 @@ namespace SmartQQ
             for (int i = 0; i < group.result.gnamelist.Count; i++)
             {
                 listBoxGroup.Items.Add(group.result.gnamelist[i].gid + ":" + group.result.gnamelist[i].name);
-                groupmember[i].gid = group.result.gnamelist[i].gid;
-                groupmember[i].Menber = GetGroupMenber(group.result.gnamelist[i].code);
+                groupinfo[i].gid = group.result.gnamelist[i].gid;
+                groupinfo[i].inf = GetGroupInfo(group.result.gnamelist[i].code);
             }
         }
         public JsonFriendInfModel GetFriendInf(string uin)

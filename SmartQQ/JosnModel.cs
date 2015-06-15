@@ -95,13 +95,14 @@ namespace SmartQQ
             }
         }
     }
-    public class JsonGroupMemberModel
+    public class JsonGroupInfoModel
     {
         public int retcode;
         public paramResult result;
         public class paramResult
         {
             public List<paramMinfo> minfo;
+            public paramGinfo ginfo;
             public class paramMinfo
             {
                 public string nick;
@@ -110,6 +111,15 @@ namespace SmartQQ
                 public string uin;
                 public string country;
                 public string city;
+            }
+            public class paramGinfo
+            {
+                public string code;
+                public string createtime;
+                public string flag;
+                public string name;
+                public string gid;
+                public string owner;
             }
         }
     }
@@ -176,10 +186,40 @@ namespace SmartQQ
         public class paramWeatherInfo
         {
             public String city;
-            public String temp1;
+            public String fchh;         //发布时间
+            public String date_y;       //日期
+            public String week;         //星期
+
+            public String temp1;        //气温
             public String temp2;
-            public String weather;
-            public String ptime;
+            public String temp3;
+            public String temp4;
+            public String temp5;
+            public String temp6;
+
+            public String weather1;     //天气描述
+            public String weather2;
+            public String weather3;
+            public String weather4;
+            public String weather5;
+            public String weather6;
+
+            public String wind1;
+            public String wind2;
+            public String wind3;
+            public String wind4;
+            public String wind5;
+            public String wind6;
+
+            public String index;        //天气指数
+            public String index_d;      //穿衣指数
+            public String index_uv;     //紫外线指数
+            public String index_xc;     //洗车指数
+            public String index_tr;     //旅游指数
+            public String index_co;     //舒适指数
+            public String index_cl;     //晨练指数
+            public String index_ls;     //晾晒指数
+            public String index_ag;     //过敏指数
         }
 
     }
