@@ -66,9 +66,11 @@ namespace SmartQQ
         struct GroupInf
         {
             public String gid;
+            public bool EnableRobot;
             public JsonGroupInfoModel inf;
         };
         GroupInf[] groupinfo = new GroupInf[100];
+        int groupinfMaxIndex = 0;
         struct FriendInf
         {
             public String uin;
@@ -185,7 +187,6 @@ namespace SmartQQ
             if (temp == "{\"retcode\":121,\"t\":\"0\"}\r\n")
             {
                 ReLogin();
-                //MessageBox.Show("账号在其他地点登录，被迫退出");
                 return;
             }
             else if (temp == "{\"retcode\":102,\"errmsg\":\"\"}\r\n" || temp == "{\"retcode\":0,\"result\":\"ok\"}\r\n")
@@ -208,7 +209,6 @@ namespace SmartQQ
                 {
                     ReLogin();
                     listBoxLog.Items.Add(result.result[i].value.reason);
-                    //MessageBox.Show(result.result[i].value.reason);
                     return;
                 }
                 else if (result.result[i].poll_type == "message")
@@ -282,34 +282,72 @@ namespace SmartQQ
             bool MsgSendFlag = false;
             if(!gid.Equals(""))
             {
+                int i = -1;
+                string adminuin = "";
+                for (i = 0; i <= groupinfMaxIndex; i++)
+                {
+                    if (groupinfo[i].gid == gid)
+                    {
+                        adminuin = groupinfo[i].inf.result.ginfo.owner;
+                        break;
+                    }
+                }
                 if (message.Contains("群管理"))
                 {
-                    bool GroupManageFlag = true;
-                    string adminuin = "";
+                    bool GroupManageFlag = true;                    
                     string[] tmp = message.Split('&');
+                    tmp[1] = tmp[1].Replace("\r", "");
+                    tmp[1] = tmp[1].Replace("\n", "");
+                    tmp[1] = tmp[1].Replace(" ", "");
                     if ((!tmp[0].Equals("群管理")) || tmp.Length != 2)
                     {
                         GroupManageFlag = false;
                     }
                     if (GroupManageFlag)
                     {
-                        for (int i = 0; i < groupinfo.Length;i++ )
-                        {
-                            if (groupinfo[i].gid == gid)
-                            {
-                                adminuin = groupinfo[i].inf.result.ginfo.owner;
-                                break;
-                            }                               
-                        }
                         if (!uin.Equals(adminuin))
+                        {
                             MessageToSend[0] = "账号" + GetRealQQ(uin) + "不是群主，无权进行此操作";
+                            return MessageToSend;
+                        }                           
                         else
                         {
                             if (tmp[1].Equals("关闭机器人"))
-                                ;
+                            {
+                                if (groupinfo[i].EnableRobot == false)
+                                {
+                                    MessageToSend[0] = "当前机器人已关闭";
+                                    return MessageToSend;
+                                }
+                                else
+                                {
+                                    groupinfo[i].EnableRobot = false;
+                                    MessageToSend[0] = "机器人关闭成功";
+                                    return MessageToSend;
+                                }
+                            }
+                            else if (tmp[1].Equals("启动机器人"))
+                            {
+                                if (groupinfo[i].EnableRobot == true)
+                                {
+                                    MessageToSend[0] = "当前机器人已启动";
+                                    return MessageToSend;
+                                }
+                                else
+                                {
+                                    groupinfo[i].EnableRobot = true;
+                                    MessageToSend[0] = "机器人启动成功";
+                                    return MessageToSend;
+                                }                                                                           
+                            }                                
                         }
-                        return MessageToSend;
+                        
                     }
+                }
+                if (i != -1 && groupinfo[i].EnableRobot == false) 
+                {
+                    MessageToSend[0] = "";
+                    return MessageToSend;
                 }
             }
             if (message.Contains("汇率"))
@@ -412,7 +450,7 @@ namespace SmartQQ
             }
             if (!MsgSendFlag)
             {
-                string[] tmp2 = message.Split("@#$(),，.。:：;^&；“”～~！!#（）%？?》《、· \r\n\"啊是的么吧呀恩嗯了呢很吗".ToCharArray());
+                string[] tmp2 = message.Split("@#$(),，.。:：;^&；“”～~！!#（）%？?》《、· \r\n\"啊喔是的么吧呀恩嗯了呢很吗".ToCharArray());
                 j = 0;
                 RepeatFlag = false;
                 for (int i = 0; i < tmp2.Length && i < 10; i++)
@@ -714,12 +752,15 @@ namespace SmartQQ
 
             group = (JsonGroupModel)JsonConvert.DeserializeObject(dat, typeof(JsonGroupModel));
             listBoxGroup.Items.Clear();
-            for (int i = 0; i < group.result.gnamelist.Count; i++)
+            int i;
+            for (i = 0; i < group.result.gnamelist.Count; i++)
             {
                 listBoxGroup.Items.Add(group.result.gnamelist[i].gid + ":" + group.result.gnamelist[i].name);
                 groupinfo[i].gid = group.result.gnamelist[i].gid;
                 groupinfo[i].inf = GetGroupInfo(group.result.gnamelist[i].code);
+                groupinfo[i].EnableRobot = true;
             }
+            groupinfMaxIndex = i;
         }
         public JsonFriendInfModel GetFriendInf(string uin)
         {
