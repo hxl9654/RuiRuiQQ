@@ -622,7 +622,7 @@ namespace SmartQQ
             string temp = HttpGet(url);
             JsonExchangeRateModel ExchangeRate = (JsonExchangeRateModel)JsonConvert.DeserializeObject(temp, typeof(JsonExchangeRateModel));
             if (ExchangeRate.success == true)
-                return p1 + "-" + p2 + "的汇率是：" + ExchangeRate.ticker.price;
+                return p1 + "-" + p2 + "的汇率：" + ExchangeRate.ticker.price;
             else return "Error:" + ExchangeRate.error;
         }
         private void ActionWhenResivedGroupMessage(string gid, string message, string uin)
@@ -633,7 +633,9 @@ namespace SmartQQ
             {
                 if ((!MessageToSendArray[i].Equals("")) && (!MessageToSendArray[i].Equals("None3")))
                 {
-                    MessageToSend += MessageToSendArray[i] + Environment.NewLine;
+                    if (i != 0)
+                        MessageToSend += Environment.NewLine;
+                    MessageToSend += MessageToSendArray[i];                   
                     MessageToSendArray[i] = "";
                 }
             }
@@ -649,7 +651,9 @@ namespace SmartQQ
                 {
                     if (MessageToSendArray[i].Equals("None3"))
                         MessageToSendArray[i] = "这句话仍在等待审核哟～～如果要大量添加语库，可以向管理员申请白名单的～";
-                    MessageToSend += MessageToSendArray[i] + Environment.NewLine;
+                    if (i != 0)
+                        MessageToSend += Environment.NewLine;
+                    MessageToSend += MessageToSendArray[i];  
                     MessageToSendArray[i] = "";
                 }
             }
