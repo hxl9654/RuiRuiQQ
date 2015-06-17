@@ -213,9 +213,24 @@ namespace SmartQQ
                 }
                 else if (result.result[i].poll_type == "message")
                 {
-                    String message = result.result[i].value.content[1].ToString();
-                    message = message.Replace("\\\\n", Environment.NewLine);
+                    String message = "";
+                    String emojis = "";
                     int j;
+                    for(j =1;j<result.result[i].value.content.Count;j++)
+                    {
+                        string temp1 = result.result[i].value.content[j].ToString();
+                        temp1 = temp1.Replace(Environment.NewLine, "");
+                        temp1 = temp1.Replace(" ", "");
+                        if (temp1.Contains("[\"face\","))
+                        {
+                            string emojiID = temp1.Replace("[\"face\",", "");
+                            emojiID = emojiID.Replace("]", "");
+                            emojis += (emojiID + ",");
+                        }
+                        else message += (result.result[i].value.content[j].ToString() + " ");
+                    }
+                    message = message.Replace("\\\\n", Environment.NewLine);
+                    
                     for (j = 0; j < user.result.info.Count; j++)
                         if (user.result.info[j].uin == result.result[i].value.from_uin)
                         {
@@ -236,21 +251,36 @@ namespace SmartQQ
                                 break;
                             }
                     }
-                    ActionWhenResivedMessage(result.result[i].value.from_uin, message);
+                    ActionWhenResivedMessage(result.result[i].value.from_uin, message, emojis);
                 }
                 else if (result.result[i].poll_type == "group_message")
                 {
-                    String message = result.result[i].value.content[1].ToString();
-                    message = message.Replace("\n", Environment.NewLine);
+                    String emojis = "";
+                    string message = "";
+                    int j;
+                    for (j = 1; j < result.result[i].value.content.Count; j++)
+                    {
+                        string temp1 = result.result[i].value.content[j].ToString();
+                        temp1 = temp1.Replace(Environment.NewLine, "");
+                        temp1 = temp1.Replace(" ", "");
+                        if (temp1.Contains("[\"face\","))
+                        {
+                            string emojiID = temp1.Replace("[\"face\",", "");
+                            emojiID = emojiID.Replace("]", "");
+                            emojis += (emojiID + ",");
+                        }
+                        else message += (result.result[i].value.content[j].ToString() + " ");
+                    }
+                    message = message.Replace("\\\\n", Environment.NewLine);
                     string gid;
                     gid = result.result[i].value.from_uin;
-                    for (int j = 0; j < group.result.gnamelist.Count; j++)
+                    for (j = 0; j < group.result.gnamelist.Count; j++)
                         if (group.result.gnamelist[j].gid == gid)
                         {
                             GName = group.result.gnamelist[j].name;
                             break;
                         }
-                    for (int j = 0; ; j++)
+                    for (j = 0; ; j++)
                     {
                         if (groupinfo[j].gid == gid)
                         {
@@ -266,16 +296,26 @@ namespace SmartQQ
                             break;
                         }
                     }
-                    ActionWhenResivedGroupMessage(gid, message, MessageFromUin);
+                    ActionWhenResivedGroupMessage(gid, message, emojis, MessageFromUin);
 
 
                 }
                 textBoxLog.Text = temp;
             }
         }
-        private string[] Answer(string message, string uin, string gid)
+
+        private string SloveEmoji(string emojiID)
         {
+            string temp;
+            temp = "[\\\"face\\\"," + emojiID + "]";
+            return temp;
+        }
+        private string[] Answer(string message, string uin, string gid)
+        {            
             string[] MessageToSend = new string[20];
+            message = message.Remove(message.Length - 1, 1);
+            if (message.Equals(""))
+                return MessageToSend;
             string QQNum = GetRealQQ(uin);
             for (int i = 0; i < 20; i++)
                 MessageToSend[i] = "";
@@ -402,6 +442,11 @@ namespace SmartQQ
                         }
                     }                    
                 }
+                if (tmp.Length != 3 || tmp[1].Replace(" ", "").Equals("") || tmp[2].Replace(" ", "").Equals("")) 
+                {
+                    StudyFlag = false;
+                    SuperStudy = false;
+                }
                 if (SuperStudy)
                 {
                     string result = "";
@@ -493,7 +538,7 @@ namespace SmartQQ
                 }
                 else
                 {
-                    return null;
+                    return MessageToSend;
                 }
             }
             return MessageToSend;
@@ -625,29 +670,40 @@ namespace SmartQQ
                 return p1 + "-" + p2 + "的汇率：" + ExchangeRate.ticker.price;
             else return "Error:" + ExchangeRate.error;
         }
-        private void ActionWhenResivedGroupMessage(string gid, string message, string uin)
+        private void ActionWhenResivedGroupMessage(string gid, string message, string emojis, string uin)
         {
             string[] MessageToSendArray = Answer(message, uin, gid);
             string MessageToSend = "";
             for (int i = 0; i < 10; i++)
             {
-                if ((!MessageToSendArray[i].Equals("")) && (!MessageToSendArray[i].Equals("None3")))
+                if (MessageToSendArray[i] != null && !MessageToSendArray[i].Equals("") && !MessageToSendArray[i].Equals("None3"))
                 {
                     if (i != 0)
                         MessageToSend += Environment.NewLine;
-                    MessageToSend += MessageToSendArray[i];                   
+                    MessageToSend += MessageToSendArray[i];
                     MessageToSendArray[i] = "";
                 }
+            }           
+            if (MessageToSend != "")
+                MessageToSend = "\\\"" + MessageToSend + "\\\"";
+            string[] tmp = emojis.Split(',');
+            for (int i = 0; i < tmp.Length - 1 && i < 10; i++)
+            {
+                if (tmp[i].Equals(""))
+                    continue;
+                if (!MessageToSend.Equals(""))
+                    MessageToSend += ",";
+                MessageToSend += SloveEmoji(tmp[i]);
             }
             SendMessageToGroup(gid, MessageToSend);
         }
-        private void ActionWhenResivedMessage(string uin, string message)
+        private void ActionWhenResivedMessage(string uin, string message, string emojis)
         {
             string[] MessageToSendArray = Answer(message, uin, "");
             string MessageToSend = "";
             for (int i = 0; i < 10; i++)
             {
-                if (!MessageToSendArray[i].Equals(""))
+                if (MessageToSendArray[i] != null && !MessageToSendArray[i].Equals("")) 
                 {
                     if (MessageToSendArray[i].Equals("None3"))
                         MessageToSendArray[i] = "这句话仍在等待审核哟～～如果要大量添加语库，可以向管理员申请白名单的～";
@@ -656,6 +712,17 @@ namespace SmartQQ
                     MessageToSend += MessageToSendArray[i];  
                     MessageToSendArray[i] = "";
                 }
+            }
+            if (MessageToSend != "")
+                MessageToSend = "\\\"" + MessageToSend + "\\\"";
+            string[] tmp = emojis.Split(',');
+            for (int i = 0; i < tmp.Length - 1 && i < 10; i++) 
+            {
+                if (tmp[i].Equals(""))
+                    continue;
+                if (!MessageToSend.Equals(""))
+                    MessageToSend += ",";
+                MessageToSend += SloveEmoji(tmp[i]);
             }
             if (MessageToSend.Equals(""))
             {
@@ -1156,8 +1223,8 @@ namespace SmartQQ
             try
             {
                 string postData = "{\"to\":" + uid;
-                postData += ",\"content\":\"[\\\"" + content.Replace(Environment.NewLine, "\\\\n");
-                postData += "\\\",[\\\"font\\\",{\\\"name\\\":\\\"宋体\\\",\\\"size\\\":10,\\\"style\\\":[0,0,0],\\\"color\\\":\\\"000000\\\"}]]\",\"face\":585,\"clientid\":" + ClientID;
+                postData += ",\"content\":\"[" + content.Replace(Environment.NewLine, "\\\\n");
+                postData += ",[\\\"font\\\",{\\\"name\\\":\\\"宋体\\\",\\\"size\\\":10,\\\"style\\\":[0,0,0],\\\"color\\\":\\\"000000\\\"}]]\",\"face\":585,\"clientid\":" + ClientID;
                 postData += ",\"msg_id\":" + MsgId;
                 postData += ",\"psessionid\":\"" + psessionid;
                 postData += "\"}";
@@ -1192,8 +1259,8 @@ namespace SmartQQ
             try
             {
                 string postData = "{\"group_uin\":" + gin
-                    + ",\"content\":\"[\\\"" + content.Replace(Environment.NewLine, "\\\\n")
-                    + "\\\",[\\\"font\\\",{\\\"name\\\":\\\"宋体\\\",\\\"size\\\":13,\\\"style\\\":[0,0,0],\\\"color\\\":\\\"000000\\\"}]]\",\"face\":549,\"clientid\":" + ClientID
+                    + ",\"content\":\"[" + content.Replace(Environment.NewLine, "\\\\n")
+                    + ",[\\\"font\\\",{\\\"name\\\":\\\"宋体\\\",\\\"size\\\":13,\\\"style\\\":[0,0,0],\\\"color\\\":\\\"000000\\\"}]]\",\"face\":549,\"clientid\":" + ClientID
                     + ",\"msg_id\":" + MsgId
                     + ",\"psessionid\":\"" + psessionid
                     + "\"}";
