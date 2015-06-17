@@ -313,7 +313,7 @@ namespace SmartQQ
         private string[] Answer(string message, string uin, string gid)
         {            
             string[] MessageToSend = new string[20];
-            message = message.Remove(message.Length - 1, 1);
+            message = message.Remove(message.Length - 2);
             if (message.Equals(""))
                 return MessageToSend;
             string QQNum = GetRealQQ(uin);
@@ -684,7 +684,7 @@ namespace SmartQQ
                     MessageToSendArray[i] = "";
                 }
             }           
-            if (MessageToSend != "")
+            if (!MessageToSend.Equals(""))
                 MessageToSend = "\\\"" + MessageToSend + "\\\"";
             string[] tmp = emojis.Split(',');
             for (int i = 0; i < tmp.Length - 1 && i < 10; i++)
@@ -713,7 +713,7 @@ namespace SmartQQ
                     MessageToSendArray[i] = "";
                 }
             }
-            if (MessageToSend != "")
+            if (!MessageToSend.Equals(""))
                 MessageToSend = "\\\"" + MessageToSend + "\\\"";
             string[] tmp = emojis.Split(',');
             for (int i = 0; i < tmp.Length - 1 && i < 10; i++) 
