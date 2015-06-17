@@ -753,7 +753,7 @@ namespace SmartQQ
                     Gender = "哥哥 ";
                 else
                     Gender = " ";
-                SendMessageToFriend(uin, SenderName + Gender + "～ 小睿睿听不懂你在说什么呢。。。教教我吧～～" + Environment.NewLine + "格式 学习^语句^设定的回复");
+                SendMessageToFriend(uin, "\\\"" + SenderName + Gender + "～ 小睿睿听不懂你在说什么呢。。。教教我吧～～" + Environment.NewLine + "格式 学习^语句^设定的回复" + "\\\"");
             }
             else SendMessageToFriend(uin, MessageToSend);
 
