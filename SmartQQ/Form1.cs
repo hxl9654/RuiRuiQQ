@@ -234,7 +234,7 @@ namespace SmartQQ
                     for (j = 0; j < user.result.info.Count; j++)
                         if (user.result.info[j].uin == result.result[i].value.from_uin)
                         {
-                            textBoxResiveMessage.Text += (user.result.info[j].nick + "  " + GetRealQQ(user.result.info[j].uin) + Environment.NewLine + result.result[i].value.content[1].ToString() + Environment.NewLine + Environment.NewLine);
+                            textBoxResiveMessage.Text += (user.result.info[j].nick + "  " + GetRealQQ(user.result.info[j].uin) + Environment.NewLine + message + "   " + emojis + Environment.NewLine + Environment.NewLine);
                             textBoxResiveMessage.SelectionStart = textBoxResiveMessage.TextLength;
                             textBoxResiveMessage.ScrollToCaret();
                             break;
@@ -245,7 +245,7 @@ namespace SmartQQ
                         for (j = 0; j < user.result.info.Count; j++)
                             if (user.result.info[j].uin == result.result[i].value.from_uin)
                             {
-                                textBoxResiveMessage.Text += (user.result.info[j].nick + "  " + GetRealQQ(user.result.info[j].uin) + Environment.NewLine + result.result[i].value.content[1].ToString() + Environment.NewLine + Environment.NewLine);
+                                textBoxResiveMessage.Text += (user.result.info[j].nick + "  " + GetRealQQ(user.result.info[j].uin) + Environment.NewLine + message + "   " + emojis + Environment.NewLine + Environment.NewLine);
                                 textBoxResiveMessage.SelectionStart = textBoxResiveMessage.TextLength;
                                 textBoxResiveMessage.ScrollToCaret();
                                 break;
@@ -288,7 +288,7 @@ namespace SmartQQ
                                 if (groupinfo[j].inf.result.minfo[k].uin == result.result[i].value.send_uin)
                                 {
                                     MessageFromUin = groupinfo[j].inf.result.minfo[k].uin;
-                                    textBoxResiveMessage.Text += (GName + "   " + groupinfo[j].inf.result.minfo[k].nick + "  " + GetRealQQ(MessageFromUin) + Environment.NewLine + result.result[i].value.content[1].ToString() + Environment.NewLine + Environment.NewLine);
+                                    textBoxResiveMessage.Text += (GName + "   " + groupinfo[j].inf.result.minfo[k].nick + "  " + GetRealQQ(MessageFromUin) + Environment.NewLine + message + "   " + emojis + Environment.NewLine + Environment.NewLine);
                                     textBoxResiveMessage.SelectionStart = textBoxResiveMessage.TextLength;
                                     textBoxResiveMessage.ScrollToCaret();
                                     break;
