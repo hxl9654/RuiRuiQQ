@@ -390,6 +390,22 @@ namespace SmartQQ
                     return MessageToSend;
                 }
             }
+            if(message.Contains("行情"))
+            {
+                bool StockFlag = true;
+                string[] tmp = message.Split('&');
+                if ((!tmp[0].Equals("行情")) || (tmp.Length != 2 && tmp.Length != 3)) 
+                {
+                    StockFlag = false;
+                }
+                if (StockFlag)
+                {
+                    if (tmp.Length == 2)
+                        MessageToSend[0] = GetStock(tmp[1], "");
+                    else MessageToSend[0] = GetStock(tmp[1], tmp[2]);
+                    return MessageToSend;
+                }
+            }
             if (message.Contains("汇率"))
             {
                 bool ExchangeRateFlag = true;
@@ -542,6 +558,39 @@ namespace SmartQQ
                 }
             }
             return MessageToSend;
+        }
+
+        private string GetStock(string p1, string p2="")
+        {
+            string url = "";
+            
+            p1 = p1.Replace(" ", "");
+            p1 = p1.Replace("\r", "");
+            p1 = p1.Replace("\n", "");
+            if(!p2.Equals(""))
+            {
+                p2 = p2.Replace(" ", "");
+                p2 = p2.Replace("\r", "");
+                p2 = p2.Replace("\n", "");
+            }
+            if (p1.ToCharArray()[0] == '6')
+                    url = "http://hq.sinajs.cn/list=s_sh" + p1;
+            else if (p1.ToCharArray()[0] == '0'||p1.ToCharArray()[0] == '3')
+                    url = "http://hq.sinajs.cn/list=s_sz" + p1;
+            else if (p1.Equals("上海") || p1.Equals("沪市") || p1.Equals("上证"))
+            {
+                url = "http://hq.sinajs.cn/list=s_sh" + p2;
+            }
+            else if (p1.Equals("深圳") || p1.Equals("深市") || p1.Equals("深证") || p1.Equals("创业板") || p1.Equals("中小板"))
+            {
+                url = "http://hq.sinajs.cn/list=s_sz" + p2;
+            }
+            string dat = HttpGet(url,100000,Encoding.GetEncoding("GB2312"));
+
+            string[] tmp = dat.Split('\"');
+            tmp = tmp[1].Split(',');
+            string ans = tmp[0] + "：现价，" + tmp[1] + "；涨跌" + tmp[2] + "，" + tmp[3] + "%；成交量，" + tmp[4] + "手，" + tmp[5] + "万元。";
+            return ans;
         }
 
         private string GetWeather(string city,string target)
@@ -955,7 +1004,7 @@ namespace SmartQQ
             var ret = scriptEngine.CallGlobalFunction<string>("getEncryption", password, token, bits, 0);
             return ret;
         }
-        public string HttpGet(string url, int timeout = 100000)
+        public string HttpGet(string url, int timeout = 100000, Encoding encode=null)
         {
             string dat;
             HttpWebRequest req = (HttpWebRequest)WebRequest.Create(url); 
@@ -971,8 +1020,11 @@ namespace SmartQQ
             {
                 return "";
             }
-            StreamReader reader = new StreamReader(res.GetResponseStream());
-
+            StreamReader reader;
+            if (encode != null)
+                reader = new StreamReader(res.GetResponseStream(), encode);
+            else
+                reader = new StreamReader(res.GetResponseStream());
             dat = reader.ReadToEnd();
             res.Close();
             req.Abort();
