@@ -320,6 +320,11 @@ namespace SmartQQ
             for (int i = 0; i < 20; i++)
                 MessageToSend[i] = "";
             bool MsgSendFlag = false;
+            if (message.Equals("源码") || message.Equals("作者") || message.Equals("代码") || message.Equals("开源许可证") || message.Equals("许可证"))
+            {
+                MessageToSend[0] = "本程序作者是何相龙，网站：https://tec.hxlxz.com 。本程序采用GPL v3许可证授权，源码获取地址：https://github.com/qwgg9654/RuiRuiQQ";
+                return MessageToSend;
+            }
             if(!gid.Equals(""))
             {
                 int i = -1;
@@ -330,6 +335,18 @@ namespace SmartQQ
                     {
                         adminuin = groupinfo[i].inf.result.ginfo.owner;
                         break;
+                    }
+                }
+                if(adminuin.Equals(""))
+                {
+                    getGroup();
+                    for (i = 0; i <= groupinfMaxIndex; i++)
+                    {
+                        if (groupinfo[i].gid == gid)
+                        {
+                            adminuin = groupinfo[i].inf.result.ginfo.owner;
+                            break;
+                        }
                     }
                 }
                 if (message.Contains("群管理"))
