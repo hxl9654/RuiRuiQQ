@@ -573,10 +573,24 @@ namespace SmartQQ
                 p2 = p2.Replace("\r", "");
                 p2 = p2.Replace("\n", "");
             }
-            if (p1.ToCharArray()[0] == '6')
-                    url = "http://hq.sinajs.cn/list=s_sh" + p1;
-            else if (p1.ToCharArray()[0] == '0'||p1.ToCharArray()[0] == '3')
-                    url = "http://hq.sinajs.cn/list=s_sz" + p1;
+            if (p1.Equals("上证指数"))
+                url = "http://hq.sinajs.cn/list=s_sh000001";
+            else if (p1.Equals("深圳综指"))
+                url = "http://hq.sinajs.cn/list=s_sz399106";
+            else if (p1.Equals("中小板指数"))
+                url = "http://hq.sinajs.cn/list=s_sz399005";
+            else if (p1.Equals("创业板指数"))
+                url = "http://hq.sinajs.cn/list=s_sz399006";
+            else if (p1.Equals("深圳成指"))
+                url = "http://hq.sinajs.cn/list=s_sz399001";
+            else if (p1.Equals("中小板综指"))
+                url = "http://hq.sinajs.cn/list=s_sz399101";
+            else if (p1.Equals("创业板综指"))
+                url = "http://hq.sinajs.cn/list=s_sz399102";
+            else if (p1.ToCharArray()[0] == '6')
+                url = "http://hq.sinajs.cn/list=s_sh" + p1;
+            else if (p1.ToCharArray()[0] == '0' || p1.ToCharArray()[0] == '3')
+                url = "http://hq.sinajs.cn/list=s_sz" + p1;
             else if (p1.Equals("上海") || p1.Equals("沪市") || p1.Equals("上证"))
             {
                 url = "http://hq.sinajs.cn/list=s_sh" + p2;
@@ -585,11 +599,15 @@ namespace SmartQQ
             {
                 url = "http://hq.sinajs.cn/list=s_sz" + p2;
             }
+            else
+                return "测试错误";
             string dat = HttpGet(url,100000,Encoding.GetEncoding("GB2312"));
 
             string[] tmp = dat.Split('\"');
             tmp = tmp[1].Split(',');
-            string ans = tmp[0] + "：现价，" + tmp[1] + "；涨跌" + tmp[2] + "，" + tmp[3] + "%；成交量，" + tmp[4] + "手，" + tmp[5] + "万元。";
+            if(tmp.Length==1)
+                return "测试错误";
+            string ans = "根据新浪财经提供的信息，" + tmp[0] + "：现价，" + tmp[1] + "；涨跌" + tmp[2] + "，" + tmp[3] + "%；成交量，" + tmp[4] + "手，" + tmp[5] + "万元。";
             return ans;
         }
 
