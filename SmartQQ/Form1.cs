@@ -600,14 +600,14 @@ namespace SmartQQ
                 url = "http://hq.sinajs.cn/list=s_sz" + p2;
             }
             else
-                return "测试错误";
+                return "参数错误";
             string dat = HttpGet(url,100000,Encoding.GetEncoding("GB2312"));
 
             string[] tmp = dat.Split('\"');
             tmp = tmp[1].Split(',');
             if(tmp.Length==1)
-                return "测试错误";
-            string ans = "根据新浪财经提供的信息，" + tmp[0] + "：现价，" + tmp[1] + "；涨跌" + tmp[2] + "，" + tmp[3] + "%；成交量，" + tmp[4] + "手，" + tmp[5] + "万元。";
+                return "参数错误";
+            string ans = "根据新浪财经的信息，" + tmp[0] + "：现价，" + tmp[1] + "；涨跌" + tmp[2] + "，" + tmp[3] + "%；成交量，" + tmp[4] + "手，" + tmp[5] + "万元。";
             return ans;
         }
 
