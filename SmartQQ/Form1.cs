@@ -1042,13 +1042,14 @@ namespace SmartQQ
         public string HttpGet(string url, int timeout = 100000, Encoding encode=null)
         {
             string dat;
-            HttpWebRequest req = (HttpWebRequest)WebRequest.Create(url); 
             HttpWebResponse res = null;
-            req.CookieContainer = cookies;
-            req.Timeout = timeout;
-            req.Referer = "http://d.web2.qq.com/proxy.html?v=20130916001&callback=1&id=2";
+            HttpWebRequest req;
             try
             {
+                req = (HttpWebRequest)WebRequest.Create(url); 
+                req.CookieContainer = cookies;
+                req.Timeout = timeout;
+                req.Referer = "http://d.web2.qq.com/proxy.html?v=20130916001&callback=1&id=2";            
                 res = (HttpWebResponse)req.GetResponse();
             }
             catch(HttpException)
@@ -1071,23 +1072,25 @@ namespace SmartQQ
         public string HttpPost(string url, string Referer, string data, Encoding encode, bool SaveCookie, int timeout = 100000)
         {
             string dat = "";
+            HttpWebRequest req;
             if (AmountOfRunningPosting == 0)
                 System.GC.Collect();
             AmountOfRunningPosting++;
-            HttpWebRequest req = WebRequest.Create(url) as HttpWebRequest;
-            req.CookieContainer = this.cookies;
-            req.ContentType = "application/x-www-form-urlencoded";
-            req.Method = "POST";
-            req.UserAgent = "Mozilla/5.0 (Windows NT 5.1; rv:30.0) Gecko/20100101 Firefox/30.0";
-            req.Proxy = null;
-            req.Timeout = timeout;
-            req.ProtocolVersion = HttpVersion.Version10;
-            if (!string.IsNullOrEmpty(Referer))
-                req.Referer = Referer;
-            byte[] mybyte = Encoding.Default.GetBytes(data);
-            req.ContentLength = mybyte.Length;
             try
             {
+                req = WebRequest.Create(url) as HttpWebRequest;
+                req.CookieContainer = this.cookies;
+                req.ContentType = "application/x-www-form-urlencoded";
+                req.Method = "POST";
+                req.UserAgent = "Mozilla/5.0 (Windows NT 5.1; rv:30.0) Gecko/20100101 Firefox/30.0";
+                req.Proxy = null;
+                req.Timeout = timeout;
+                req.ProtocolVersion = HttpVersion.Version10;
+                if (!string.IsNullOrEmpty(Referer))
+                    req.Referer = Referer;
+                byte[] mybyte = Encoding.Default.GetBytes(data);
+                req.ContentLength = mybyte.Length;
+            
                 Stream stream = req.GetRequestStream();
                 stream.Write(mybyte, 0, mybyte.Length);
 
@@ -1106,6 +1109,7 @@ namespace SmartQQ
             }            
             catch(HttpException)
             {
+                AmountOfRunningPosting--;
                 return "";
             }
             
@@ -1126,38 +1130,57 @@ namespace SmartQQ
 
             Encoding encode = Encoding.UTF8;
             string Referer = "http://d.web2.qq.com/proxy.html?v=20130916001&callback=1&id=2";
+            try
+            {
+                HttpWebRequest req = WebRequest.Create(url) as HttpWebRequest;
+                req.CookieContainer = this.cookies;
+                req.ContentType = "application/x-www-form-urlencoded";
+                req.Method = "POST";
+                req.UserAgent = "Mozilla/5.0 (Windows NT 5.1; rv:30.0) Gecko/20100101 Firefox/30.0";
+                req.Proxy = null;
+                req.ProtocolVersion = HttpVersion.Version10;
+                if (!string.IsNullOrEmpty(Referer))
+                    req.Referer = Referer;
 
-            HttpWebRequest req = WebRequest.Create(url) as HttpWebRequest;
-            req.CookieContainer = this.cookies;
-            req.ContentType = "application/x-www-form-urlencoded";
-            req.Method = "POST";
-            req.UserAgent = "Mozilla/5.0 (Windows NT 5.1; rv:30.0) Gecko/20100101 Firefox/30.0";
-            req.Proxy = null;
-            req.ProtocolVersion = HttpVersion.Version10;
-            if (!string.IsNullOrEmpty(Referer))
-                req.Referer = Referer;
-
-            req.BeginGetRequestStream(new AsyncCallback(RequestProceed), req);
+                req.BeginGetRequestStream(new AsyncCallback(RequestProceed), req);
+            }
+            catch(WebException)
+            {
+                return;
+            }
         }
         private void RequestProceed(IAsyncResult asyncResult)
         {
-
-            HttpWebRequest request = (HttpWebRequest)asyncResult.AsyncState;
-            StreamWriter postDataWriter = new StreamWriter(request.EndGetRequestStream(asyncResult));
-            postDataWriter.Write(HeartPackdata);
-            postDataWriter.Close();
-            request.BeginGetResponse(new AsyncCallback(ResponesProceed), request);
+            try
+            {
+                HttpWebRequest request = (HttpWebRequest)asyncResult.AsyncState;
+                StreamWriter postDataWriter = new StreamWriter(request.EndGetRequestStream(asyncResult));
+                postDataWriter.Write(HeartPackdata);
+                postDataWriter.Close();
+                request.BeginGetResponse(new AsyncCallback(ResponesProceed), request);
+            }
+            catch(WebException)
+            {
+                return;
+            }
         }
         private void ResponesProceed(IAsyncResult ar)
         {
-            StreamReader reader = null;
-            HttpWebRequest req = ar.AsyncState as HttpWebRequest;
-            HttpWebResponse res = req.GetResponse() as HttpWebResponse;
-            reader = new StreamReader(res.GetResponseStream());
-            String temp = reader.ReadToEnd();
-            res.Close();
-            req.Abort();
-            HeartPackAction(temp);
+            try
+            {
+                StreamReader reader = null;
+                HttpWebRequest req = ar.AsyncState as HttpWebRequest;
+                HttpWebResponse res = req.GetResponse() as HttpWebResponse;
+                reader = new StreamReader(res.GetResponseStream());
+                String temp = reader.ReadToEnd();
+                res.Close();
+                req.Abort();
+                HeartPackAction(temp);
+            }
+            catch(WebException)
+            {
+                return;
+            }
         }
         private void pictureBoxCAPTCHA_Click(object sender, EventArgs e)
         {
