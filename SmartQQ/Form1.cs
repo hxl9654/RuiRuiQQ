@@ -592,13 +592,13 @@ namespace SmartQQ
             }
             if (p1.Equals("上证指数"))
                 url = "http://hq.sinajs.cn/list=s_sh000001";
-            else if (p1.Equals("深圳综指"))
+            else if (p1.Equals("深证综指"))
                 url = "http://hq.sinajs.cn/list=s_sz399106";
             else if (p1.Equals("中小板指数"))
                 url = "http://hq.sinajs.cn/list=s_sz399005";
             else if (p1.Equals("创业板指数"))
                 url = "http://hq.sinajs.cn/list=s_sz399006";
-            else if (p1.Equals("深圳成指"))
+            else if (p1.Equals("深证成指"))
                 url = "http://hq.sinajs.cn/list=s_sz399001";
             else if (p1.Equals("中小板综指"))
                 url = "http://hq.sinajs.cn/list=s_sz399101";
