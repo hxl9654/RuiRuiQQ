@@ -400,12 +400,7 @@ namespace SmartQQ
                         }
                         
                     }
-                }
-                if (i != -1 && groupinfo[i].EnableRobot == false) 
-                {
-                    MessageToSend[0] = "";
-                    return MessageToSend;
-                }
+                }               
             }
             if(message.Contains("行情"))
             {
@@ -758,6 +753,17 @@ namespace SmartQQ
         {
             string[] MessageToSendArray = Answer(message, uin, gid);
             string MessageToSend = "";
+             for (int i = 0; i <= groupinfMaxIndex; i++)
+            {
+                if (groupinfo[i].gid == gid)
+                {
+                    if (groupinfo[i].EnableRobot == false)
+                    {
+                        return;
+                    }
+                }
+            }
+            
             for (int i = 0; i < 10; i++)
             {
                 if (MessageToSendArray[i] != null && !MessageToSendArray[i].Equals("") && !MessageToSendArray[i].Equals("None3"))
