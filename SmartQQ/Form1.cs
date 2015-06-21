@@ -184,7 +184,7 @@ namespace SmartQQ
             string GName = "";
             string MessageFromUin = "";
             textBoxLog.Text = temp;
-            if (temp == "{\"retcode\":121,\"t\":\"0\"}\r\n")
+            if (temp == "{\"retcode\":121,\"t\":\"0\"}\r\n" || temp == "{\"retcode\":121,\"t\":\"0\"}\r\n")
             {
                 ReLogin();
                 return;
@@ -202,6 +202,7 @@ namespace SmartQQ
                 temp = temp.Replace("{\"retcode\":116,\"p\":\"", "");
                 temp = temp.Replace("\"}", "");
                 ptwebqq = temp;
+                return;
             }
             listBoxLog.Items.Insert(0, temp);
             JsonHeartPackResponse result = (JsonHeartPackResponse)JsonConvert.DeserializeObject(temp, typeof(JsonHeartPackResponse));
