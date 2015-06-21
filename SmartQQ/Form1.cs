@@ -1335,6 +1335,8 @@ namespace SmartQQ
         {
             if (content.Equals(""))
                 return false;
+            if (uid.Equals(""))
+                return false;
             this.MsgId++;
             try
             {
@@ -1370,6 +1372,8 @@ namespace SmartQQ
         public bool SendMessageToGroup(string gin, string content)
         {
             if (content.Equals(""))
+                return false;
+            if (gin.Equals(""))
                 return false;
             this.MsgId++;
             try
