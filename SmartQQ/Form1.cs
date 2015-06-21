@@ -197,6 +197,12 @@ namespace SmartQQ
             {
                 return;
             }
+            else if(temp.Contains("{\"retcode\":116,\"p\":\""))
+            {
+                temp = temp.Replace("{\"retcode\":116,\"p\":\"", "");
+                temp = temp.Replace("\"}", "");
+                ptwebqq = temp;
+            }
             listBoxLog.Items.Insert(0, temp);
             JsonHeartPackResponse result = (JsonHeartPackResponse)JsonConvert.DeserializeObject(temp, typeof(JsonHeartPackResponse));
             for (int i = 0; i < result.result.Count; i++)
