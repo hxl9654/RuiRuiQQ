@@ -186,6 +186,7 @@ namespace SmartQQ
             textBoxLog.Text = temp;
             if (temp == "{\"retcode\":121,\"t\":\"0\"}\r\n" || temp == "{\"retcode\":121,\"t\":\"0\"}\r\n")
             {
+                listBoxLog.Items.Insert(0, temp);
                 ReLogin();
                 return;
             }
@@ -195,17 +196,27 @@ namespace SmartQQ
             }
             else if (temp == "{\"retcode\":108,\"errmsg\":\"\"}\r\n")
             {
+                listBoxLog.Items.Insert(0, temp);
+                return;
+            }
+            else if (temp == "{\"retcode\":103,\"errmsg\":\"\"}\r\n")
+            {
+                listBoxLog.Items.Insert(0, temp);
                 return;
             }
             else if(temp.Contains("{\"retcode\":116,\"p\":\""))
             {
+                listBoxLog.Items.Insert(0, temp);
                 temp = temp.Replace("{\"retcode\":116,\"p\":\"", "");
                 temp = temp.Replace("\"}", "");
+                temp = temp.Replace("\r\n", "");               
                 ptwebqq = temp;
                 return;
             }
             listBoxLog.Items.Insert(0, temp);
             JsonHeartPackResponse result = (JsonHeartPackResponse)JsonConvert.DeserializeObject(temp, typeof(JsonHeartPackResponse));
+            if (result.result == null)
+                return;
             for (int i = 0; i < result.result.Count; i++)
             {
                 if (result.result[i].poll_type == "buddies_status_change")
