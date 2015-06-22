@@ -325,22 +325,22 @@
         #endregion
 
         private System.Windows.Forms.Button buttonLogIn;
-        private System.Windows.Forms.TextBox textBoxID;
+        public System.Windows.Forms.TextBox textBoxID;
         private System.Windows.Forms.TextBox textBoxPassword;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.TextBox textBoxCAPTCHA;
-        private System.Windows.Forms.PictureBox pictureBoxCAPTCHA;
+        public System.Windows.Forms.TextBox textBoxCAPTCHA;
+        public System.Windows.Forms.PictureBox pictureBoxCAPTCHA;
         private System.Windows.Forms.Timer timerHeart;
         private System.Windows.Forms.GroupBox groupbox1;
         public System.Windows.Forms.ListBox listBoxLog;
         private System.Windows.Forms.TextBox textBoxResiveMessage;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.GroupBox groupBox3;
-        private System.Windows.Forms.ListBox listBoxFriend;
+        public System.Windows.Forms.ListBox listBoxFriend;
         private System.Windows.Forms.GroupBox groupBox4;
-        private System.Windows.Forms.ListBox listBoxGroup;
+        public System.Windows.Forms.ListBox listBoxGroup;
         private System.Windows.Forms.GroupBox groupBox5;
         private System.Windows.Forms.Button buttonSend;
         private System.Windows.Forms.TextBox textBoxSendMessage;

@@ -1,14 +1,8 @@
-﻿using Jurassic;
-using Jurassic.Library;
-using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Drawing;
+﻿using System;
 using System.IO;
 using System.Net;
 using System.Text;
 using System.Web;
-using System.Windows.Forms;
 // *   This program is free software: you can redistribute it and/or modify
 // *   it under the terms of the GNU General Public License as published by
 // *   the Free Software Foundation, either version 3 of the License, or
@@ -127,7 +121,7 @@ namespace SmartQQ
             String sendData2 = "\",\"clientid\":";
             String sendData3 = ",\"psessionid\":\"";
             String sendData4 = "\",\"key\":\"\"}";
-            HeartPackdata = sendData1 + Program.formlogin.ptwebqq + sendData2 + Program.formlogin.ClientID.ToString() + sendData3 + Program.formlogin.psessionid + sendData4;
+            HeartPackdata = sendData1 + SmartQQ.ptwebqq + sendData2 + SmartQQ.ClientID.ToString() + sendData3 + SmartQQ.psessionid + sendData4;
 
             Encoding encode = Encoding.UTF8;
             string Referer = "http://d.web2.qq.com/proxy.html?v=20130916001&callback=1&id=2";

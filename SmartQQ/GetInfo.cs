@@ -1,14 +1,6 @@
-﻿using Jurassic;
-using Jurassic.Library;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.IO;
-using System.Net;
 using System.Text;
-using System.Web;
-using System.Windows.Forms;
 // *   This program is free software: you can redistribute it and/or modify
 // *   it under the terms of the GNU General Public License as published by
 // *   the Free Software Foundation, either version 3 of the License, or

@@ -35,44 +35,38 @@ namespace SmartQQ
     {
 
         //系统配置相关
-        private int MsgId;
-        public int ClientID;
+
         string StudyPassword = "";
         string DicServer = "";
         bool DisableStudy = false;
         bool DisableWeather = false;
-        //通信参数相关
         public bool StopSendingHeartPack = false;
-        String ptvsession = "";
-        String p_skey, MyUin, skey, p_uin, vfwebqq, hash;
-        public String ptwebqq, psessionid;
-        String pt_uin = "";
         //多个函数要用到的变量
-        bool CAPTCHA = false;
+        
         string pin = string.Empty;       
-        String CaptchaCode;
+        
         
         bool IsGroupSelent = false, IsFriendSelent = false;
         bool DoNotChangeSelentGroupOrPeople = false;
         //数据存储相关
-        JsonGroupModel group;
-        JsonFriendModel user;
+        public JsonGroupModel group;
+        public JsonFriendModel user;
 
-        struct GroupInf
+        public struct GroupInf
         {
             public String gid;
             public bool EnableRobot;
             public JsonGroupInfoModel inf;
         };
-        GroupInf[] groupinfo = new GroupInf[100];
-        int groupinfMaxIndex = 0;
-        struct FriendInf
+        public GroupInf[] groupinfo = new GroupInf[100];
+        public int groupinfMaxIndex = 0;
+        public struct FriendInf
         {
             public String uin;
             public JsonFriendInfModel Inf;
         };
-        FriendInf[] friendinf = new FriendInf[1000];
-        int friendinfMaxIndex = 0;
+        public FriendInf[] friendinf = new FriendInf[1000];
+        public int friendinfMaxIndex = 0;
         string[] Badwords;
         private void buttonLogIn_Click(object sender, EventArgs e)
         {
@@ -100,64 +94,11 @@ namespace SmartQQ
                 return;
             }
 
-            //一次登录
-            String tokentemp = System.Text.RegularExpressions.Regex.Replace(pt_uin, @"\\x", "");
-            String token = HexString2Ascii(tokentemp);
-            string key = EncodePassword(textBoxPassword.Text, token, textBoxCAPTCHA.Text.ToUpper());
+            SmartQQ.FirstLogin(textBoxID.Text, textBoxPassword.Text, textBoxCAPTCHA.Text);
+            SmartQQ.SecondLogin(textBoxID.Text);
 
-            String url1 = "https://ssl.ptlogin2.qq.com/login?u=";
-            String url2 = "&p=";
-            String url3 = "&verifycode=";
-            String url4 = "&webqq_type=10&remember_uin=1&login2qq=1&aid=501004106&u1=http%3A%2F%2Fw.qq.com%2Fproxy.html";
-            String url5 = "%3Flogin2qq%3D1%26webqq_type%3D10&h=1&ptredirect=0&ptlang=2052&daid=164&from_ui=1&pttype=1";
-            String url6 = "&dumy=&fp=loginerroralert&action=0-15-19190&mibao_css=m_webqq&t=1&g=1&js_type=0&js_ver=10123&";
-            String url7 = "login_sig=&pt_randsalt=0&pt_vcode_v1=0&pt_verifysession_v1=";
-            String url = url1 + textBoxID.Text + url2 + key + url3 + textBoxCAPTCHA.Text + url4 + url5 + url6 + url7 + ptvsession;
-
-            string temp = HTTP.HttpGet(url);
-
-            //二次登录准备
-            temp = temp.Replace("ptui_checkVC(", "");
-            temp = temp.Replace(");", "");
-            temp = temp.Replace("'", "");
-            string[] tmp = temp.Split(',');
-            url = tmp[2];
-            if (url == "")
-            {
-                MessageBox.Show("登录失败，请重试");
-                if (CAPTCHA) GetCaptcha();
-                return;
-            }
-
-            HTTP.HttpGet(url);
-
-            Uri uri = new Uri("http://web2.qq.com/");
-            ptwebqq = HTTP.cookies.GetCookies(uri)["ptwebqq"].Value;
-            p_skey = HTTP.cookies.GetCookies(uri)["p_skey"].Value;
-            MyUin = HTTP.cookies.GetCookies(uri)["uin"].Value;
-            skey = HTTP.cookies.GetCookies(uri)["skey"].Value;
-            p_uin = HTTP.cookies.GetCookies(uri)["p_uin"].Value;
-
-            //二次登录
-            url = "http://d.web2.qq.com/channel/login2";
-            url1 = string.Format("r={{\"ptwebqq\":\"{0}\",\"clientid\":{1},\"psessionid\":\"\",\"status\":\"online\"}}", this.ptwebqq, this.ClientID);
-            String dat = HTTP.HttpPost(url, "http://d.web2.qq.com/proxy.html?v=20130916001&callback=1&id=2", url1, Encoding.UTF8, true);
-
-            textBoxLog.Text = dat;
-            char[] t = new char[2];
-            t[0] = ':';
-            t[1] = ',';
-            dat = dat.Replace("{", "");
-            dat = dat.Replace("}", "");
-            dat = dat.Replace("\"", "");
-            tmp = dat.Split(t);
-
-            vfwebqq = tmp[14];
-            psessionid = tmp[16];
-
-            hash = GetHash(textBoxID.Text, ptwebqq);
-            getFrienf();
-            getGroup();
+            SmartQQ.getFrienf();
+            SmartQQ.getGroup();
 
             listBoxLog.Items.Insert(0, "账号" + textBoxID.Text + "登录成功");
             timerHeart.Enabled = true;
@@ -193,7 +134,7 @@ namespace SmartQQ
             else if (HeartPackMessage.retcode == 116)
             {
                 listBoxLog.Items.Insert(0, temp);
-                ptwebqq = HeartPackMessage.p;
+                SmartQQ.ptwebqq = HeartPackMessage.p;
                 return;
             }
             else if (HeartPackMessage.retcode == 108)
@@ -247,18 +188,18 @@ namespace SmartQQ
                     for (j = 0; j < user.result.info.Count; j++)
                         if (user.result.info[j].uin == HeartPackMessage.result[i].value.from_uin)
                         {
-                            textBoxResiveMessage.Text += (user.result.info[j].nick + "  " + GetRealQQ(user.result.info[j].uin) + Environment.NewLine + message + "   " + emojis + Environment.NewLine + Environment.NewLine);
+                            textBoxResiveMessage.Text += (user.result.info[j].nick + "  " + SmartQQ.GetRealQQ(user.result.info[j].uin) + Environment.NewLine + message + "   " + emojis + Environment.NewLine + Environment.NewLine);
                             textBoxResiveMessage.SelectionStart = textBoxResiveMessage.TextLength;
                             textBoxResiveMessage.ScrollToCaret();
                             break;
                         }
                     if (j == user.result.info.Count)
                     {
-                        getFrienf();
+                        SmartQQ.getFrienf();
                         for (j = 0; j < user.result.info.Count; j++)
                             if (user.result.info[j].uin == HeartPackMessage.result[i].value.from_uin)
                             {
-                                textBoxResiveMessage.Text += (user.result.info[j].nick + "  " + GetRealQQ(user.result.info[j].uin) + Environment.NewLine + message + "   " + emojis + Environment.NewLine + Environment.NewLine);
+                                textBoxResiveMessage.Text += (user.result.info[j].nick + "  " + SmartQQ.GetRealQQ(user.result.info[j].uin) + Environment.NewLine + message + "   " + emojis + Environment.NewLine + Environment.NewLine);
                                 textBoxResiveMessage.SelectionStart = textBoxResiveMessage.TextLength;
                                 textBoxResiveMessage.ScrollToCaret();
                                 break;
@@ -301,7 +242,7 @@ namespace SmartQQ
                                 if (groupinfo[j].inf.result.minfo[k].uin == HeartPackMessage.result[i].value.send_uin)
                                 {
                                     MessageFromUin = groupinfo[j].inf.result.minfo[k].uin;
-                                    textBoxResiveMessage.Text += (GName + "   " + groupinfo[j].inf.result.minfo[k].nick + "  " + GetRealQQ(MessageFromUin) + Environment.NewLine + message + "   " + emojis + Environment.NewLine + Environment.NewLine);
+                                    textBoxResiveMessage.Text += (GName + "   " + groupinfo[j].inf.result.minfo[k].nick + "  " + SmartQQ.GetRealQQ(MessageFromUin) + Environment.NewLine + message + "   " + emojis + Environment.NewLine + Environment.NewLine);
                                     textBoxResiveMessage.SelectionStart = textBoxResiveMessage.TextLength;
                                     textBoxResiveMessage.ScrollToCaret();
                                     break;
@@ -327,7 +268,7 @@ namespace SmartQQ
             message = message.Remove(message.Length - 2);
             if (message.Equals(""))
                 return MessageToSend;
-            string QQNum = GetRealQQ(uin);
+            string QQNum = SmartQQ.GetRealQQ(uin);
             for (int i = 0; i < 20; i++)
                 MessageToSend[i] = "";
             bool MsgSendFlag = false;
@@ -350,7 +291,7 @@ namespace SmartQQ
                 }
                 if(adminuin.Equals(""))
                 {
-                    getGroup();
+                    SmartQQ.getGroup();
                     for (i = 0; i <= groupinfMaxIndex; i++)
                     {
                         if (groupinfo[i].gid == gid)
@@ -375,7 +316,7 @@ namespace SmartQQ
                     {
                         if (!uin.Equals(adminuin))
                         {
-                            MessageToSend[0] = "账号" + GetRealQQ(uin) + "不是群主，无权进行此操作";
+                            MessageToSend[0] = "账号" + SmartQQ.GetRealQQ(uin) + "不是群主，无权进行此操作";
                             return MessageToSend;
                         }                           
                         else
@@ -619,7 +560,7 @@ namespace SmartQQ
                     MessageToSend += ",";
                 MessageToSend += SloveEmoji(tmp[i]);
             }
-            SendMessageToGroup(gid, MessageToSend);
+            SmartQQ.SendMessageToGroup(gid, MessageToSend);
         }
         private void ActionWhenResivedMessage(string uin, string message, string emojis)
         {
@@ -662,7 +603,7 @@ namespace SmartQQ
                     }
                 if (i > friendinfMaxIndex)
                 {
-                    getFrienf();
+                    SmartQQ.getFrienf();
                     for (i = 0; i <= friendinfMaxIndex; i++)
                         if (friendinf[i].uin == uin)
                         {
@@ -677,9 +618,9 @@ namespace SmartQQ
                     Gender = "哥哥 ";
                 else
                     Gender = " ";
-                SendMessageToFriend(uin, "\\\"" + SenderName + Gender + "～ 小睿睿听不懂你在说什么呢。。。教教我吧～～" + Environment.NewLine + "格式 学习^语句^设定的回复" + "\\\"");
+                SmartQQ.SendMessageToFriend(uin, "\\\"" + SenderName + Gender + "～ 小睿睿听不懂你在说什么呢。。。教教我吧～～" + Environment.NewLine + "格式 学习^语句^设定的回复" + "\\\"");
             }
-            else SendMessageToFriend(uin, MessageToSend);
+            else SmartQQ.SendMessageToFriend(uin, MessageToSend);
 
         }
         private string AIGet(string message, string QQNum)
@@ -706,65 +647,8 @@ namespace SmartQQ
             return temp;
         }
 
-        public void getFrienf()
-        {
-            String url = "http://s.web2.qq.com/api/get_user_friends2";
-            String sendData = string.Format("r={{\"vfwebqq\":\"{0}\",\"hash\":\"{1}\"}}", vfwebqq, this.hash);
-            String dat = HTTP.HttpPost(url, "http://s.web2.qq.com/proxy.html?v=20130916001&callback=1&id=1", sendData, Encoding.UTF8, true);
-            textBoxLog.Text = dat;
-
-            user = (JsonFriendModel)JsonConvert.DeserializeObject(dat, typeof(JsonFriendModel));
-            listBoxFriend.Items.Clear();
-            for (int i = 0; i < user.result.info.Count; i++)
-            {
-                string gender;
-                friendinf[i].uin = user.result.info[i].uin;
-                friendinf[i].Inf = GetFriendInf(user.result.info[i].uin);
-                if (friendinfMaxIndex < i)
-                    friendinfMaxIndex = i;
-                if (friendinf[i].Inf.result.gender.Equals("female"))
-                    gender = "妹纸";
-                else if (friendinf[i].Inf.result.gender.Equals("male"))
-                    gender = "汉子";
-                else gender = "未知";
-                listBoxFriend.Items.Add(user.result.info[i].uin + ":" + GetRealQQ(user.result.info[i].uin) + ":" + user.result.info[i].nick + ":" + gender);
-            }
-        }
-        public JsonGroupInfoModel GetGroupInfo(string gcode)
-        {
-            String url = "http://s.web2.qq.com/api/get_group_info_ext2?gcode=" + gcode + "&vfwebqq=" + vfwebqq + "&t=" + GetTimeStamp();
-            string dat = HTTP.HttpGet(url);
-
-            JsonGroupInfoModel ans = (JsonGroupInfoModel)JsonConvert.DeserializeObject(dat, typeof(JsonGroupInfoModel));
-            return ans;
-        }
-        public void getGroup()
-        {
-            String url = "http://s.web2.qq.com/api/get_group_name_list_mask2";
-            String sendData = string.Format("r={{\"vfwebqq\":\"{0}\",\"hash\":\"{1}\"}}", this.vfwebqq, this.hash);
-            String dat = HTTP.HttpPost(url, "http://s.web2.qq.com/proxy.html?v=20130916001&callback=1&id=1", sendData, Encoding.UTF8, true);
-            textBoxLog.Text = dat;
-
-            group = (JsonGroupModel)JsonConvert.DeserializeObject(dat, typeof(JsonGroupModel));
-            listBoxGroup.Items.Clear();
-            int i;
-            for (i = 0; i < group.result.gnamelist.Count; i++)
-            {
-                listBoxGroup.Items.Add(group.result.gnamelist[i].gid + ":" + group.result.gnamelist[i].name);
-                groupinfo[i].gid = group.result.gnamelist[i].gid;
-                groupinfo[i].inf = GetGroupInfo(group.result.gnamelist[i].code);
-                groupinfo[i].EnableRobot = true;
-            }
-            groupinfMaxIndex = i;
-        }
-        public JsonFriendInfModel GetFriendInf(string uin)
-        {
-            String url = "http://s.web2.qq.com/api/get_friend_info2?tuin=" + uin + "&vfwebqq=" + vfwebqq + "&clientid=" + ClientID + "&psessionid=" + psessionid + "&t=" + GetTimeStamp();
-
-            string dat = HTTP.HttpGet(url);
-            JsonFriendInfModel ans = (JsonFriendInfModel)JsonConvert.DeserializeObject(dat, typeof(JsonFriendInfModel));
-            return ans;
-        }
+        
+        
         public string GetXiaoHuangJi(string msg)
         {
             string url = "http://www.xiaohuangji.com/ajax.php";
@@ -776,113 +660,25 @@ namespace SmartQQ
         {
             if (textBoxID.Text.Length == 0)
                 return;
-            String str1 = "https://ssl.ptlogin2.qq.com/check?pt_tea=1&uin=";
-            String str2 = "&appid=501004106&js_ver=10121&js_type=0&login_sig=&u1=http%3A%2F%2Fw.qq.com%2Fproxy.html&r=0.4053995015565306";
-            String url = str1 + textBoxID.Text + str2;
-
-            string dat = HTTP.HttpGet(url);
-
-            dat = dat.Replace("ptui_checkVC(", "");
-            dat = dat.Replace(");", "");
-            dat = dat.Replace("'", "");
-            string[] tmp = dat.Split(',');
-
-            pt_uin = tmp[2];
-
-            if (tmp[0] == "1")
+            if (SmartQQ.GetCAPTCHAInf(textBoxID.Text) == true)
             {
-                CAPTCHA = true;
-
-                CaptchaCode = tmp[1];
-                GetCaptcha();
-
                 pictureBoxCAPTCHA.Visible = true;
                 textBoxCAPTCHA.Visible = true;
                 label3.Visible = true;
             }
             else
             {
-                CAPTCHA = false;
                 pictureBoxCAPTCHA.Visible = false;
                 textBoxCAPTCHA.Visible = false;
                 label3.Visible = false;
-                textBoxCAPTCHA.Text = tmp[1];
-                ptvsession = tmp[3];
             }
 
         }
-        public void GetCaptcha()
-        {
-            textBoxCAPTCHA.Text = "";
-
-            String strimg1 = "https://ssl.captcha.qq.com/getimage?aid=501004106&r=0.005933324107900262&uin=";
-            String strimg2 = "&cap_cd=";
-            String strimg = strimg1 + textBoxID.Text + strimg2 + CaptchaCode;
-
-            HttpWebRequest req = (HttpWebRequest)WebRequest.Create(strimg);
-            req.CookieContainer = HTTP.cookies;
-            HttpWebResponse res = (HttpWebResponse)req.GetResponse();
-
-            pictureBoxCAPTCHA.Image = Image.FromStream(res.GetResponseStream());
-
-            ptvsession = res.Cookies["verifysession"].Value;
-            res.Close();
-        }
-        String GetRealQQ(string uin)
-        {
-
-            String url = "http://s.web2.qq.com/api/get_friend_uin2?tuin=" + uin + "&type=1&vfwebqq=" + vfwebqq + "&t=" + GetTimeStamp();
-
-            string dat = HTTP.HttpGet(url);
-
-            if (dat == "{\"retcode\":100101}")
-            {
-                return GetRealQQ(uin);
-            }
-            dat = dat.Replace("{\"retcode\":0,\"result\":{\"uiuin\":\"\",\"account\":", "");
-            dat = dat.Replace("}", "");
-            dat = dat.Replace("\"uin\":", "");
-            dat = dat.Replace("\r", "");
-            dat = dat.Replace("\n", "");
-            string[] tmp = dat.Split(',');
-
-            return tmp[0];
-        }
-        //感谢QQBOT群（346167134） 杨小泡的热心帮助！
-        internal static string HexString2Ascii(string hexString)
-        {
-            string res = String.Empty;
-            for (int a = 0; a < hexString.Length; a = a + 2)
-            {
-                string Char2Convert = hexString.Substring(a, 2);
-                int n = Convert.ToInt32(Char2Convert, 16);
-                char c = (char)n;
-                res += c.ToString();
-            }
-            return res;
-        }
-        private String GetHash(String no, String ptwebqq)
-        {
-            var scriptEngine = new Jurassic.ScriptEngine();
-            scriptEngine.EnableDebugging = true;
-            scriptEngine.SetGlobalValue("window", new WindowObject(scriptEngine));
-            scriptEngine.ExecuteFile(System.AppDomain.CurrentDomain.BaseDirectory + "hash.js");
-            var ret = scriptEngine.CallGlobalFunction<string>("friendsHash", no, ptwebqq, 0);
-            return ret;
-        }
-        internal static string EncodePassword(string password, string token, string bits)
-        {
-            var scriptEngine = new Jurassic.ScriptEngine();
-            scriptEngine.EnableDebugging = true;
-            scriptEngine.SetGlobalValue("window", new WindowObject(scriptEngine));
-            scriptEngine.ExecuteFile(System.AppDomain.CurrentDomain.BaseDirectory + "encode.js");
-            var ret = scriptEngine.CallGlobalFunction<string>("getEncryption", password, token, bits, 0);
-            return ret;
-        }
+        
         
         private void pictureBoxCAPTCHA_Click(object sender, EventArgs e)
         {
-            GetCaptcha();
+            SmartQQ.GetCaptcha();
         }
         private void FormLogin_Load(object sender, EventArgs e)
         {
@@ -892,7 +688,7 @@ namespace SmartQQ
             Control.CheckForIllegalCrossThreadCalls = false;
             System.Net.ServicePointManager.DefaultConnectionLimit = 500;
             Random rd = new Random();
-            MsgId = rd.Next(10000000, 50000000);
+            SmartQQ.MsgId = rd.Next(10000000, 50000000);
             try
             {
                 FileStream file = new FileStream(Environment.CurrentDirectory + "\\RuiRuiRobot.conf", FileMode.Open);
@@ -919,17 +715,17 @@ namespace SmartQQ
                 textBoxPassword.Text = dat.QQPassword;
                 StudyPassword = dat.DicPassword;
                 DicServer = dat.DicServer;
-                ClientID = dat.ClientID;
+                SmartQQ.ClientID = dat.ClientID;
             }
             else
             {
                 DicServer = "http://smartqq.hxlxz.com/";
                 DisableStudy = true;
-                ClientID = rd.Next(1000000, 9999999); ;
+                SmartQQ.ClientID = rd.Next(1000000, 9999999); ;
             }
             if (textBoxID.Text.Length > 0)
             {
-                GetCaptcha();
+                SmartQQ.GetCaptcha();
                 if (!textBoxCAPTCHA.Text.Equals(""))
                     buttonLogIn_Click(this, EventArgs.Empty);
             }
@@ -1005,98 +801,16 @@ namespace SmartQQ
             label3.Visible = true;
             pictureBoxCAPTCHA.Visible = true;
             textBoxCAPTCHA.Visible = true;
-            if (CAPTCHA) GetCaptcha();
+            if (SmartQQ.NeedCAPTCHA) SmartQQ.GetCaptcha();
             listBoxLog.Items.Insert(0, "账号" + textBoxID.Text + "已登出");
         }
         private void buttonLogout_Click(object sender, EventArgs e)
         {
             LogOut();
         }
-        public static string GetTimeStamp()
-        {
-            TimeSpan ts = DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, 0);
-            string ret = string.Empty;
-            ret = Convert.ToInt64(ts.TotalMilliseconds).ToString();
+        
 
-            return ret;
-        }
-
-        //http://www.cnblogs.com/lianmin/p/4257421.html
-        /// 发送好友消息
-        public bool SendMessageToFriend(string uid, string content)
-        {
-            if (content.Equals(""))
-                return false;
-            if (uid.Equals(""))
-                return false;
-            this.MsgId++;
-            try
-            {
-                string postData = "{\"to\":" + uid;
-                postData += ",\"content\":\"[" + content.Replace(Environment.NewLine, "\\\\n");
-                postData += ",[\\\"font\\\",{\\\"name\\\":\\\"宋体\\\",\\\"size\\\":10,\\\"style\\\":[0,0,0],\\\"color\\\":\\\"000000\\\"}]]\",\"face\":585,\"clientid\":" + ClientID;
-                postData += ",\"msg_id\":" + MsgId;
-                postData += ",\"psessionid\":\"" + psessionid;
-                postData += "\"}";
-
-                string referer = "http://d.web2.qq.com/proxy.html?v=20130916001&callback=1&id=2";
-                string url = "http://d.web2.qq.com/channel/send_buddy_msg2";
-                postData = "r=" + HttpUtility.UrlEncode(postData);
-
-                string dat = HTTP.HttpPost(url, referer, postData, Encoding.UTF8, false);
-
-                dat = dat.Replace("{\"retcode\":", "");
-                dat = dat.Replace("\"result\":\"", "");
-                dat = dat.Replace("\"}", "");
-                string[] tmp = dat.Split(',');
-                if (tmp[0] == "0" && tmp[0] == "ok")
-                    return true;
-                else
-                    return false;
-            }
-            catch
-            {
-                return false;
-            }
-        }
-
-        /// 发送群消息
-        public bool SendMessageToGroup(string gin, string content)
-        {
-            if (content.Equals(""))
-                return false;
-            if (gin.Equals(""))
-                return false;
-            this.MsgId++;
-            try
-            {
-                string postData = "{\"group_uin\":" + gin
-                    + ",\"content\":\"[" + content.Replace(Environment.NewLine, "\\\\n")
-                    + ",[\\\"font\\\",{\\\"name\\\":\\\"宋体\\\",\\\"size\\\":13,\\\"style\\\":[0,0,0],\\\"color\\\":\\\"000000\\\"}]]\",\"face\":549,\"clientid\":" + ClientID
-                    + ",\"msg_id\":" + MsgId
-                    + ",\"psessionid\":\"" + psessionid
-                    + "\"}";
-                postData = "r=" + HttpUtility.UrlEncode(postData);
-
-                string referer = "http://d.web2.qq.com/proxy.html?v=20130916001&callback=1&id=2";
-                string url = "http://d.web2.qq.com/channel/send_qun_msg2";
-
-                string dat = HTTP.HttpPost(url, referer, postData, Encoding.UTF8, false);
-
-                dat = dat.Replace("{\"retcode\":", "");
-                dat = dat.Replace("\"result\":\"", "");
-                dat = dat.Replace("\"}", "");
-                string[] tmp = dat.Split(',');
-                if (tmp[0] == "0" && tmp[0] == "ok")
-                    return true;
-                else
-                    return false;
-            }
-            catch
-            {
-                return false;
-            }
-        }
+        
 
         private void buttonSend_Click(object sender, EventArgs e)
         {
@@ -1109,7 +823,7 @@ namespace SmartQQ
             {
                 string GName = "";
                 string[] tmp = listBoxGroup.SelectedItem.ToString().Split(':');
-                SendMessageToGroup(tmp[0], textBoxSendMessage.Text);
+                SmartQQ.SendMessageToGroup(tmp[0], textBoxSendMessage.Text);
 
                 for (int i = 0; i < group.result.gnamelist.Count; i++)
                     if (group.result.gnamelist[i].gid == tmp[0])
@@ -1125,7 +839,7 @@ namespace SmartQQ
             {
                 string Nick = "";
                 string[] tmp = listBoxFriend.SelectedItem.ToString().Split(':');
-                SendMessageToFriend(tmp[0], textBoxSendMessage.Text);
+                SmartQQ.SendMessageToFriend(tmp[0], textBoxSendMessage.Text);
 
                 for (int i = 0; i < user.result.info.Count; i++)
                     if (user.result.info[i].uin == tmp[0])
@@ -1133,7 +847,7 @@ namespace SmartQQ
                         Nick = user.result.info[i].nick;
                         break;
                     }
-                textBoxResiveMessage.Text += ("发送至   " + Nick + "   " + GetRealQQ(tmp[0]) + Environment.NewLine + textBoxSendMessage.Text + Environment.NewLine + Environment.NewLine);
+                textBoxResiveMessage.Text += ("发送至   " + Nick + "   " + SmartQQ.GetRealQQ(tmp[0]) + Environment.NewLine + textBoxSendMessage.Text + Environment.NewLine + Environment.NewLine);
                 textBoxResiveMessage.SelectionStart = textBoxResiveMessage.TextLength;
                 textBoxResiveMessage.ScrollToCaret();
             }
