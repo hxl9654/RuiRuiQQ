@@ -155,9 +155,9 @@ namespace SmartQQ
                 //收到消息
                 public List<object> content;
                 public string from_uin;
-                //群消息有send_uin，为群号
+                //群消息有send_uin，为特征群号；info_seq为群号
                 public string send_uin;
-
+                public string info_seq;
                 //上线提示
                 public string uin;
                 public string status;

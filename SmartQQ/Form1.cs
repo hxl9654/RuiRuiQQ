@@ -55,6 +55,7 @@ namespace SmartQQ
         public struct GroupInf
         {
             public String gid;
+            public String no;
             public bool EnableRobot;
             public JsonGroupInfoModel inf;
         };
@@ -226,8 +227,8 @@ namespace SmartQQ
                         else message += (HeartPackMessage.result[i].value.content[j].ToString() + " ");
                     }
                     message = message.Replace("\\\\n", Environment.NewLine);
-                    string gid;
-                    gid = HeartPackMessage.result[i].value.from_uin;
+                    string gno = HeartPackMessage.result[i].value.info_seq;
+                    string gid = HeartPackMessage.result[i].value.from_uin;
                     for (j = 0; j < group.result.gnamelist.Count; j++)
                         if (group.result.gnamelist[j].gid == gid)
                         {
@@ -250,7 +251,7 @@ namespace SmartQQ
                             break;
                         }
                     }
-                    ActionWhenResivedGroupMessage(gid, message, emojis, MessageFromUin);
+                    ActionWhenResivedGroupMessage(gid, message, emojis, MessageFromUin, gno);
                 }
                 textBoxLog.Text = temp;
             }
@@ -262,7 +263,7 @@ namespace SmartQQ
             temp = "[\\\"face\\\"," + emojiID + "]";
             return temp;
         }
-        private string[] Answer(string message, string uin, string gid)
+        private string[] Answer(string message, string uin, string gid="",string gno="")
         {            
             string[] MessageToSend = new string[20];
             message = message.Remove(message.Length - 2);
@@ -277,15 +278,38 @@ namespace SmartQQ
                 MessageToSend[0] = "本程序作者是何相龙，网站：https://tec.hxlxz.com 。本程序采用GPL v3许可证授权，源码获取地址：https://github.com/qwgg9654/RuiRuiQQ";
                 return MessageToSend;
             }
+            int j = 0;
             if(!gid.Equals(""))
             {
                 int i = -1;
                 string adminuin = "";
+                
                 for (i = 0; i <= groupinfMaxIndex; i++)
                 {
                     if (groupinfo[i].gid == gid)
                     {
                         adminuin = groupinfo[i].inf.result.ginfo.owner;
+                        //获取群号
+                        if (groupinfo[i].no == null || !groupinfo[i].no.Equals(gno)) 
+                        {
+                            groupinfo[i].no = gno;
+                            for (j = 0; j < listBoxGroup.Items.Count; j++) 
+                            {
+                                string[] tmp = listBoxGroup.Items[j].ToString().Split(':');
+                                if(tmp[0].Equals(gid))
+                                {
+                                    string temp = tmp[0] + ":" + gno;
+                                    for (int k = 2; k < tmp.Length; k++)
+                                    {
+                                        temp += ":" + tmp[k];
+                                    }
+                                    listBoxGroup.Items.Remove(listBoxGroup.Items[j]);
+                                    listBoxGroup.Items.Insert(0, temp);
+                                    break;
+                                }                                
+                            }
+                            
+                        }
                         break;
                     }
                 }
@@ -452,7 +476,7 @@ namespace SmartQQ
                 return MessageToSend;
             }
             string[] tmp1 = message.Split("@#$(),，.。:：;^&；“”～~！!#（）%？?》《、· \r\n\"".ToCharArray());
-            int j = 0;
+            j = 0;
             bool RepeatFlag = false;
             for (int i = 0; i < tmp1.Length && i < 10; i++)
             {
@@ -524,9 +548,9 @@ namespace SmartQQ
             return MessageToSend;
         }
        
-        private void ActionWhenResivedGroupMessage(string gid, string message, string emojis, string uin)
+        private void ActionWhenResivedGroupMessage(string gid, string message, string emojis, string uin, string gno)
         {
-            string[] MessageToSendArray = Answer(message, uin, gid);
+            string[] MessageToSendArray = Answer(message, uin, gid, gno);
             string MessageToSend = "";
              for (int i = 0; i <= groupinfMaxIndex; i++)
             {

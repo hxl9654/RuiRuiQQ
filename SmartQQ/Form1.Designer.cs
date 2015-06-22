@@ -178,8 +178,8 @@
             this.listBoxLog.Name = "listBoxLog";
             this.listBoxLog.Size = new System.Drawing.Size(192, 244);
             this.listBoxLog.TabIndex = 9;
-            this.listBoxLog.DoubleClick += new System.EventHandler(this.listBoxLog_DoubleClick);
             this.listBoxLog.SelectedIndexChanged += new System.EventHandler(this.listBoxLog_SelectedIndexChanged);
+            this.listBoxLog.DoubleClick += new System.EventHandler(this.listBoxLog_DoubleClick);
             // 
             // textBoxResiveMessage
             // 
@@ -209,7 +209,7 @@
             this.groupBox3.Controls.Add(this.listBoxFriend);
             this.groupBox3.Location = new System.Drawing.Point(226, 12);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(264, 270);
+            this.groupBox3.Size = new System.Drawing.Size(330, 270);
             this.groupBox3.TabIndex = 12;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "好友列表";
@@ -219,7 +219,7 @@
             this.listBoxFriend.ItemHeight = 12;
             this.listBoxFriend.Location = new System.Drawing.Point(10, 20);
             this.listBoxFriend.Name = "listBoxFriend";
-            this.listBoxFriend.Size = new System.Drawing.Size(248, 244);
+            this.listBoxFriend.Size = new System.Drawing.Size(314, 244);
             this.listBoxFriend.TabIndex = 9;
             this.listBoxFriend.SelectedIndexChanged += new System.EventHandler(this.listBoxFriend_SelectedIndexChanged);
             this.listBoxFriend.DoubleClick += new System.EventHandler(this.listBoxFriend_DoubleClick);
@@ -229,7 +229,7 @@
             this.groupBox4.Controls.Add(this.listBoxGroup);
             this.groupBox4.Location = new System.Drawing.Point(226, 288);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(264, 173);
+            this.groupBox4.Size = new System.Drawing.Size(330, 173);
             this.groupBox4.TabIndex = 13;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "群组列表";
@@ -240,7 +240,7 @@
             this.listBoxGroup.ItemHeight = 12;
             this.listBoxGroup.Location = new System.Drawing.Point(6, 19);
             this.listBoxGroup.Name = "listBoxGroup";
-            this.listBoxGroup.Size = new System.Drawing.Size(252, 148);
+            this.listBoxGroup.Size = new System.Drawing.Size(318, 148);
             this.listBoxGroup.TabIndex = 9;
             this.listBoxGroup.SelectedIndexChanged += new System.EventHandler(this.listBoxGroup_SelectedIndexChanged);
             this.listBoxGroup.DoubleClick += new System.EventHandler(this.listBoxGroup_DoubleClick);
@@ -250,7 +250,7 @@
             this.groupBox5.Controls.Add(this.buttonSend);
             this.groupBox5.Controls.Add(this.textBoxSendMessage);
             this.groupBox5.Controls.Add(this.textBoxResiveMessage);
-            this.groupBox5.Location = new System.Drawing.Point(496, 12);
+            this.groupBox5.Location = new System.Drawing.Point(562, 12);
             this.groupBox5.Name = "groupBox5";
             this.groupBox5.Size = new System.Drawing.Size(326, 449);
             this.groupBox5.TabIndex = 14;
@@ -287,7 +287,7 @@
             this.textBoxLog.Name = "textBoxLog";
             this.textBoxLog.ReadOnly = true;
             this.textBoxLog.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.textBoxLog.Size = new System.Drawing.Size(810, 32);
+            this.textBoxLog.Size = new System.Drawing.Size(876, 32);
             this.textBoxLog.TabIndex = 15;
             // 
             // FormLogin
@@ -295,7 +295,7 @@
             this.AcceptButton = this.buttonLogIn;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(834, 502);
+            this.ClientSize = new System.Drawing.Size(900, 502);
             this.Controls.Add(this.textBoxLog);
             this.Controls.Add(this.groupBox5);
             this.Controls.Add(this.groupBox4);
@@ -304,8 +304,8 @@
             this.Controls.Add(this.groupbox1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
-            this.MaximumSize = new System.Drawing.Size(850, 540);
-            this.MinimumSize = new System.Drawing.Size(850, 540);
+            this.MaximumSize = new System.Drawing.Size(916, 540);
+            this.MinimumSize = new System.Drawing.Size(916, 540);
             this.Name = "FormLogin";
             this.Text = "Smart QQ Robot";
             this.Load += new System.EventHandler(this.FormLogin_Load);

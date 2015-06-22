@@ -340,7 +340,7 @@ namespace SmartQQ
             int i;
             for (i = 0; i < Program.formlogin.group.result.gnamelist.Count; i++)
             {
-                Program.formlogin.listBoxGroup.Items.Add(Program.formlogin.group.result.gnamelist[i].gid + ":" + Program.formlogin.group.result.gnamelist[i].name);
+                Program.formlogin.listBoxGroup.Items.Add(Program.formlogin.group.result.gnamelist[i].gid + "::" + Program.formlogin.group.result.gnamelist[i].name);
                 Program.formlogin.groupinfo[i].gid = Program.formlogin.group.result.gnamelist[i].gid;
                 Program.formlogin.groupinfo[i].inf = GetGroupInfo(Program.formlogin.group.result.gnamelist[i].code);
                 Program.formlogin.groupinfo[i].EnableRobot = true;
