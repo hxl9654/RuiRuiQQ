@@ -184,59 +184,59 @@ namespace SmartQQ
             string GName = "";
             string MessageFromUin = "";
             textBoxLog.Text = temp;
-            if (temp == "{\"retcode\":121,\"t\":\"0\"}\r\n" || temp == "{\"retcode\":121,\"t\":\"0\"}\r\n")
+            JsonHeartPackMessage HeartPackMessage = (JsonHeartPackMessage)JsonConvert.DeserializeObject(temp, typeof(JsonHeartPackMessage));
+           
+            if (HeartPackMessage.retcode == 102)
+            {
+                return;
+            }
+            else if (HeartPackMessage.retcode == 103)
             {
                 listBoxLog.Items.Insert(0, temp);
+                return;
+            }
+            else if (HeartPackMessage.retcode == 116)
+            {
+                listBoxLog.Items.Insert(0, temp);
+                ptwebqq = HeartPackMessage.p;
+                return;
+            }
+            else if (HeartPackMessage.retcode == 108)
+            {
+                listBoxLog.Items.Insert(0, temp);
+                return;
+            }
+            else if (HeartPackMessage.retcode == 120 || HeartPackMessage.retcode == 121)
+            {
+                listBoxLog.Items.Insert(0, temp);
+                listBoxLog.Items.Insert(0, HeartPackMessage.t);
                 ReLogin();
                 return;
             }
-            else if (temp == "{\"retcode\":102,\"errmsg\":\"\"}\r\n" || temp == "{\"retcode\":0,\"result\":\"ok\"}\r\n")
-            {
-                return;
-            }
-            else if (temp == "{\"retcode\":108,\"errmsg\":\"\"}\r\n")
-            {
-                listBoxLog.Items.Insert(0, temp);
-                return;
-            }
-            else if (temp == "{\"retcode\":103,\"errmsg\":\"\"}\r\n")
-            {
-                listBoxLog.Items.Insert(0, temp);
-                return;
-            }
-            else if(temp.Contains("{\"retcode\":116,\"p\":\""))
-            {
-                listBoxLog.Items.Insert(0, temp);
-                temp = temp.Replace("{\"retcode\":116,\"p\":\"", "");
-                temp = temp.Replace("\"}", "");
-                temp = temp.Replace("\r\n", "");               
-                ptwebqq = temp;
-                return;
-            }
             listBoxLog.Items.Insert(0, temp);
-            JsonHeartPackResponse result = (JsonHeartPackResponse)JsonConvert.DeserializeObject(temp, typeof(JsonHeartPackResponse));
-            if (result.result == null)
+
+            if (HeartPackMessage.retcode != 0 || HeartPackMessage.result == null)
                 return;
-            for (int i = 0; i < result.result.Count; i++)
+            for (int i = 0; i < HeartPackMessage.result.Count; i++)
             {
-                if (result.result[i].poll_type == "buddies_status_change")
+                if (HeartPackMessage.result[i].poll_type == "buddies_status_change")
                 {
                     return;
                 }
-                else if (result.result[i].poll_type == "kick_message")
+                else if (HeartPackMessage.result[i].poll_type == "kick_message")
                 {
                     ReLogin();
-                    listBoxLog.Items.Add(result.result[i].value.reason);
+                    listBoxLog.Items.Add(HeartPackMessage.result[i].value.reason);
                     return;
                 }
-                else if (result.result[i].poll_type == "message")
+                else if (HeartPackMessage.result[i].poll_type == "message")
                 {
                     String message = "";
                     String emojis = "";
                     int j;
-                    for(j =1;j<result.result[i].value.content.Count;j++)
+                    for(j =1;j<HeartPackMessage.result[i].value.content.Count;j++)
                     {
-                        string temp1 = result.result[i].value.content[j].ToString();
+                        string temp1 = HeartPackMessage.result[i].value.content[j].ToString();
                         temp1 = temp1.Replace(Environment.NewLine, "");
                         temp1 = temp1.Replace(" ", "");
                         if (temp1.Contains("[\"face\","))
@@ -245,12 +245,12 @@ namespace SmartQQ
                             emojiID = emojiID.Replace("]", "");
                             emojis += (emojiID + ",");
                         }
-                        else message += (result.result[i].value.content[j].ToString() + " ");
+                        else message += (HeartPackMessage.result[i].value.content[j].ToString() + " ");
                     }
                     message = message.Replace("\\\\n", Environment.NewLine);
                     
                     for (j = 0; j < user.result.info.Count; j++)
-                        if (user.result.info[j].uin == result.result[i].value.from_uin)
+                        if (user.result.info[j].uin == HeartPackMessage.result[i].value.from_uin)
                         {
                             textBoxResiveMessage.Text += (user.result.info[j].nick + "  " + GetRealQQ(user.result.info[j].uin) + Environment.NewLine + message + "   " + emojis + Environment.NewLine + Environment.NewLine);
                             textBoxResiveMessage.SelectionStart = textBoxResiveMessage.TextLength;
@@ -261,7 +261,7 @@ namespace SmartQQ
                     {
                         getFrienf();
                         for (j = 0; j < user.result.info.Count; j++)
-                            if (user.result.info[j].uin == result.result[i].value.from_uin)
+                            if (user.result.info[j].uin == HeartPackMessage.result[i].value.from_uin)
                             {
                                 textBoxResiveMessage.Text += (user.result.info[j].nick + "  " + GetRealQQ(user.result.info[j].uin) + Environment.NewLine + message + "   " + emojis + Environment.NewLine + Environment.NewLine);
                                 textBoxResiveMessage.SelectionStart = textBoxResiveMessage.TextLength;
@@ -269,16 +269,16 @@ namespace SmartQQ
                                 break;
                             }
                     }
-                    ActionWhenResivedMessage(result.result[i].value.from_uin, message, emojis);
+                    ActionWhenResivedMessage(HeartPackMessage.result[i].value.from_uin, message, emojis);
                 }
-                else if (result.result[i].poll_type == "group_message")
+                else if (HeartPackMessage.result[i].poll_type == "group_message")
                 {
                     String emojis = "";
                     string message = "";
                     int j;
-                    for (j = 1; j < result.result[i].value.content.Count; j++)
+                    for (j = 1; j < HeartPackMessage.result[i].value.content.Count; j++)
                     {
-                        string temp1 = result.result[i].value.content[j].ToString();
+                        string temp1 = HeartPackMessage.result[i].value.content[j].ToString();
                         temp1 = temp1.Replace(Environment.NewLine, "");
                         temp1 = temp1.Replace(" ", "");
                         if (temp1.Contains("[\"face\","))
@@ -287,11 +287,11 @@ namespace SmartQQ
                             emojiID = emojiID.Replace("]", "");
                             emojis += (emojiID + ",");
                         }
-                        else message += (result.result[i].value.content[j].ToString() + " ");
+                        else message += (HeartPackMessage.result[i].value.content[j].ToString() + " ");
                     }
                     message = message.Replace("\\\\n", Environment.NewLine);
                     string gid;
-                    gid = result.result[i].value.from_uin;
+                    gid = HeartPackMessage.result[i].value.from_uin;
                     for (j = 0; j < group.result.gnamelist.Count; j++)
                         if (group.result.gnamelist[j].gid == gid)
                         {
@@ -303,7 +303,7 @@ namespace SmartQQ
                         if (groupinfo[j].gid == gid)
                         {
                             for (int k = 0; k < groupinfo[j].inf.result.minfo.Count; k++)
-                                if (groupinfo[j].inf.result.minfo[k].uin == result.result[i].value.send_uin)
+                                if (groupinfo[j].inf.result.minfo[k].uin == HeartPackMessage.result[i].value.send_uin)
                                 {
                                     MessageFromUin = groupinfo[j].inf.result.minfo[k].uin;
                                     textBoxResiveMessage.Text += (GName + "   " + groupinfo[j].inf.result.minfo[k].nick + "  " + GetRealQQ(MessageFromUin) + Environment.NewLine + message + "   " + emojis + Environment.NewLine + Environment.NewLine);
@@ -315,8 +315,6 @@ namespace SmartQQ
                         }
                     }
                     ActionWhenResivedGroupMessage(gid, message, emojis, MessageFromUin);
-
-
                 }
                 textBoxLog.Text = temp;
             }

@@ -123,10 +123,14 @@ namespace SmartQQ
             }
         }
     }
-    class JsonHeartPackResponse
+    class JsonHeartPackMessage
     {
-        public int retcode;
+        public int retcode;     //状态码
+        public string errmsg;   //错误信息
+        public string t;        //被迫下线说明
+        public string p;        //需要更换的ptwebqq
         public List<paramResult> result;
+
         public class paramResult
         {
             public String poll_type;
