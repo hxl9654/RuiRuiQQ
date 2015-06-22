@@ -808,9 +808,6 @@ namespace SmartQQ
         {
             LogOut();
         }
-        
-
-        
 
         private void buttonSend_Click(object sender, EventArgs e)
         {
