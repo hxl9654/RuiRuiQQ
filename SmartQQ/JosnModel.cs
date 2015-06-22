@@ -3,10 +3,28 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+// *   This program is free software: you can redistribute it and/or modify
+// *   it under the terms of the GNU General Public License as published by
+// *   the Free Software Foundation, either version 3 of the License, or
+// *   (at your option) any later version.
+// *
+// *   This program is distributed in the hope that it will be useful,
+// *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+// *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// *   GNU General Public License for more details.
+// *
+// *   You should have received a copy of the GNU General Public License
+// *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+// *
+// * @author     Xianglong He
+// * @copyright  Copyright (c) 2015 Xianglong He. (http://tec.hxlxz.com)
+// * @license    http://www.gnu.org/licenses/     GPL v3
+// * @version    1.0
+// * @discribe   RuiRuiQQRobot服务端
+// * 本软件作者是何相龙，使用GPL v3许可证进行授权。
 namespace SmartQQ
 {
-    class JsonFriendModel
+    public class JsonFriendModel
     {
         public int retcode;
         public paramResult result;
@@ -49,7 +67,7 @@ namespace SmartQQ
             }
         }
     }
-    class JsonGroupModel
+    public class JsonGroupModel
     {
         public int retcode;
         public paramResult result;
@@ -123,7 +141,7 @@ namespace SmartQQ
             }
         }
     }
-    class JsonHeartPackMessage
+    public class JsonHeartPackMessage
     {
         public int retcode;     //状态码
         public string errmsg;   //错误信息
@@ -151,7 +169,7 @@ namespace SmartQQ
             }
         }
     }
-    class JosnConfigFileModel
+    public class JosnConfigFileModel
     {
         public String DicServer;
         public String DicPassword;
@@ -159,7 +177,7 @@ namespace SmartQQ
         public String QQPassword;
         public int ClientID;
     }
-    class JsonExchangeRateModel
+    public class JsonExchangeRateModel
     {
         public bool success;
         public string error;
@@ -169,7 +187,7 @@ namespace SmartQQ
             public String price;
         }
     }
-    class JsonWeatherCityCodeModel
+    public class JsonWeatherCityCodeModel
     {
         public List<paramCitycode> citycodes;
         public class paramCitycode
@@ -184,7 +202,7 @@ namespace SmartQQ
         }
 
     }
-    class JsonWeatherModel
+    public class JsonWeatherModel
     {
         public paramWeatherInfo weatherinfo;
         public class paramWeatherInfo

@@ -33,24 +33,19 @@ namespace SmartQQ
 
     public partial class FormLogin : Form
     {
-        //网络通信相关
-        CookieContainer cookies = new CookieContainer();
-        CookieCollection CookieCollection = new CookieCollection();
-        CookieContainer CookieContainer = new CookieContainer();
 
-        public String HeartPackdata;
-        bool StopSendingHeartPack = false;
-        int AmountOfRunningPosting = 0;
         //系统配置相关
         private int MsgId;
-        private int ClientID;
+        public int ClientID;
         string StudyPassword = "";
         string DicServer = "";
         bool DisableStudy = false;
         bool DisableWeather = false;
         //通信参数相关
+        public bool StopSendingHeartPack = false;
         String ptvsession = "";
-        String p_skey, MyUin, skey, p_uin, ptwebqq, vfwebqq, psessionid, hash;
+        String p_skey, MyUin, skey, p_uin, vfwebqq, hash;
+        public String ptwebqq, psessionid;
         String pt_uin = "";
         //多个函数要用到的变量
         bool CAPTCHA = false;
@@ -62,7 +57,7 @@ namespace SmartQQ
         //数据存储相关
         JsonGroupModel group;
         JsonFriendModel user;
-        JsonWeatherCityCodeModel citycode;
+
         struct GroupInf
         {
             public String gid;
@@ -119,7 +114,7 @@ namespace SmartQQ
             String url7 = "login_sig=&pt_randsalt=0&pt_vcode_v1=0&pt_verifysession_v1=";
             String url = url1 + textBoxID.Text + url2 + key + url3 + textBoxCAPTCHA.Text + url4 + url5 + url6 + url7 + ptvsession;
 
-            string temp = HttpGet(url);
+            string temp = HTTP.HttpGet(url);
 
             //二次登录准备
             temp = temp.Replace("ptui_checkVC(", "");
@@ -134,19 +129,19 @@ namespace SmartQQ
                 return;
             }
 
-            HttpGet(url);
+            HTTP.HttpGet(url);
 
             Uri uri = new Uri("http://web2.qq.com/");
-            ptwebqq = cookies.GetCookies(uri)["ptwebqq"].Value;
-            p_skey = cookies.GetCookies(uri)["p_skey"].Value;
-            MyUin = cookies.GetCookies(uri)["uin"].Value;
-            skey = cookies.GetCookies(uri)["skey"].Value;
-            p_uin = cookies.GetCookies(uri)["p_uin"].Value;
+            ptwebqq = HTTP.cookies.GetCookies(uri)["ptwebqq"].Value;
+            p_skey = HTTP.cookies.GetCookies(uri)["p_skey"].Value;
+            MyUin = HTTP.cookies.GetCookies(uri)["uin"].Value;
+            skey = HTTP.cookies.GetCookies(uri)["skey"].Value;
+            p_uin = HTTP.cookies.GetCookies(uri)["p_uin"].Value;
 
             //二次登录
             url = "http://d.web2.qq.com/channel/login2";
             url1 = string.Format("r={{\"ptwebqq\":\"{0}\",\"clientid\":{1},\"psessionid\":\"\",\"status\":\"online\"}}", this.ptwebqq, this.ClientID);
-            String dat = HttpPost(url, "http://d.web2.qq.com/proxy.html?v=20130916001&callback=1&id=2", url1, Encoding.UTF8, true);
+            String dat = HTTP.HttpPost(url, "http://d.web2.qq.com/proxy.html?v=20130916001&callback=1&id=2", url1, Encoding.UTF8, true);
 
             textBoxLog.Text = dat;
             char[] t = new char[2];
@@ -179,7 +174,7 @@ namespace SmartQQ
             textBoxCAPTCHA.Text = "";
             this.AcceptButton = this.buttonSend;
         }
-        private void HeartPackAction(string temp)
+        public void HeartPackAction(string temp)
         {
             string GName = "";
             string MessageFromUin = "";
@@ -429,8 +424,8 @@ namespace SmartQQ
                 if (StockFlag)
                 {
                     if (tmp.Length == 2)
-                        MessageToSend[0] = GetStock(tmp[1], "");
-                    else MessageToSend[0] = GetStock(tmp[1], tmp[2]);
+                        MessageToSend[0] = GetInfo.GetStock(tmp[1], "");
+                    else MessageToSend[0] = GetInfo.GetStock(tmp[1], tmp[2]);
                     return MessageToSend;
                 }
             }
@@ -444,7 +439,7 @@ namespace SmartQQ
                 }
                 if (ExchangeRateFlag)
                 {
-                    MessageToSend[0] = GetExchangeRate(tmp[1], tmp[2]);
+                    MessageToSend[0] = GetInfo.GetExchangeRate(tmp[1], tmp[2]);
                     return MessageToSend;                       
                 }
             }
@@ -459,9 +454,9 @@ namespace SmartQQ
                 if (WeatherFlag)
                 {
                     if (tmp.Length == 2)
-                        MessageToSend[0] = GetWeather(tmp[1], "");
+                        MessageToSend[0] = GetInfo.GetWeather(tmp[1], "");
                     else
-                        MessageToSend[0] = GetWeather(tmp[1], tmp[2]);
+                        MessageToSend[0] = GetInfo.GetWeather(tmp[1], tmp[2]);
                     return MessageToSend;
                 }
             }
@@ -495,7 +490,7 @@ namespace SmartQQ
                 {
                     string result = "";
                     result = AIStudy(tmp[1], tmp[2], QQNum, true);
-                    MessageToSend[0] = GetStudyFlagInfo(result, QQNum, tmp[1], tmp[2]);
+                    MessageToSend[0] = GetInfo.GetStudyFlagInfo(result, QQNum, tmp[1], tmp[2]);
                     return MessageToSend;
                 }
                 if(StudyFlag)
@@ -506,7 +501,7 @@ namespace SmartQQ
                             result = "ForbiddenWord";
                     if (result.Equals(""))
                         result = AIStudy(tmp[1], tmp[2], QQNum, false);
-                    MessageToSend[0] = GetStudyFlagInfo(result, QQNum,tmp[1],tmp[2]);                    
+                    MessageToSend[0] = GetInfo.GetStudyFlagInfo(result, QQNum, tmp[1], tmp[2]);                    
                     return MessageToSend;
                 }                
             }
@@ -587,184 +582,7 @@ namespace SmartQQ
             }
             return MessageToSend;
         }
-
-        private string GetStock(string p1, string p2="")
-        {
-            string url = "";
-            
-            p1 = p1.Replace(" ", "");
-            p1 = p1.Replace("\r", "");
-            p1 = p1.Replace("\n", "");
-            if(!p2.Equals(""))
-            {
-                p2 = p2.Replace(" ", "");
-                p2 = p2.Replace("\r", "");
-                p2 = p2.Replace("\n", "");
-            }
-            if (p1.Equals("上证指数"))
-                url = "http://hq.sinajs.cn/list=s_sh000001";
-            else if (p1.Equals("深证综指"))
-                url = "http://hq.sinajs.cn/list=s_sz399106";
-            else if (p1.Equals("中小板指数"))
-                url = "http://hq.sinajs.cn/list=s_sz399005";
-            else if (p1.Equals("创业板指数"))
-                url = "http://hq.sinajs.cn/list=s_sz399006";
-            else if (p1.Equals("深证成指"))
-                url = "http://hq.sinajs.cn/list=s_sz399001";
-            else if (p1.Equals("中小板综指"))
-                url = "http://hq.sinajs.cn/list=s_sz399101";
-            else if (p1.Equals("创业板综指"))
-                url = "http://hq.sinajs.cn/list=s_sz399102";
-            else if (p1.ToCharArray()[0] == '6')
-                url = "http://hq.sinajs.cn/list=s_sh" + p1;
-            else if (p1.ToCharArray()[0] == '0' || p1.ToCharArray()[0] == '3')
-                url = "http://hq.sinajs.cn/list=s_sz" + p1;
-            else if (p1.Equals("上海") || p1.Equals("沪市") || p1.Equals("上证"))
-            {
-                url = "http://hq.sinajs.cn/list=s_sh" + p2;
-            }
-            else if (p1.Equals("深圳") || p1.Equals("深市") || p1.Equals("深证") || p1.Equals("创业板") || p1.Equals("中小板"))
-            {
-                url = "http://hq.sinajs.cn/list=s_sz" + p2;
-            }
-            else
-                return "参数错误";
-            string dat = HttpGet(url,100000,Encoding.GetEncoding("GB2312"));
-
-            string[] tmp = dat.Split('\"');
-            tmp = tmp[1].Split(',');
-            if(tmp.Length==1)
-                return "参数错误";
-            string ans = "根据新浪财经的信息，" + tmp[0] + "：现价，" + tmp[1] + "；涨跌" + tmp[2] + "，" + tmp[3] + "%；成交量，" + tmp[4] + "手，" + tmp[5] + "万元。";
-            return ans;
-        }
-
-        private string GetWeather(string city,string target)
-        {
-            bool FlagProvinceFound = false;
-            bool FlagCityFound = false;
-            string citycodestring = "";
-            city = city.Replace("省", "");
-            city = city.Replace("市", "");
-            city = city.Replace(" ", "");
-            city = city.Replace("\r", "");
-            city = city.Replace("\n", "");
-
-            target = target.Replace(" ", "");
-            target = target.Replace("\r", "");
-            target = target.Replace("\n", "");
-
-            for (int i = 0; i < citycode.citycodes.Count; i++) 
-            {
-                if (citycode.citycodes[i].province.Equals(city)) 
-                    FlagProvinceFound = true;
-                for (int j = 0; j < citycode.citycodes[i].cities.Count; j++)
-                {
-                    if(citycode.citycodes[i].cities[j].city.Equals(city))
-                    {
-                        citycodestring = citycode.citycodes[i].cities[j].code;
-                        FlagCityFound = true;
-                        break;
-                    }
-                }
-                if (FlagCityFound)
-                    break;
-            }
-            if (FlagCityFound)
-            {
-                string ans="";
-                string url = "http://m.weather.com.cn/atad/" + citycodestring + ".html";
-                string temp = HttpGet(url);
-                JsonWeatherModel weather = (JsonWeatherModel)JsonConvert.DeserializeObject(temp, typeof(JsonWeatherModel));
-                if (target.Equals("五天") || target.Equals("5天") || target.Equals("五日") || target.Equals("5日"))
-                {
-                    string[] week = {"星期一","星期二","星期三","星期四","星期五","星期六","星期日"};
-                    int WeekIndex = 0;
-                    for (int i = 0; i < 7;i++ )
-                        if(weather.weatherinfo.week.Equals(week[i]))
-                        {
-                            WeekIndex = i;
-                            break;
-                        } 
-                    ans = "根据中国天气网于今天" + weather.weatherinfo.fchh + "时发布的气象预报，" + weather.weatherinfo.city + "的气象信息如下：" + Environment.NewLine;
-                    ans = ans + "今天" + weather.weatherinfo.weather1 + "，气温" + weather.weatherinfo.temp1 + "，风力：" + weather.weatherinfo.wind1 + "。" + Environment.NewLine;
-                    ans = ans + "明天" + weather.weatherinfo.weather2 + "，气温" + weather.weatherinfo.temp2 + "，风力：" + weather.weatherinfo.wind2 + "。" + Environment.NewLine;
-                    ans = ans + "后天" + weather.weatherinfo.weather3 + "，气温" + weather.weatherinfo.temp3 + "，风力：" + weather.weatherinfo.wind3 + "。" + Environment.NewLine;
-                    ans = ans + week[(WeekIndex + 3) % 7] + weather.weatherinfo.weather4 + "，气温" + weather.weatherinfo.temp4 + "，风力：" + weather.weatherinfo.wind4 + "。" + Environment.NewLine;
-                    ans = ans + week[(WeekIndex + 4) % 7] + weather.weatherinfo.weather5 + "，气温" + weather.weatherinfo.temp5 + "，风力：" + weather.weatherinfo.wind5 + "。" + Environment.NewLine;
-                    ans = ans + week[(WeekIndex + 5) % 7] + weather.weatherinfo.weather6 + "，气温" + weather.weatherinfo.temp6 + "，风力：" + weather.weatherinfo.wind6 + "。";
-                }
-                else if (target.Equals("指数"))
-                {
-                    ans = "根据中国天气网于今天" + weather.weatherinfo.fchh + "时发布的气象预报，" + weather.weatherinfo.city + "的气象指数如下：" + Environment.NewLine;
-                    ans = ans + "天气指数：" + weather.weatherinfo.index + "，穿衣指数：" + weather.weatherinfo.index_d + "。" + Environment.NewLine;
-                    ans = ans + "紫外线指数：" + weather.weatherinfo.index_uv + "，洗车指数：" + weather.weatherinfo.index_xc + "，晾晒指数：" + weather.weatherinfo.index_ls + "，旅游指数：" + weather.weatherinfo.index_tr + "。" + Environment.NewLine;
-                    ans = ans + "晨练指数：" + weather.weatherinfo.index_cl + "，过敏指数：" + weather.weatherinfo.index_ag + "，舒适指数：" + weather.weatherinfo.index_co + "。";
-                }
-                else
-                {
-                    ans = "根据中国天气网于今天" + weather.weatherinfo.fchh + "时发布的气象预报，" + weather.weatherinfo.city + "：" + Environment.NewLine;
-                    ans = ans + "今天" + weather.weatherinfo.weather1 + "，气温" + weather.weatherinfo.temp1 + "，风力：" + weather.weatherinfo.wind1 + "。" + Environment.NewLine;
-                    ans = ans + "明天" + weather.weatherinfo.weather2 + "，气温" + weather.weatherinfo.temp2 + "，风力：" + weather.weatherinfo.wind2 + "。";
-                }
-                return ans;
-            }
-            else if (FlagProvinceFound)
-            {
-                return "查询天气时，请指定具体的城市，而不是省份。";
-            }
-            else return "未查询到指定城市 " + city + " 的天气信息";
-        }
-
-        private string GetStudyFlagInfo(string result, string QQNum, string tmp1, string tmp2)
-        {
-            if (result.Equals("Success"))
-            {
-                return "嗯嗯～小睿睿记住了～～" + Environment.NewLine + "主人说 " + tmp1 + " 时，小睿睿应该回答 " + tmp2;
-            }
-            else if (result.Equals("Already"))
-            {
-                return "小睿睿知道了啦～" + Environment.NewLine + "主人说 " + tmp1 + " 时，小睿睿应该回答 " + tmp2;
-            }
-            else if (result.Equals("DisableStudy"))
-            {
-                return "当前学习功能未开启";
-            }
-            else if (result.Equals("IDDisabled"))
-            {
-                return "小睿睿拒绝学习这句话，原因是：" + Environment.NewLine + "妈麻说，" + QQNum + "是坏人，小睿睿不能听他的话，详询管理员。";
-            }
-            else if (result.Equals("Waitting"))
-            {
-                return "小睿睿记下了" + QQNum + "提交的学习请求，不过小睿睿还得去问问语文老师呢～～";
-            }
-            else if (result.Equals("ForbiddenWord"))
-            {
-                return "小睿睿拒绝学习这句话，原因是：" + Environment.NewLine + "根据相关法律法规和政策，账号" + QQNum + "提交的学习内容包含敏感词，详询管理员";
-            }
-            else if (result.Equals("Forbidden"))
-            {
-                return "小睿睿拒绝学习这句话，原因是：" + Environment.NewLine + "账号" + QQNum + "提交的学习内容被屏蔽，详询管理员";
-            }
-            else if (result.Equals("NotSuper"))
-            {
-                return "小睿睿拒绝学习这句话，原因是：" + Environment.NewLine + "账号" + QQNum + "不是特权用户，不能使用特权学习命令。";
-            }
-            else
-            {
-                return "小睿睿出错了，也许主人卖个萌就好了～～";
-            }
-        }
-
-        private string GetExchangeRate(string p1, string p2)
-        {
-            string url = "https://www.cryptonator.com/api/ticker/" + p1 + "-" + p2;
-            string temp = HttpGet(url);
-            JsonExchangeRateModel ExchangeRate = (JsonExchangeRateModel)JsonConvert.DeserializeObject(temp, typeof(JsonExchangeRateModel));
-            if (ExchangeRate.success == true)
-                return p1 + "-" + p2 + "的汇率：" + ExchangeRate.ticker.price;
-            else return "Error:" + ExchangeRate.error;
-        }
+       
         private void ActionWhenResivedGroupMessage(string gid, string message, string emojis, string uin)
         {
             string[] MessageToSendArray = Answer(message, uin, gid);
@@ -867,7 +685,7 @@ namespace SmartQQ
         private string AIGet(string message, string QQNum)
         {
             String url = DicServer + "gettalk.php?source=" + message + "&qqnum=" + QQNum;
-            string temp = HttpGet(url);
+            string temp = HTTP.HttpGet(url);
             if (temp.Equals("None1") || temp.Equals("None2") || temp.Equals("None4"))
                 temp = "";
             return temp;
@@ -884,7 +702,7 @@ namespace SmartQQ
             if (superstudy)
                 url = url + "&superstudy=true";
             else url = url + "&superstudy=false";
-            string temp = HttpGet(url);
+            string temp = HTTP.HttpGet(url);
             return temp;
         }
 
@@ -892,7 +710,7 @@ namespace SmartQQ
         {
             String url = "http://s.web2.qq.com/api/get_user_friends2";
             String sendData = string.Format("r={{\"vfwebqq\":\"{0}\",\"hash\":\"{1}\"}}", vfwebqq, this.hash);
-            String dat = HttpPost(url, "http://s.web2.qq.com/proxy.html?v=20130916001&callback=1&id=1", sendData, Encoding.UTF8, true);
+            String dat = HTTP.HttpPost(url, "http://s.web2.qq.com/proxy.html?v=20130916001&callback=1&id=1", sendData, Encoding.UTF8, true);
             textBoxLog.Text = dat;
 
             user = (JsonFriendModel)JsonConvert.DeserializeObject(dat, typeof(JsonFriendModel));
@@ -915,7 +733,7 @@ namespace SmartQQ
         public JsonGroupInfoModel GetGroupInfo(string gcode)
         {
             String url = "http://s.web2.qq.com/api/get_group_info_ext2?gcode=" + gcode + "&vfwebqq=" + vfwebqq + "&t=" + GetTimeStamp();
-            string dat = HttpGet(url);
+            string dat = HTTP.HttpGet(url);
 
             JsonGroupInfoModel ans = (JsonGroupInfoModel)JsonConvert.DeserializeObject(dat, typeof(JsonGroupInfoModel));
             return ans;
@@ -924,7 +742,7 @@ namespace SmartQQ
         {
             String url = "http://s.web2.qq.com/api/get_group_name_list_mask2";
             String sendData = string.Format("r={{\"vfwebqq\":\"{0}\",\"hash\":\"{1}\"}}", this.vfwebqq, this.hash);
-            String dat = HttpPost(url, "http://s.web2.qq.com/proxy.html?v=20130916001&callback=1&id=1", sendData, Encoding.UTF8, true);
+            String dat = HTTP.HttpPost(url, "http://s.web2.qq.com/proxy.html?v=20130916001&callback=1&id=1", sendData, Encoding.UTF8, true);
             textBoxLog.Text = dat;
 
             group = (JsonGroupModel)JsonConvert.DeserializeObject(dat, typeof(JsonGroupModel));
@@ -943,7 +761,7 @@ namespace SmartQQ
         {
             String url = "http://s.web2.qq.com/api/get_friend_info2?tuin=" + uin + "&vfwebqq=" + vfwebqq + "&clientid=" + ClientID + "&psessionid=" + psessionid + "&t=" + GetTimeStamp();
 
-            string dat = HttpGet(url);
+            string dat = HTTP.HttpGet(url);
             JsonFriendInfModel ans = (JsonFriendInfModel)JsonConvert.DeserializeObject(dat, typeof(JsonFriendInfModel));
             return ans;
         }
@@ -951,7 +769,7 @@ namespace SmartQQ
         {
             string url = "http://www.xiaohuangji.com/ajax.php";
             string postdata = "para=" + HttpUtility.UrlEncode(msg);
-            string MsgGet = HttpPost(url, "http://www.xiaohuangji.com/", postdata, Encoding.UTF8, false, 10000);
+            string MsgGet = HTTP.HttpPost(url, "http://www.xiaohuangji.com/", postdata, Encoding.UTF8, false, 10000);
             return MsgGet;
         }
         private void textBoxID_LostFocus(object sender, EventArgs e)
@@ -962,7 +780,7 @@ namespace SmartQQ
             String str2 = "&appid=501004106&js_ver=10121&js_type=0&login_sig=&u1=http%3A%2F%2Fw.qq.com%2Fproxy.html&r=0.4053995015565306";
             String url = str1 + textBoxID.Text + str2;
 
-            string dat = HttpGet(url);
+            string dat = HTTP.HttpGet(url);
 
             dat = dat.Replace("ptui_checkVC(", "");
             dat = dat.Replace(");", "");
@@ -1002,7 +820,7 @@ namespace SmartQQ
             String strimg = strimg1 + textBoxID.Text + strimg2 + CaptchaCode;
 
             HttpWebRequest req = (HttpWebRequest)WebRequest.Create(strimg);
-            req.CookieContainer = cookies;
+            req.CookieContainer = HTTP.cookies;
             HttpWebResponse res = (HttpWebResponse)req.GetResponse();
 
             pictureBoxCAPTCHA.Image = Image.FromStream(res.GetResponseStream());
@@ -1015,7 +833,7 @@ namespace SmartQQ
 
             String url = "http://s.web2.qq.com/api/get_friend_uin2?tuin=" + uin + "&type=1&vfwebqq=" + vfwebqq + "&t=" + GetTimeStamp();
 
-            string dat = HttpGet(url);
+            string dat = HTTP.HttpGet(url);
 
             if (dat == "{\"retcode\":100101}")
             {
@@ -1061,149 +879,7 @@ namespace SmartQQ
             var ret = scriptEngine.CallGlobalFunction<string>("getEncryption", password, token, bits, 0);
             return ret;
         }
-        public string HttpGet(string url, int timeout = 100000, Encoding encode=null)
-        {
-            string dat;
-            HttpWebResponse res = null;
-            HttpWebRequest req;
-            try
-            {
-                req = (HttpWebRequest)WebRequest.Create(url); 
-                req.CookieContainer = cookies;
-                req.Timeout = timeout;
-                req.Referer = "http://d.web2.qq.com/proxy.html?v=20130916001&callback=1&id=2";            
-                res = (HttpWebResponse)req.GetResponse();
-            }
-            catch(HttpException)
-            {
-                return "";
-            }
-            StreamReader reader;
-            if (encode != null)
-                reader = new StreamReader(res.GetResponseStream(), encode);
-            else
-                reader = new StreamReader(res.GetResponseStream());
-            dat = reader.ReadToEnd();
-            res.Close();
-            req.Abort();
-            textBoxLog.Text = dat;
-            listBoxLog.Items.Insert(0, dat);
-            return dat;
-        }
-        //http://www.itokit.com/2012/0721/74607.html
-        public string HttpPost(string url, string Referer, string data, Encoding encode, bool SaveCookie, int timeout = 100000)
-        {
-            string dat = "";
-            HttpWebRequest req;
-            if (AmountOfRunningPosting == 0)
-                System.GC.Collect();
-            AmountOfRunningPosting++;
-            try
-            {
-                req = WebRequest.Create(url) as HttpWebRequest;
-                req.CookieContainer = this.cookies;
-                req.ContentType = "application/x-www-form-urlencoded";
-                req.Method = "POST";
-                req.UserAgent = "Mozilla/5.0 (Windows NT 5.1; rv:30.0) Gecko/20100101 Firefox/30.0";
-                req.Proxy = null;
-                req.Timeout = timeout;
-                req.ProtocolVersion = HttpVersion.Version10;
-                if (!string.IsNullOrEmpty(Referer))
-                    req.Referer = Referer;
-                byte[] mybyte = Encoding.Default.GetBytes(data);
-                req.ContentLength = mybyte.Length;
-            
-                Stream stream = req.GetRequestStream();
-                stream.Write(mybyte, 0, mybyte.Length);
-
-
-                HttpWebResponse hwr = req.GetResponse() as HttpWebResponse;
-                stream.Close();
-                if (SaveCookie)
-                {
-                    this.CookieCollection = hwr.Cookies;
-                    this.cookies.GetCookies(req.RequestUri);
-                }
-                StreamReader SR = new StreamReader(hwr.GetResponseStream(), encode);
-                dat = SR.ReadToEnd();
-                hwr.Close();
-                req.Abort();
-            }            
-            catch(HttpException)
-            {
-                AmountOfRunningPosting--;
-                return "";
-            }
-            
-            textBoxLog.Text = dat;
-            listBoxLog.Items.Insert(0, dat);
-            AmountOfRunningPosting--;
-            return dat;
-        }
-        public void HeartPack()
-        {
-            System.GC.Collect();
-            String url = "http://d.web2.qq.com/channel/poll2";
-            String sendData1 = "r= {\"ptwebqq\":\"";
-            String sendData2 = "\",\"clientid\":";
-            String sendData3 = ",\"psessionid\":\"";
-            String sendData4 = "\",\"key\":\"\"}";
-            HeartPackdata = sendData1 + ptwebqq + sendData2 + ClientID.ToString() + sendData3 + psessionid + sendData4;
-
-            Encoding encode = Encoding.UTF8;
-            string Referer = "http://d.web2.qq.com/proxy.html?v=20130916001&callback=1&id=2";
-            try
-            {
-                HttpWebRequest req = WebRequest.Create(url) as HttpWebRequest;
-                req.CookieContainer = this.cookies;
-                req.ContentType = "application/x-www-form-urlencoded";
-                req.Method = "POST";
-                req.UserAgent = "Mozilla/5.0 (Windows NT 5.1; rv:30.0) Gecko/20100101 Firefox/30.0";
-                req.Proxy = null;
-                req.ProtocolVersion = HttpVersion.Version10;
-                if (!string.IsNullOrEmpty(Referer))
-                    req.Referer = Referer;
-
-                req.BeginGetRequestStream(new AsyncCallback(RequestProceed), req);
-            }
-            catch(WebException)
-            {
-                return;
-            }
-        }
-        private void RequestProceed(IAsyncResult asyncResult)
-        {
-            try
-            {
-                HttpWebRequest request = (HttpWebRequest)asyncResult.AsyncState;
-                StreamWriter postDataWriter = new StreamWriter(request.EndGetRequestStream(asyncResult));
-                postDataWriter.Write(HeartPackdata);
-                postDataWriter.Close();
-                request.BeginGetResponse(new AsyncCallback(ResponesProceed), request);
-            }
-            catch(WebException)
-            {
-                return;
-            }
-        }
-        private void ResponesProceed(IAsyncResult ar)
-        {
-            try
-            {
-                StreamReader reader = null;
-                HttpWebRequest req = ar.AsyncState as HttpWebRequest;
-                HttpWebResponse res = req.GetResponse() as HttpWebResponse;
-                reader = new StreamReader(res.GetResponseStream());
-                String temp = reader.ReadToEnd();
-                res.Close();
-                req.Abort();
-                HeartPackAction(temp);
-            }
-            catch(WebException)
-            {
-                return;
-            }
-        }
+        
         private void pictureBoxCAPTCHA_Click(object sender, EventArgs e)
         {
             GetCaptcha();
@@ -1298,7 +974,7 @@ namespace SmartQQ
                 string tmp = "";
                 for (int i = 0; i < charData.Length; i++)
                     if (charData[i] != '\0') tmp += charData[i];
-                citycode = (JsonWeatherCityCodeModel)JsonConvert.DeserializeObject(tmp, typeof(JsonWeatherCityCodeModel));
+                GetInfo.citycode = (JsonWeatherCityCodeModel)JsonConvert.DeserializeObject(tmp, typeof(JsonWeatherCityCodeModel));
             }
             else DisableWeather = true;
         }
@@ -1308,7 +984,7 @@ namespace SmartQQ
         }
         private void timerHeart_Tick(object sender, EventArgs e)
         {
-            if (!StopSendingHeartPack) HeartPack();
+            if (!StopSendingHeartPack) HTTP.HeartPack();
         }
         public void ReLogin()
         {
@@ -1367,7 +1043,7 @@ namespace SmartQQ
                 string url = "http://d.web2.qq.com/channel/send_buddy_msg2";
                 postData = "r=" + HttpUtility.UrlEncode(postData);
 
-                string dat = HttpPost(url, referer, postData, Encoding.UTF8, false);
+                string dat = HTTP.HttpPost(url, referer, postData, Encoding.UTF8, false);
 
                 dat = dat.Replace("{\"retcode\":", "");
                 dat = dat.Replace("\"result\":\"", "");
@@ -1405,7 +1081,7 @@ namespace SmartQQ
                 string referer = "http://d.web2.qq.com/proxy.html?v=20130916001&callback=1&id=2";
                 string url = "http://d.web2.qq.com/channel/send_qun_msg2";
 
-                string dat = HttpPost(url, referer, postData, Encoding.UTF8, false);
+                string dat = HTTP.HttpPost(url, referer, postData, Encoding.UTF8, false);
 
                 dat = dat.Replace("{\"retcode\":", "");
                 dat = dat.Replace("\"result\":\"", "");

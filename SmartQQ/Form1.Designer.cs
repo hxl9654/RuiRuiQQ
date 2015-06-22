@@ -334,7 +334,7 @@
         private System.Windows.Forms.PictureBox pictureBoxCAPTCHA;
         private System.Windows.Forms.Timer timerHeart;
         private System.Windows.Forms.GroupBox groupbox1;
-        private System.Windows.Forms.ListBox listBoxLog;
+        public System.Windows.Forms.ListBox listBoxLog;
         private System.Windows.Forms.TextBox textBoxResiveMessage;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.GroupBox groupBox3;
@@ -345,7 +345,7 @@
         private System.Windows.Forms.Button buttonSend;
         private System.Windows.Forms.TextBox textBoxSendMessage;
         private System.Windows.Forms.Button buttonLogout;
-        private System.Windows.Forms.TextBox textBoxLog;
+        public System.Windows.Forms.TextBox textBoxLog;
     }
 }
 
