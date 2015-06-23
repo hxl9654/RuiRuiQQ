@@ -242,4 +242,11 @@ namespace SmartQQ
         }
 
     }
+    public class JsonGroupManageModel
+    {
+        public string enable;
+        public string gno;
+        public string statu;
+        public string error;
+    }
 }

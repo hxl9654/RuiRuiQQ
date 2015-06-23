@@ -56,7 +56,7 @@ namespace SmartQQ
         {
             public String gid;
             public String no;
-            public bool EnableRobot;
+            public String enable;
             public JsonGroupInfoModel inf;
         };
         public GroupInf[] groupinfo = new GroupInf[100];
@@ -347,28 +347,42 @@ namespace SmartQQ
                         {
                             if (tmp[1].Equals("关闭机器人"))
                             {
-                                if (groupinfo[i].EnableRobot == false)
+                                if (groupinfo[i].enable.Equals("false"))
                                 {
                                     MessageToSend[0] = "当前机器人已关闭";
                                     return MessageToSend;
                                 }
                                 else
                                 {
-                                    groupinfo[i].EnableRobot = false;
+                                    groupinfo[i].enable = "false";
+
+                                    string url = DicServer + "groupmanage.php?password=" + StudyPassword + "&action=set&gno=" + groupinfo[i].no + "&option=enable&value=false";
+                                    string temp = HTTP.HttpGet(url);
+                                    JsonGroupManageModel GroupManageInfo = (JsonGroupManageModel)JsonConvert.DeserializeObject(temp, typeof(JsonGroupManageModel));
+                                    if (GroupManageInfo.statu.Equals("fail"))
+                                        listBoxLog.Items.Insert(0, GroupManageInfo.statu + GroupManageInfo.error);
+
                                     MessageToSend[0] = "机器人关闭成功";
                                     return MessageToSend;
                                 }
                             }
                             else if (tmp[1].Equals("启动机器人"))
                             {
-                                if (groupinfo[i].EnableRobot == true)
+                                if (groupinfo[i].enable.Equals("true"))
                                 {
                                     MessageToSend[0] = "当前机器人已启动";
                                     return MessageToSend;
                                 }
                                 else
                                 {
-                                    groupinfo[i].EnableRobot = true;
+                                    groupinfo[i].enable = "true";
+
+                                    string url = DicServer + "groupmanage.php?password=" + StudyPassword + "&action=set&gno=" + groupinfo[i].no + "&option=enable&value=true";
+                                    string temp = HTTP.HttpGet(url);
+                                    JsonGroupManageModel GroupManageInfo = (JsonGroupManageModel)JsonConvert.DeserializeObject(temp, typeof(JsonGroupManageModel));
+                                    if (GroupManageInfo.statu.Equals("fail"))
+                                        listBoxLog.Items.Insert(0, GroupManageInfo.statu + GroupManageInfo.error);
+
                                     MessageToSend[0] = "机器人启动成功";
                                     return MessageToSend;
                                 }                                                                           
@@ -556,7 +570,17 @@ namespace SmartQQ
             {
                 if (groupinfo[i].gid == gid)
                 {
-                    if (groupinfo[i].EnableRobot == false)
+                    if (groupinfo[i].enable == null) 
+                    {
+                        string url = DicServer + "groupmanage.php?password=" + StudyPassword + "&action=get&gno=" + groupinfo[i].no;
+                        string temp = HTTP.HttpGet(url);
+                        JsonGroupManageModel GroupManageInfo = (JsonGroupManageModel)JsonConvert.DeserializeObject(temp, typeof(JsonGroupManageModel));
+                        if (GroupManageInfo.statu.Equals("success"))
+                            groupinfo[i].enable = GroupManageInfo.enable;
+                        else
+                            groupinfo[i].enable = "true";
+                    }
+                    if (groupinfo[i].enable.Equals("false"))
                     {
                         return;
                     }
