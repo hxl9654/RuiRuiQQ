@@ -315,125 +315,7 @@ namespace SmartQQ
                         }
                         break;
                     }
-                }
-                if(adminuin.Equals(""))
-                {
-                    SmartQQ.getGroup();
-                    for (i = 0; i <= groupinfMaxIndex; i++)
-                    {
-                        if (groupinfo[i].gid == gid)
-                        {
-                            GroupInfoIndex = i;
-                            adminuin = groupinfo[i].inf.result.ginfo.owner;
-                            break;
-                        }
-                    }
-                }
-                if(groupinfo[GroupInfoIndex].managers == null)
-                {
-                    groupinfo[GroupInfoIndex].managers = new string[100];
-                    groupinfo[GroupInfoIndex].GroupManagerIndex = 0;
-                    for(i=0;i<groupinfo[GroupInfoIndex].inf.result.ginfo.members.Count;i++)
-                    {
-                        if(groupinfo[GroupInfoIndex].inf.result.ginfo.members[i].mflag == 1)
-                        {
-                            groupinfo[GroupInfoIndex].managers[groupinfo[GroupInfoIndex].GroupManagerIndex] = groupinfo[GroupInfoIndex].inf.result.ginfo.members[i].muin;
-                            groupinfo[GroupInfoIndex].GroupManagerIndex++;
-                        }
-                    }
-                }
-                if (message.Contains("群管理"))
-                {
-                    bool GroupManageFlag = true;                    
-                    string[] tmp = message.Split('&');
-                    tmp[1] = tmp[1].Replace("\r", "");
-                    tmp[1] = tmp[1].Replace("\n", "");
-                    tmp[1] = tmp[1].Replace(" ", "");
-                    if ((!tmp[0].Equals("群管理")) || tmp.Length != 2)
-                    {
-                        GroupManageFlag = false;
-                    }
-                    if (GroupManageFlag)
-                    {
-                        bool HaveRight = false;
-                        if (uin.Equals(adminuin))
-                        {
-                            HaveRight = true;
-                        }     
-                        else
-                        {
-                            for(i = 0;i<=groupinfo[GroupInfoIndex].GroupManagerIndex;i++)
-                            {
-                                if(uin.Equals(groupinfo[GroupInfoIndex].managers[i]))
-                                {
-                                    HaveRight = true;
-                                    break;
-                                }
-                            }
-                        }
-                        if(HaveRight == false)
-                        {
-                            MessageToSend[0] = "账号" + SmartQQ.GetRealQQ(uin) + "不是群管理，无权进行此操作";
-                            return MessageToSend;
-                        }
-                        else
-                        {
-                            if (groupinfo[GroupInfoIndex].enable == null)
-                            {
-                                string url = DicServer + "groupmanage.php?password=" + StudyPassword + "&action=get&gno=" + groupinfo[GroupInfoIndex].no;
-                                string temp = HTTP.HttpGet(url);
-                                JsonGroupManageModel GroupManageInfo = (JsonGroupManageModel)JsonConvert.DeserializeObject(temp, typeof(JsonGroupManageModel));
-                                if (GroupManageInfo.statu.Equals("success"))
-                                    groupinfo[GroupInfoIndex].enable = GroupManageInfo.enable;
-                                else
-                                    groupinfo[GroupInfoIndex].enable = "true";
-                            }
-                            if (tmp[1].Equals("关闭机器人"))
-                            {
-                                if (groupinfo[GroupInfoIndex].enable.Equals("false"))
-                                {
-                                    MessageToSend[0] = "当前机器人已关闭";
-                                    return MessageToSend;
-                                }
-                                else
-                                {
-                                    groupinfo[GroupInfoIndex].enable = "false";
-
-                                    string url = DicServer + "groupmanage.php?password=" + StudyPassword + "&action=set&gno=" + groupinfo[i].no + "&option=enable&value=false";
-                                    string temp = HTTP.HttpGet(url);
-                                    JsonGroupManageModel GroupManageInfo = (JsonGroupManageModel)JsonConvert.DeserializeObject(temp, typeof(JsonGroupManageModel));
-                                    if (GroupManageInfo.statu.Equals("fail"))
-                                        listBoxLog.Items.Insert(0, GroupManageInfo.statu + GroupManageInfo.error);
-
-                                    MessageToSend[0] = "机器人关闭成功";
-                                    return MessageToSend;
-                                }
-                            }
-                            else if (tmp[1].Equals("启动机器人"))
-                            {
-                                if (groupinfo[GroupInfoIndex].enable.Equals("true"))
-                                {
-                                    MessageToSend[0] = "当前机器人已启动";
-                                    return MessageToSend;
-                                }
-                                else
-                                {
-                                    groupinfo[GroupInfoIndex].enable = "true";
-
-                                    string url = DicServer + "groupmanage.php?password=" + StudyPassword + "&action=set&gno=" + groupinfo[i].no + "&option=enable&value=true";
-                                    string temp = HTTP.HttpGet(url);
-                                    JsonGroupManageModel GroupManageInfo = (JsonGroupManageModel)JsonConvert.DeserializeObject(temp, typeof(JsonGroupManageModel));
-                                    if (GroupManageInfo.statu.Equals("fail"))
-                                        listBoxLog.Items.Insert(0, GroupManageInfo.statu + GroupManageInfo.error);
-
-                                    MessageToSend[0] = "机器人启动成功";
-                                    return MessageToSend;
-                                }                                                                           
-                            }                                
-                        }
-                        
-                    }
-                }               
+                }                               
             }
             if(message.Contains("行情"))
             {
@@ -604,12 +486,140 @@ namespace SmartQQ
             }
             return MessageToSend;
         }
-       
+        string GroupManage(string message, string uin, string gid = "", string gno = "")
+        {
+            string adminuin = "";
+            int GroupInfoIndex = -1;
+            string MessageToSend = "";
+            int i;
+            if (message.Contains("群管理"))
+            {
+                    SmartQQ.getGroup();
+                    for (i = 0; i <= groupinfMaxIndex; i++)
+                    {
+                        if (groupinfo[i].gid == gid)
+                        {
+                            GroupInfoIndex = i;
+                            adminuin = groupinfo[i].inf.result.ginfo.owner;
+                            break;
+                        }
+                    }
+                if (groupinfo[GroupInfoIndex].managers == null)
+                {
+                    groupinfo[GroupInfoIndex].managers = new string[100];
+                    groupinfo[GroupInfoIndex].GroupManagerIndex = 0;
+                    for (i = 0; i < groupinfo[GroupInfoIndex].inf.result.ginfo.members.Count; i++)
+                    {
+                        if (groupinfo[GroupInfoIndex].inf.result.ginfo.members[i].mflag == 1)
+                        {
+                            groupinfo[GroupInfoIndex].managers[groupinfo[GroupInfoIndex].GroupManagerIndex] = groupinfo[GroupInfoIndex].inf.result.ginfo.members[i].muin;
+                            groupinfo[GroupInfoIndex].GroupManagerIndex++;
+                        }
+                    }
+                }
+
+                bool GroupManageFlag = true;
+                string[] tmp = message.Split('&');
+                tmp[1] = tmp[1].Replace("\r", "");
+                tmp[1] = tmp[1].Replace("\n", "");
+                tmp[1] = tmp[1].Replace(" ", "");
+                if ((!tmp[0].Equals("群管理")) || tmp.Length != 2)
+                {
+                    GroupManageFlag = false;
+                }
+                if (GroupManageFlag)
+                {
+                    bool HaveRight = false;
+                    if (uin.Equals(adminuin))
+                    {
+                        HaveRight = true;
+                    }
+                    else
+                    {
+                        for (i = 0; i <= groupinfo[GroupInfoIndex].GroupManagerIndex; i++)
+                        {
+                            if (uin.Equals(groupinfo[GroupInfoIndex].managers[i]))
+                            {
+                                HaveRight = true;
+                                break;
+                            }
+                        }
+                    }
+                    if (HaveRight == false)
+                    {
+                        MessageToSend = "账号" + SmartQQ.GetRealQQ(uin) + "不是群管理，无权进行此操作";
+                        return MessageToSend;
+                    }
+                    else
+                    {
+                        if (groupinfo[GroupInfoIndex].enable == null)
+                        {
+                            string url = DicServer + "groupmanage.php?password=" + StudyPassword + "&action=get&gno=" + groupinfo[GroupInfoIndex].no;
+                            string temp = HTTP.HttpGet(url);
+                            JsonGroupManageModel GroupManageInfo = (JsonGroupManageModel)JsonConvert.DeserializeObject(temp, typeof(JsonGroupManageModel));
+                            if (GroupManageInfo.statu.Equals("success"))
+                                groupinfo[GroupInfoIndex].enable = GroupManageInfo.enable;
+                            else
+                                groupinfo[GroupInfoIndex].enable = "true";
+                        }
+                        if (tmp[1].Equals("关闭机器人"))
+                        {
+                            if (groupinfo[GroupInfoIndex].enable.Equals("false"))
+                            {
+                                MessageToSend = "当前机器人已关闭";
+                                return MessageToSend;
+                            }
+                            else
+                            {
+                                groupinfo[GroupInfoIndex].enable = "false";
+
+                                string url = DicServer + "groupmanage.php?password=" + StudyPassword + "&action=set&gno=" + groupinfo[i].no + "&option=enable&value=false";
+                                string temp = HTTP.HttpGet(url);
+                                JsonGroupManageModel GroupManageInfo = (JsonGroupManageModel)JsonConvert.DeserializeObject(temp, typeof(JsonGroupManageModel));
+                                if (GroupManageInfo.statu.Equals("fail"))
+                                    listBoxLog.Items.Insert(0, GroupManageInfo.statu + GroupManageInfo.error);
+
+                                MessageToSend = "机器人关闭成功";
+                                return MessageToSend;
+                            }
+                        }
+                        else if (tmp[1].Equals("启动机器人"))
+                        {
+                            if (groupinfo[GroupInfoIndex].enable.Equals("true"))
+                            {
+                                MessageToSend = "当前机器人已启动";
+                                return MessageToSend;
+                            }
+                            else
+                            {
+                                groupinfo[GroupInfoIndex].enable = "true";
+
+                                string url = DicServer + "groupmanage.php?password=" + StudyPassword + "&action=set&gno=" + groupinfo[i].no + "&option=enable&value=true";
+                                string temp = HTTP.HttpGet(url);
+                                JsonGroupManageModel GroupManageInfo = (JsonGroupManageModel)JsonConvert.DeserializeObject(temp, typeof(JsonGroupManageModel));
+                                if (GroupManageInfo.statu.Equals("fail"))
+                                    listBoxLog.Items.Insert(0, GroupManageInfo.statu + GroupManageInfo.error);
+
+                                MessageToSend = "机器人启动成功";
+                                return MessageToSend;
+                            }
+                        }
+                    }
+
+                }
+            }
+            return MessageToSend;
+        }
         private void ActionWhenResivedGroupMessage(string gid, string message, string emojis, string uin, string gno)
         {
-            string[] MessageToSendArray = Answer(message, uin, gid, gno);
-            string MessageToSend = "";
-             for (int i = 0; i <= groupinfMaxIndex; i++)
+            string MessageToSend = GroupManage(message, uin, gid, gno);
+            if (!MessageToSend.Equals(""))
+            {
+                MessageToSend = "\\\"" + MessageToSend + "\\\"";
+                SmartQQ.SendMessageToGroup(gid, MessageToSend);
+                return;
+            }                
+            for (int i = 0; i <= groupinfMaxIndex; i++)
             {
                 if (groupinfo[i].gid == gid)
                 {
@@ -629,7 +639,8 @@ namespace SmartQQ
                     }
                 }
             }
-            
+
+            string[] MessageToSendArray = Answer(message, uin, gid, gno);
             for (int i = 0; i < 10; i++)
             {
                 if (MessageToSendArray[i] != null && !MessageToSendArray[i].Equals("") && !MessageToSendArray[i].Equals("None3"))
