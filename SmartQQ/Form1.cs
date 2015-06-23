@@ -494,27 +494,28 @@ namespace SmartQQ
             int i;
             if (message.Contains("群管理"))
             {
-                    SmartQQ.getGroup();
-                    for (i = 0; i <= groupinfMaxIndex; i++)
-                    {
-                        if (groupinfo[i].gid == gid)
-                        {
-                            GroupInfoIndex = i;
-                            adminuin = groupinfo[i].inf.result.ginfo.owner;
-                            break;
-                        }
-                    }
-                if (groupinfo[GroupInfoIndex].managers == null)
+                SmartQQ.getGroup();
+                for (i = 0; i <= groupinfMaxIndex; i++)
                 {
-                    groupinfo[GroupInfoIndex].managers = new string[100];
-                    groupinfo[GroupInfoIndex].GroupManagerIndex = 0;
-                    for (i = 0; i < groupinfo[GroupInfoIndex].inf.result.ginfo.members.Count; i++)
+                    if (groupinfo[i].gid == gid)
                     {
-                        if (groupinfo[GroupInfoIndex].inf.result.ginfo.members[i].mflag == 1)
-                        {
-                            groupinfo[GroupInfoIndex].managers[groupinfo[GroupInfoIndex].GroupManagerIndex] = groupinfo[GroupInfoIndex].inf.result.ginfo.members[i].muin;
-                            groupinfo[GroupInfoIndex].GroupManagerIndex++;
-                        }
+                        GroupInfoIndex = i;
+                        adminuin = groupinfo[i].inf.result.ginfo.owner;
+                        break;
+                    }
+                }
+                groupinfo[GroupInfoIndex].inf = SmartQQ.GetGroupInfo(groupinfo[GroupInfoIndex].inf.result.ginfo.code);
+                //获取管理员
+                if (groupinfo[GroupInfoIndex].managers == null)
+                    groupinfo[GroupInfoIndex].managers = new string[30];
+                    
+                groupinfo[GroupInfoIndex].GroupManagerIndex = 0;
+                for (i = 0; i < groupinfo[GroupInfoIndex].inf.result.ginfo.members.Count; i++)
+                {
+                    if (groupinfo[GroupInfoIndex].inf.result.ginfo.members[i].mflag == 1)
+                    {
+                        groupinfo[GroupInfoIndex].managers[groupinfo[GroupInfoIndex].GroupManagerIndex] = groupinfo[GroupInfoIndex].inf.result.ginfo.members[i].muin;
+                        groupinfo[GroupInfoIndex].GroupManagerIndex++;
                     }
                 }
 
