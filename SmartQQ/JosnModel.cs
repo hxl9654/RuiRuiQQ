@@ -135,6 +135,12 @@ namespace SmartQQ
                 public string name;
                 public string gid;
                 public string owner;
+                public List<paramMembers> members;
+                public class paramMembers
+                {
+                    public string muin;
+                    public int mflag;
+                }
             }
         }
     }

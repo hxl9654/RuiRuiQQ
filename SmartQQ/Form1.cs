@@ -58,6 +58,8 @@ namespace SmartQQ
             public String no;
             public String enable;
             public JsonGroupInfoModel inf;
+            public String[] managers;
+            public int GroupManagerIndex;
         };
         public GroupInf[] groupinfo = new GroupInf[100];
         public int groupinfMaxIndex = 0;
@@ -283,11 +285,12 @@ namespace SmartQQ
             {
                 int i = -1;
                 string adminuin = "";
-                
+                int GroupInfoIndex = -1;
                 for (i = 0; i <= groupinfMaxIndex; i++)
                 {
                     if (groupinfo[i].gid == gid)
                     {
+                        GroupInfoIndex = i;
                         adminuin = groupinfo[i].inf.result.ginfo.owner;
                         //获取群号
                         if (groupinfo[i].no == null || !groupinfo[i].no.Equals(gno)) 
@@ -320,8 +323,22 @@ namespace SmartQQ
                     {
                         if (groupinfo[i].gid == gid)
                         {
+                            GroupInfoIndex = i;
                             adminuin = groupinfo[i].inf.result.ginfo.owner;
                             break;
+                        }
+                    }
+                }
+                if(groupinfo[GroupInfoIndex].managers == null)
+                {
+                    groupinfo[GroupInfoIndex].managers = new string[100];
+                    groupinfo[GroupInfoIndex].GroupManagerIndex = 0;
+                    for(i=0;i<groupinfo[GroupInfoIndex].inf.result.ginfo.members.Count;i++)
+                    {
+                        if(groupinfo[GroupInfoIndex].inf.result.ginfo.members[i].mflag == 1)
+                        {
+                            groupinfo[GroupInfoIndex].managers[groupinfo[GroupInfoIndex].GroupManagerIndex] = groupinfo[GroupInfoIndex].inf.result.ginfo.members[i].muin;
+                            groupinfo[GroupInfoIndex].GroupManagerIndex++;
                         }
                     }
                 }
@@ -338,23 +355,49 @@ namespace SmartQQ
                     }
                     if (GroupManageFlag)
                     {
-                        if (!uin.Equals(adminuin))
+                        bool HaveRight = false;
+                        if (uin.Equals(adminuin))
                         {
-                            MessageToSend[0] = "账号" + SmartQQ.GetRealQQ(uin) + "不是群主，无权进行此操作";
-                            return MessageToSend;
-                        }                           
+                            HaveRight = true;
+                        }     
                         else
                         {
+                            for(i = 0;i<=groupinfo[GroupInfoIndex].GroupManagerIndex;i++)
+                            {
+                                if(uin.Equals(groupinfo[GroupInfoIndex].managers[i]))
+                                {
+                                    HaveRight = true;
+                                    break;
+                                }
+                            }
+                        }
+                        if(HaveRight == false)
+                        {
+                            MessageToSend[0] = "账号" + SmartQQ.GetRealQQ(uin) + "不是群管理，无权进行此操作";
+                            return MessageToSend;
+                        }
+                        else
+                        {
+                            if (groupinfo[GroupInfoIndex].enable == null)
+                            {
+                                string url = DicServer + "groupmanage.php?password=" + StudyPassword + "&action=get&gno=" + groupinfo[GroupInfoIndex].no;
+                                string temp = HTTP.HttpGet(url);
+                                JsonGroupManageModel GroupManageInfo = (JsonGroupManageModel)JsonConvert.DeserializeObject(temp, typeof(JsonGroupManageModel));
+                                if (GroupManageInfo.statu.Equals("success"))
+                                    groupinfo[GroupInfoIndex].enable = GroupManageInfo.enable;
+                                else
+                                    groupinfo[GroupInfoIndex].enable = "true";
+                            }
                             if (tmp[1].Equals("关闭机器人"))
                             {
-                                if (groupinfo[i].enable.Equals("false"))
+                                if (groupinfo[GroupInfoIndex].enable.Equals("false"))
                                 {
                                     MessageToSend[0] = "当前机器人已关闭";
                                     return MessageToSend;
                                 }
                                 else
                                 {
-                                    groupinfo[i].enable = "false";
+                                    groupinfo[GroupInfoIndex].enable = "false";
 
                                     string url = DicServer + "groupmanage.php?password=" + StudyPassword + "&action=set&gno=" + groupinfo[i].no + "&option=enable&value=false";
                                     string temp = HTTP.HttpGet(url);
@@ -368,14 +411,14 @@ namespace SmartQQ
                             }
                             else if (tmp[1].Equals("启动机器人"))
                             {
-                                if (groupinfo[i].enable.Equals("true"))
+                                if (groupinfo[GroupInfoIndex].enable.Equals("true"))
                                 {
                                     MessageToSend[0] = "当前机器人已启动";
                                     return MessageToSend;
                                 }
                                 else
                                 {
-                                    groupinfo[i].enable = "true";
+                                    groupinfo[GroupInfoIndex].enable = "true";
 
                                     string url = DicServer + "groupmanage.php?password=" + StudyPassword + "&action=set&gno=" + groupinfo[i].no + "&option=enable&value=true";
                                     string temp = HTTP.HttpGet(url);
