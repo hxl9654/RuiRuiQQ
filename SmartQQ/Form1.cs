@@ -1247,8 +1247,11 @@ namespace SmartQQ
             if (IsGroupSelent)
             {
                 string GName = "";
-                string[] tmp = listBoxGroup.SelectedItem.ToString().Split(':');
-                SmartQQ.SendMessageToGroup(tmp[0], textBoxSendMessage.Text);
+                string[] tmp = listBoxGroup.SelectedItem.ToString().Split(':'); 
+                string MessageToSend = textBoxSendMessage.Text;
+                MessageToSend = "\\\"" + MessageToSend + "\\\"";
+
+                SmartQQ.SendMessageToFriend(tmp[0], MessageToSend);
 
                 for (int i = 0; i < group.result.gnamelist.Count; i++)
                     if (group.result.gnamelist[i].gid == tmp[0])
@@ -1264,7 +1267,10 @@ namespace SmartQQ
             {
                 string Nick = "";
                 string[] tmp = listBoxFriend.SelectedItem.ToString().Split(':');
-                SmartQQ.SendMessageToFriend(tmp[0], textBoxSendMessage.Text);
+                string MessageToSend = textBoxSendMessage.Text;
+                MessageToSend = "\\\"" + MessageToSend + "\\\"";
+
+                SmartQQ.SendMessageToFriend(tmp[0], MessageToSend);
 
                 for (int i = 0; i < user.result.info.Count; i++)
                     if (user.result.info[i].uin == tmp[0])
