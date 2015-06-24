@@ -57,6 +57,12 @@ namespace SmartQQ
             public String gid;
             public String no;
             public String enable;
+            public String enableWeather;
+            public String enableExchangeRate;
+            public String enableStock;
+            public String enableStudy;
+            public String enabletalk;
+            public String enablexhj;
             public JsonGroupInfoModel inf;
             public String[] managers;
             public int GroupManagerIndex;
@@ -281,212 +287,274 @@ namespace SmartQQ
                 return MessageToSend;
             }
             int j = 0;
+            int GroupInfoIndex = -1;
             if (!gid.Equals(""))
             {
                 int i = -1;
-                string adminuin = "";
-                int GroupInfoIndex = -1;
+                string adminuin = "";                
                 for (i = 0; i <= groupinfMaxIndex; i++)
                 {
                     if (groupinfo[i].gid == gid)
                     {
                         GroupInfoIndex = i;
                         adminuin = groupinfo[i].inf.result.ginfo.owner;
-                        //获取群号
-                        if (groupinfo[i].no == null || !groupinfo[i].no.Equals(gno))
-                        {
-                            groupinfo[i].no = gno;
-                            for (j = 0; j < listBoxGroup.Items.Count; j++)
-                            {
-                                string[] tmp = listBoxGroup.Items[j].ToString().Split(':');
-                                if (tmp[0].Equals(gid))
-                                {
-                                    string temp = tmp[0] + ":" + gno;
-                                    for (int k = 2; k < tmp.Length; k++)
-                                    {
-                                        temp += ":" + tmp[k];
-                                    }
-                                    listBoxGroup.Items.Remove(listBoxGroup.Items[j]);
-                                    listBoxGroup.Items.Insert(0, temp);
-                                    break;
-                                }
-                            }
-
-                        }
                         break;
                     }
                 }
             }
             if (message.Contains("行情"))
             {
-                bool StockFlag = true;
-                string[] tmp = message.Split('&');
-                if ((!tmp[0].Equals("行情")) || (tmp.Length != 2 && tmp.Length != 3))
+                bool DisableFlag = false;
+                if (!gid.Equals(""))
                 {
-                    StockFlag = false;
+                    if (groupinfo[GroupInfoIndex].enableStock == null)
+                        GetGroupSetting(groupinfMaxIndex);
+                    if (groupinfo[GroupInfoIndex].enableStock.Equals("false"))
+                        DisableFlag = true;
                 }
-                if (StockFlag)
+                if (!DisableFlag)
                 {
-                    if (tmp.Length == 2)
-                        MessageToSend[0] = GetInfo.GetStock(tmp[1], "");
-                    else MessageToSend[0] = GetInfo.GetStock(tmp[1], tmp[2]);
-                    return MessageToSend;
+                    bool StockFlag = true;
+                    string[] tmp = message.Split('&');
+                    if ((!tmp[0].Equals("行情")) || (tmp.Length != 2 && tmp.Length != 3))
+                    {
+                        StockFlag = false;
+                    }
+                    if (StockFlag)
+                    {
+                        if (tmp.Length == 2)
+                            MessageToSend[0] = GetInfo.GetStock(tmp[1], "");
+                        else MessageToSend[0] = GetInfo.GetStock(tmp[1], tmp[2]);
+                        return MessageToSend;
+                    }
                 }
             }
             if (message.Contains("汇率"))
             {
-                bool ExchangeRateFlag = true;
-                string[] tmp = message.Split('&');
-                if ((!tmp[0].Equals("汇率")) || tmp.Length != 3)
+                bool DisableFlag = false;
+                if (!gid.Equals(""))
                 {
-                    ExchangeRateFlag = false;
+                    if (groupinfo[GroupInfoIndex].enableExchangeRate == null)
+                        GetGroupSetting(groupinfMaxIndex);
+                    if (groupinfo[GroupInfoIndex].enableExchangeRate.Equals("false"))
+                        DisableFlag = true;
                 }
-                if (ExchangeRateFlag)
+                if (!DisableFlag)
                 {
-                    MessageToSend[0] = GetInfo.GetExchangeRate(tmp[1], tmp[2]);
-                    return MessageToSend;
+                    bool ExchangeRateFlag = true;
+                    string[] tmp = message.Split('&');
+                    if ((!tmp[0].Equals("汇率")) || tmp.Length != 3)
+                    {
+                        ExchangeRateFlag = false;
+                    }
+                    if (ExchangeRateFlag)
+                    {
+                        MessageToSend[0] = GetInfo.GetExchangeRate(tmp[1], tmp[2]);
+                        return MessageToSend;
+                    }
                 }
             }
             if (message.Contains("天气") && DisableWeather == false)
             {
-                bool WeatherFlag = true;
-                string[] tmp = message.Split('&');
-                if ((!tmp[0].Equals("天气")) || (tmp.Length != 2 && tmp.Length != 3))
+                bool DisableFlag = false;
+                if (!gid.Equals(""))
                 {
-                    WeatherFlag = false;
+                    if (groupinfo[GroupInfoIndex].enableWeather == null)
+                        GetGroupSetting(groupinfMaxIndex);
+                    if (groupinfo[GroupInfoIndex].enableWeather.Equals("false"))
+                        DisableFlag = true;
                 }
-                if (WeatherFlag)
+                if (!DisableFlag)
                 {
-                    if (tmp.Length == 2)
-                        MessageToSend[0] = GetInfo.GetWeather(tmp[1], "");
-                    else
-                        MessageToSend[0] = GetInfo.GetWeather(tmp[1], tmp[2]);
-                    return MessageToSend;
+                    bool WeatherFlag = true;
+                    string[] tmp = message.Split('&');
+                    if ((!tmp[0].Equals("天气")) || (tmp.Length != 2 && tmp.Length != 3))
+                    {
+                        WeatherFlag = false;
+                    }
+                    if (WeatherFlag)
+                    {
+                        if (tmp.Length == 2)
+                            MessageToSend[0] = GetInfo.GetWeather(tmp[1], "");
+                        else
+                            MessageToSend[0] = GetInfo.GetWeather(tmp[1], tmp[2]);
+                        return MessageToSend;
+                    }
                 }
             }
             if (message.Contains("学习"))
             {
-                bool StudyFlag = true;
-                bool SuperStudy = false;
-                string[] tmp = message.Split('^');
-                if ((!tmp[0].Equals("学习")) || tmp.Length != 3)
+                bool DisableFlag = false;
+                if (!gid.Equals(""))
                 {
-                    if ((tmp[0].Equals("特权学习")) && tmp.Length == 3)
-                    {
-                        SuperStudy = true;
-                    }
-                    tmp = message.Split('&');
+                    if (groupinfo[GroupInfoIndex].enableStudy == null)
+                        GetGroupSetting(groupinfMaxIndex);
+                    if (groupinfo[GroupInfoIndex].enableStudy.Equals("false"))
+                        DisableFlag = true;
+                }
+                if (!DisableFlag)
+                {
+                    bool StudyFlag = true;
+                    bool SuperStudy = false;
+                    string[] tmp = message.Split('^');
                     if ((!tmp[0].Equals("学习")) || tmp.Length != 3)
                     {
-                        StudyFlag = false;
                         if ((tmp[0].Equals("特权学习")) && tmp.Length == 3)
                         {
                             SuperStudy = true;
                         }
+                        tmp = message.Split('&');
+                        if ((!tmp[0].Equals("学习")) || tmp.Length != 3)
+                        {
+                            StudyFlag = false;
+                            if ((tmp[0].Equals("特权学习")) && tmp.Length == 3)
+                            {
+                                SuperStudy = true;
+                            }
+                        }
+                    }
+                    if (tmp.Length != 3 || tmp[1].Replace(" ", "").Equals("") || tmp[2].Replace(" ", "").Equals(""))
+                    {
+                        StudyFlag = false;
+                        SuperStudy = false;
+                    }
+                    if (SuperStudy)
+                    {
+                        string result = "";
+                        result = AIStudy(tmp[1], tmp[2], QQNum, true);
+                        MessageToSend[0] = GetInfo.GetStudyFlagInfo(result, QQNum, tmp[1], tmp[2]);
+                        return MessageToSend;
+                    }
+                    if (StudyFlag)
+                    {
+                        string result = "";
+                        for (int i = 0; i < Badwords.Length; i++)
+                            if (tmp[1].Contains(Badwords[i]) || tmp[2].Contains(Badwords[i]))
+                                result = "ForbiddenWord";
+                        if (result.Equals(""))
+                            result = AIStudy(tmp[1], tmp[2], QQNum, false);
+                        MessageToSend[0] = GetInfo.GetStudyFlagInfo(result, QQNum, tmp[1], tmp[2]);
+                        return MessageToSend;
                     }
                 }
-                if (tmp.Length != 3 || tmp[1].Replace(" ", "").Equals("") || tmp[2].Replace(" ", "").Equals(""))
+            }
+            bool DisableTalkFlag = false;
+            if (!gid.Equals(""))
+            {
+                if (groupinfo[GroupInfoIndex].enabletalk == null)
+                    GetGroupSetting(groupinfMaxIndex);
+                if (groupinfo[GroupInfoIndex].enabletalk.Equals("false"))
+                    DisableTalkFlag = true;
+            }
+            if (!DisableTalkFlag)
+            {
+
+                MessageToSend[0] = AIGet(message, QQNum);
+                if (!MessageToSend[0].Equals(""))
                 {
-                    StudyFlag = false;
-                    SuperStudy = false;
-                }
-                if (SuperStudy)
-                {
-                    string result = "";
-                    result = AIStudy(tmp[1], tmp[2], QQNum, true);
-                    MessageToSend[0] = GetInfo.GetStudyFlagInfo(result, QQNum, tmp[1], tmp[2]);
                     return MessageToSend;
                 }
-                if (StudyFlag)
-                {
-                    string result = "";
-                    for (int i = 0; i < Badwords.Length; i++)
-                        if (tmp[1].Contains(Badwords[i]) || tmp[2].Contains(Badwords[i]))
-                            result = "ForbiddenWord";
-                    if (result.Equals(""))
-                        result = AIStudy(tmp[1], tmp[2], QQNum, false);
-                    MessageToSend[0] = GetInfo.GetStudyFlagInfo(result, QQNum, tmp[1], tmp[2]);
-                    return MessageToSend;
-                }
-            }
-            MessageToSend[0] = AIGet(message, QQNum);
-            if (!MessageToSend[0].Equals(""))
-            {
-                return MessageToSend;
-            }
-            string[] tmp1 = message.Split("@#$(),，.。:：;^&；“”～~！!#（）%？?》《、· \r\n\"".ToCharArray());
-            j = 0;
-            bool RepeatFlag = false;
-            for (int i = 0; i < tmp1.Length && i < 10; i++)
-            {
-                if (tmp1[i].Equals(message))
-                    continue;
-                for (int k = 0; k < i; k++)
-                    if (tmp1[k].Equals(tmp1[i]))
-                        RepeatFlag = true;
-                if (RepeatFlag)
-                {
-                    RepeatFlag = false;
-                    continue;
-                }
-                if (!tmp1[i].Equals(""))
-                {
-                    MessageToSend[j] = AIGet(tmp1[i], QQNum);
-                    j++;
-                    MsgSendFlag = true;
-                }
-            }
-            if (!MsgSendFlag)
-            {
-                string[] tmp2 = message.Split("@#$(),，.。:：;^&；“”～~！!#（）%？?》《、· \r\n\"啊喔是的么吧呀恩嗯了呢很吗".ToCharArray());
+                string[] tmp1 = message.Split("@#$(),，.。:：;^&；“”～~！!#（）%？?》《、· \r\n\"".ToCharArray());
                 j = 0;
-                RepeatFlag = false;
-                for (int i = 0; i < tmp2.Length && i < 10; i++)
+                bool RepeatFlag = false;
+                for (int i = 0; i < tmp1.Length && i < 10; i++)
                 {
                     if (tmp1[i].Equals(message))
                         continue;
                     for (int k = 0; k < i; k++)
-                        if (tmp2[k].Equals(tmp2[i]))
+                        if (tmp1[k].Equals(tmp1[i]))
                             RepeatFlag = true;
-                    for (int k = 0; k < tmp1.Length; k++)
-                        if (tmp1[k].Equals(tmp2[i]))
-                            RepeatFlag = true;
-
                     if (RepeatFlag)
                     {
                         RepeatFlag = false;
                         continue;
                     }
-                    if (!tmp2[i].Equals(""))
+                    if (!tmp1[i].Equals(""))
                     {
-                        MessageToSend[j] = AIGet(tmp2[i], QQNum);
+                        MessageToSend[j] = AIGet(tmp1[i], QQNum);
                         j++;
                         MsgSendFlag = true;
                     }
                 }
-            }
-
-
-            if (!MsgSendFlag)
-            {
-                string XiaoHuangJiMsg = GetXiaoHuangJi(message);
-                if (XiaoHuangJiMsg.Length > 1)
+                if (!MsgSendFlag)
                 {
-                    for (int i = 0; i < Badwords.Length; i++)
-                        if (XiaoHuangJiMsg.Contains(Badwords[i]))
-                            return null;
-                    MessageToSend[0] = "隔壁小黄鸡说：" + XiaoHuangJiMsg;
+                    string[] tmp2 = message.Split("@#$(),，.。:：;^&；“”～~！!#（）%？?》《、· \r\n\"啊喔是的么吧呀恩嗯了呢很吗".ToCharArray());
+                    j = 0;
+                    RepeatFlag = false;
+                    for (int i = 0; i < tmp2.Length && i < 10; i++)
+                    {
+                        if (tmp1[i].Equals(message))
+                            continue;
+                        for (int k = 0; k < i; k++)
+                            if (tmp2[k].Equals(tmp2[i]))
+                                RepeatFlag = true;
+                        for (int k = 0; k < tmp1.Length; k++)
+                            if (tmp1[k].Equals(tmp2[i]))
+                                RepeatFlag = true;
 
-                    return MessageToSend;
+                        if (RepeatFlag)
+                        {
+                            RepeatFlag = false;
+                            continue;
+                        }
+                        if (!tmp2[i].Equals(""))
+                        {
+                            MessageToSend[j] = AIGet(tmp2[i], QQNum);
+                            j++;
+                            MsgSendFlag = true;
+                        }
+                    }
                 }
-                else
+
+                if (!MsgSendFlag)
                 {
-                    return MessageToSend;
+                    bool DisableFlag = false;
+                    if (!gid.Equals(""))
+                    {
+                        if (groupinfo[GroupInfoIndex].enablexhj == null)
+                            GetGroupSetting(groupinfMaxIndex);
+                        if (groupinfo[GroupInfoIndex].enablexhj.Equals("false"))
+                            DisableFlag = true;
+                    }
+                    if (!DisableFlag)
+                    {
+                        string XiaoHuangJiMsg = GetXiaoHuangJi(message);
+                        if (XiaoHuangJiMsg.Length > 1)
+                        {
+                            for (int i = 0; i < Badwords.Length; i++)
+                                if (XiaoHuangJiMsg.Contains(Badwords[i]))
+                                    return null;
+                            MessageToSend[0] = "隔壁小黄鸡说：" + XiaoHuangJiMsg;
+
+                        }
+                        return MessageToSend;
+                    }
                 }
+                return MessageToSend;
             }
             return MessageToSend;
         }
-        string GroupManage(string message, string uin, string gid = "", string gno = "")
+
+        private void SetGroupNum(int GroupInfoIndex, string gno, string gid)
+        {
+            groupinfo[GroupInfoIndex].no = gno;
+            for (int j = 0; j < listBoxGroup.Items.Count; j++)
+            {
+                string[] tmp = listBoxGroup.Items[j].ToString().Split(':');
+                if (tmp[0].Equals(gid))
+                {
+                    string temp = tmp[0] + ":" + gno;
+                    for (int k = 2; k < tmp.Length; k++)
+                    {
+                        temp += ":" + tmp[k];
+                    }
+                    listBoxGroup.Items.Remove(listBoxGroup.Items[j]);
+                    listBoxGroup.Items.Insert(0, temp);
+                    break;
+                }
+            }
+        }
+        string GroupManage(string message, string uin, string gid, string gno)
         {
             string adminuin = "";
             int GroupInfoIndex = -1;
@@ -555,36 +623,11 @@ namespace SmartQQ
                     {
                         if (groupinfo[GroupInfoIndex].enable == null)
                         {
-                            string url = DicServer + "groupmanage.php?password=" + StudyPassword + "&action=get&gno=" + groupinfo[GroupInfoIndex].no;
-                            string temp = HTTP.HttpGet(url);
-                            JsonGroupManageModel GroupManageInfo = (JsonGroupManageModel)JsonConvert.DeserializeObject(temp, typeof(JsonGroupManageModel));
-                            if (GroupManageInfo.statu.Equals("success"))
-                                groupinfo[GroupInfoIndex].enable = GroupManageInfo.enable;
-                            else
-                                groupinfo[GroupInfoIndex].enable = "true";
+                            GetGroupSetting(GroupInfoIndex);
                         }
-                        if (tmp[1].Equals("关闭机器人"))
-                        {
-                            if (groupinfo[GroupInfoIndex].enable.Equals("false"))
-                            {
-                                MessageToSend = "当前机器人已关闭";
-                                return MessageToSend;
-                            }
-                            else
-                            {
-                                groupinfo[GroupInfoIndex].enable = "false";
-
-                                string url = DicServer + "groupmanage.php?password=" + StudyPassword + "&action=set&gno=" + groupinfo[i].no + "&option=enable&value=false";
-                                string temp = HTTP.HttpGet(url);
-                                JsonGroupManageModel GroupManageInfo = (JsonGroupManageModel)JsonConvert.DeserializeObject(temp, typeof(JsonGroupManageModel));
-                                if (GroupManageInfo.statu.Equals("fail"))
-                                    listBoxLog.Items.Insert(0, GroupManageInfo.statu + GroupManageInfo.error);
-
-                                MessageToSend = "机器人关闭成功";
-                                return MessageToSend;
-                            }
-                        }
-                        else if (tmp[1].Equals("启动机器人"))
+                        if (tmp.Length != 2 || tmp[1] == null)
+                            return "";
+                        if (tmp[1].Equals("启动机器人"))
                         {
                             if (groupinfo[GroupInfoIndex].enable.Equals("true"))
                             {
@@ -593,17 +636,211 @@ namespace SmartQQ
                             }
                             else
                             {
-                                groupinfo[GroupInfoIndex].enable = "true";
-
-                                string url = DicServer + "groupmanage.php?password=" + StudyPassword + "&action=set&gno=" + groupinfo[i].no + "&option=enable&value=true";
-                                string temp = HTTP.HttpGet(url);
-                                JsonGroupManageModel GroupManageInfo = (JsonGroupManageModel)JsonConvert.DeserializeObject(temp, typeof(JsonGroupManageModel));
-                                if (GroupManageInfo.statu.Equals("fail"))
-                                    listBoxLog.Items.Insert(0, GroupManageInfo.statu + GroupManageInfo.error);
+                                SetGroupSetting(GroupInfoIndex, "enable", "true");
 
                                 MessageToSend = "机器人启动成功";
                                 return MessageToSend;
                             }
+                        }
+                        else if (tmp[1].Equals("关闭机器人"))
+                        {
+                            if (groupinfo[GroupInfoIndex].enable.Equals("false"))
+                            {
+                                MessageToSend = "当前机器人已关闭";
+                                return MessageToSend;
+                            }
+                            else
+                            {
+                                SetGroupSetting(GroupInfoIndex, "enable", "false");
+
+                                MessageToSend = "机器人关闭成功";
+                                return MessageToSend;
+                            }
+                        }
+                        else if (tmp[1].Equals("启动天气查询"))
+                        {
+                            if (groupinfo[GroupInfoIndex].enableWeather.Equals("true"))
+                            {
+                                MessageToSend = "当前天气查询已启动";
+                                return MessageToSend;
+                            }
+                            else
+                            {
+                                SetGroupSetting(GroupInfoIndex, "enableWeather", "true");
+
+                                MessageToSend = "天气查询启动成功";
+                                return MessageToSend;
+                            }
+                        }
+                        else if (tmp[1].Equals("关闭天气查询"))
+                        {
+                            if (groupinfo[GroupInfoIndex].enableWeather.Equals("false"))
+                            {
+                                MessageToSend = "当前天气查询已关闭";
+                                return MessageToSend;
+                            }
+                            else
+                            {
+                                SetGroupSetting(GroupInfoIndex, "enableWeather", "false");
+
+                                MessageToSend = "天气查询关闭成功";
+                                return MessageToSend;
+                            }
+                        }
+                        else if (tmp[1].Equals("启动汇率查询"))
+                        {
+                            if (groupinfo[GroupInfoIndex].enableExchangeRate.Equals("true"))
+                            {
+                                MessageToSend = "当前汇率查询已启动";
+                                return MessageToSend;
+                            }
+                            else
+                            {
+                                SetGroupSetting(GroupInfoIndex, "enableExchangeRate", "true");
+
+                                MessageToSend = "汇率查询启动成功";
+                                return MessageToSend;
+                            }
+                        }
+                        else if (tmp[1].Equals("关闭汇率查询"))
+                        {
+                            if (groupinfo[GroupInfoIndex].enableExchangeRate.Equals("false"))
+                            {
+                                MessageToSend = "当前汇率查询已关闭";
+                                return MessageToSend;
+                            }
+                            else
+                            {
+                                SetGroupSetting(GroupInfoIndex, "enableExchangeRate", "false");
+
+                                MessageToSend = "汇率查询关闭成功";
+                                return MessageToSend;
+                            }
+                        }
+                        else if (tmp[1].Equals("启动行情查询"))
+                        {
+                            if (groupinfo[GroupInfoIndex].enableStock.Equals("true"))
+                            {
+                                MessageToSend = "当前行情查询已启动";
+                                return MessageToSend;
+                            }
+                            else
+                            {
+                                SetGroupSetting(GroupInfoIndex, "enableStock", "true");
+
+                                MessageToSend = "行情查询启动成功";
+                                return MessageToSend;
+                            }
+                        }
+                        else if (tmp[1].Equals("关闭行情查询"))
+                        {
+                            if (groupinfo[GroupInfoIndex].enableStock.Equals("false"))
+                            {
+                                MessageToSend = "当前行情查询已关闭";
+                                return MessageToSend;
+                            }
+                            else
+                            {
+                                SetGroupSetting(GroupInfoIndex, "enableStock", "false");
+
+                                MessageToSend = "行情查询关闭成功";
+                                return MessageToSend;
+                            }
+                        }
+                        else if (tmp[1].Equals("启动聊天"))
+                        {
+                            if (groupinfo[GroupInfoIndex].enabletalk.Equals("true"))
+                            {
+                                MessageToSend = "当前聊天已启动";
+                                return MessageToSend;
+                            }
+                            else
+                            {
+                                SetGroupSetting(GroupInfoIndex, "enabletalk", "true");
+
+                                MessageToSend = "聊天启动成功";
+                                return MessageToSend;
+                            }
+                        }
+                        else if (tmp[1].Equals("关闭聊天"))
+                        {
+                            if (groupinfo[GroupInfoIndex].enabletalk.Equals("false"))
+                            {
+                                MessageToSend = "当前聊天已关闭";
+                                return MessageToSend;
+                            }
+                            else
+                            {
+                                SetGroupSetting(GroupInfoIndex, "enabletalk", "false");
+
+                                MessageToSend = "聊天关闭成功";
+                                return MessageToSend;
+                            }
+                        }
+                        else if (tmp[1].Equals("启动学习"))
+                        {
+                            if (groupinfo[GroupInfoIndex].enableStudy.Equals("true"))
+                            {
+                                MessageToSend = "当前学习已启动";
+                                return MessageToSend;
+                            }
+                            else
+                            {
+                                SetGroupSetting(GroupInfoIndex, "enableStudy", "true");
+
+                                MessageToSend = "学习启动成功";
+                                return MessageToSend;
+                            }
+                        }
+                        else if (tmp[1].Equals("关闭学习"))
+                        {
+                            if (groupinfo[GroupInfoIndex].enableStudy.Equals("false"))
+                            {
+                                MessageToSend = "当前学习已关闭";
+                                return MessageToSend;
+                            }
+                            else
+                            {
+                                SetGroupSetting(GroupInfoIndex, "enableStudy", "false");
+
+                                MessageToSend = "学习关闭成功";
+                                return MessageToSend;
+                            }
+                        }
+                        else if (tmp[1].Equals("启动小黄鸡"))
+                        {
+                            if (groupinfo[GroupInfoIndex].enablexhj.Equals("true"))
+                            {
+                                MessageToSend = "当前小黄鸡已启动";
+                                return MessageToSend;
+                            }
+                            else
+                            {
+                                SetGroupSetting(GroupInfoIndex, "enablexhj", "true");
+
+                                MessageToSend = "小黄鸡启动成功";
+                                return MessageToSend;
+                            }
+                        }
+                        else if (tmp[1].Equals("关闭小黄鸡"))
+                        {
+                            if (groupinfo[GroupInfoIndex].enablexhj.Equals("false"))
+                            {
+                                MessageToSend = "当前小黄鸡已关闭";
+                                return MessageToSend;
+                            }
+                            else
+                            {
+                                SetGroupSetting(GroupInfoIndex, "enablexhj", "false");
+
+                                MessageToSend = "小黄鸡关闭成功";
+                                return MessageToSend;
+                            }
+                        }
+                        else
+                        {
+                            MessageToSend = "没有这条指令。";
+                            return MessageToSend;
                         }
                     }
 
@@ -611,9 +848,88 @@ namespace SmartQQ
             }
             return MessageToSend;
         }
+
+        private void SetGroupSetting(int GroupInfoIndex, string option, string value)
+        {
+            string url = DicServer + "groupmanage.php?password=" + StudyPassword + "&action=set&gno=" + groupinfo[GroupInfoIndex].no + "&option=" + option + "&value=" + value;
+            string temp = HTTP.HttpGet(url);
+            JsonGroupManageModel GroupManageInfo = (JsonGroupManageModel)JsonConvert.DeserializeObject(temp, typeof(JsonGroupManageModel));
+            if (GroupManageInfo.statu.Equals("fail"))
+                listBoxLog.Items.Insert(0, GroupManageInfo.statu + GroupManageInfo.error);
+            if (option.Equals("enable"))
+                groupinfo[GroupInfoIndex].enable = value;
+            else if (option.Equals("enablexhj"))
+                groupinfo[GroupInfoIndex].enablexhj = value;
+            else if (option.Equals("enableWeather"))
+                groupinfo[GroupInfoIndex].enableWeather = value;
+            else if (option.Equals("enabletalk"))
+                groupinfo[GroupInfoIndex].enabletalk = value;
+            else if (option.Equals("enableStudy"))
+                groupinfo[GroupInfoIndex].enableStudy = value;
+            else if (option.Equals("enableStock"))
+                groupinfo[GroupInfoIndex].enableStock = value;
+            else if (option.Equals("enableExchangeRate"))
+                groupinfo[GroupInfoIndex].enableExchangeRate = value;
+        }
+
+        private void GetGroupSetting(int GroupInfoIndex)
+        {
+            string url = DicServer + "groupmanage.php?password=" + StudyPassword + "&action=get&gno=" + groupinfo[GroupInfoIndex].no;
+            string temp = HTTP.HttpGet(url);
+            JsonGroupManageModel GroupManageInfo = (JsonGroupManageModel)JsonConvert.DeserializeObject(temp, typeof(JsonGroupManageModel));
+            if (GroupManageInfo.statu.Equals("success"))
+            {
+                groupinfo[GroupInfoIndex].enable = GroupManageInfo.enable;
+                groupinfo[GroupInfoIndex].enablexhj = GroupManageInfo.enablexhj;
+                groupinfo[GroupInfoIndex].enableWeather = GroupManageInfo.enableWeather;
+                groupinfo[GroupInfoIndex].enabletalk = GroupManageInfo.enabletalk;
+                groupinfo[GroupInfoIndex].enableStudy = GroupManageInfo.enableStudy;
+                groupinfo[GroupInfoIndex].enableStock = GroupManageInfo.enableStock;
+                groupinfo[GroupInfoIndex].enableExchangeRate = GroupManageInfo.enableExchangeRate;
+
+                if (groupinfo[GroupInfoIndex].enable.Equals(""))
+                    groupinfo[GroupInfoIndex].enable = "true";
+                if (groupinfo[GroupInfoIndex].enablexhj.Equals(""))
+                    groupinfo[GroupInfoIndex].enablexhj = "true";
+                if (groupinfo[GroupInfoIndex].enableWeather.Equals(""))
+                    groupinfo[GroupInfoIndex].enableWeather = "true";
+                if (groupinfo[GroupInfoIndex].enabletalk.Equals(""))
+                    groupinfo[GroupInfoIndex].enabletalk = "true";
+                if (groupinfo[GroupInfoIndex].enableStudy.Equals(""))
+                    groupinfo[GroupInfoIndex].enableStudy = "true";
+                if (groupinfo[GroupInfoIndex].enableStock.Equals(""))
+                    groupinfo[GroupInfoIndex].enableStock = "true";
+                if (groupinfo[GroupInfoIndex].enableExchangeRate.Equals(""))
+                    groupinfo[GroupInfoIndex].enableExchangeRate = "true";
+            }
+            else
+            {
+                groupinfo[GroupInfoIndex].enable = "true";
+                groupinfo[GroupInfoIndex].enablexhj = "true";
+                groupinfo[GroupInfoIndex].enableWeather = "true";
+                groupinfo[GroupInfoIndex].enabletalk = "true";
+                groupinfo[GroupInfoIndex].enableStudy = "true";
+                groupinfo[GroupInfoIndex].enableStock = "true";
+                groupinfo[GroupInfoIndex].enableExchangeRate = "true";
+            }
+
+        }
         private void ActionWhenResivedGroupMessage(string gid, string message, string emojis, string uin, string gno)
         {
             string MessageToSend = GroupManage(message, uin, gid, gno);
+
+            for (int i = 0; i <= groupinfMaxIndex; i++)
+            {
+                if (groupinfo[i].gid == gid)
+                {
+                    if (groupinfo[i].no == null || !groupinfo[i].no.Equals(gno))
+                    {
+                        SetGroupNum(i, gno, gid);
+                        break;
+                    }
+                }
+            }
+
             if (!MessageToSend.Equals(""))
             {
                 MessageToSend = "\\\"" + MessageToSend + "\\\"";
@@ -626,13 +942,7 @@ namespace SmartQQ
                 {
                     if (groupinfo[i].enable == null)
                     {
-                        string url = DicServer + "groupmanage.php?password=" + StudyPassword + "&action=get&gno=" + groupinfo[i].no;
-                        string temp = HTTP.HttpGet(url);
-                        JsonGroupManageModel GroupManageInfo = (JsonGroupManageModel)JsonConvert.DeserializeObject(temp, typeof(JsonGroupManageModel));
-                        if (GroupManageInfo.statu.Equals("success"))
-                            groupinfo[i].enable = GroupManageInfo.enable;
-                        else
-                            groupinfo[i].enable = "true";
+                        GetGroupSetting(i);
                     }
                     if (groupinfo[i].enable.Equals("false"))
                     {

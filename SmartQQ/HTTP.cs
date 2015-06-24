@@ -34,7 +34,7 @@ namespace SmartQQ
 
         static public String HeartPackdata;
         static int AmountOfRunningPosting = 0;
-        public static string HttpGet(string url, int timeout = 100000, Encoding encode = null)
+        public static string HttpGet(string url, int timeout = 100000, Encoding encode = null, string referer="http://d.web2.qq.com/proxy.html?v=20130916001&callback=1&id=2")
         {
             string dat;
             HttpWebResponse res = null;
@@ -44,7 +44,7 @@ namespace SmartQQ
                 req = (HttpWebRequest)WebRequest.Create(url);
                 req.CookieContainer = cookies;
                 req.Timeout = timeout;
-                req.Referer = "http://d.web2.qq.com/proxy.html?v=20130916001&callback=1&id=2";
+                req.Referer = referer;
                 res = (HttpWebResponse)req.GetResponse();
             }
             catch (HttpException)

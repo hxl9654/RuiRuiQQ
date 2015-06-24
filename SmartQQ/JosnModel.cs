@@ -251,6 +251,13 @@ namespace SmartQQ
     public class JsonGroupManageModel
     {
         public string enable;
+        public string enableWeather;
+        public string enableExchangeRate;
+        public string enableStock;
+        public string enableStudy;
+        public string enabletalk;
+        public string enablexhj;
+
         public string gno;
         public string statu;
         public string error;
