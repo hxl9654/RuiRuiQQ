@@ -945,10 +945,12 @@ namespace SmartQQ
                 SmartQQ.SendMessageToGroup(gid, MessageToSend);
                 return;
             }
+            int GroupInfoIndex = -1;
             for (int i = 0; i <= groupinfMaxIndex; i++)
             {
                 if (groupinfo[i].gid == gid)
                 {
+                    GroupInfoIndex = i;
                     if (groupinfo[i].enable == null)
                     {
                         GetGroupSetting(i);
@@ -957,6 +959,7 @@ namespace SmartQQ
                     {
                         return;
                     }
+
                 }
             }
 
@@ -973,14 +976,17 @@ namespace SmartQQ
             }
             if (!MessageToSend.Equals(""))
                 MessageToSend = "\\\"" + MessageToSend + "\\\"";
-            string[] tmp = emojis.Split(',');
-            for (int i = 0; i < tmp.Length - 1 && i < 10; i++)
+            if (groupinfo[GroupInfoIndex].enable.Equals("true") && groupinfo[GroupInfoIndex].enabletalk.Equals("true"))
             {
-                if (tmp[i].Equals(""))
-                    continue;
-                if (!MessageToSend.Equals(""))
-                    MessageToSend += ",";
-                MessageToSend += SloveEmoji(tmp[i]);
+                string[] tmp = emojis.Split(',');
+                for (int i = 0; i < tmp.Length - 1 && i < 10; i++)
+                {
+                    if (tmp[i].Equals(""))
+                        continue;
+                    if (!MessageToSend.Equals(""))
+                        MessageToSend += ",";
+                    MessageToSend += SloveEmoji(tmp[i]);
+                }
             }
             SmartQQ.SendMessageToGroup(gid, MessageToSend);
         }
