@@ -1251,7 +1251,7 @@ namespace SmartQQ
                 string MessageToSend = textBoxSendMessage.Text;
                 MessageToSend = "\\\"" + MessageToSend + "\\\"";
 
-                SmartQQ.SendMessageToFriend(tmp[0], MessageToSend);
+                SmartQQ.SendMessageToGroup(tmp[0], MessageToSend);
 
                 for (int i = 0; i < group.result.gnamelist.Count; i++)
                     if (group.result.gnamelist[i].gid == tmp[0])
