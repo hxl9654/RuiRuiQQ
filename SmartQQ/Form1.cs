@@ -291,7 +291,7 @@ namespace SmartQQ
             if (!gid.Equals(""))
             {
                 int i = -1;
-                string adminuin = "";                
+                string adminuin = "";
                 for (i = 0; i <= groupinfMaxIndex; i++)
                 {
                     if (groupinfo[i].gid == gid)
@@ -614,6 +614,23 @@ namespace SmartQQ
                             }
                         }
                     }
+                    if (groupinfo[GroupInfoIndex].enable == null)
+                    {
+                        GetGroupSetting(GroupInfoIndex);
+                    }
+                    if (tmp.Length != 2 || tmp[1] == null)
+                        return "";
+                    if ((HaveRight || groupinfo[GroupInfoIndex].enable.Equals("true")) && (tmp[1].Equals("查询状态") || tmp[1].Equals("状态")))
+                    {
+                        MessageToSend = "机器人启动：" + groupinfo[GroupInfoIndex].enable + Environment.NewLine;
+                        MessageToSend += "汇率查询启动：" + groupinfo[GroupInfoIndex].enableExchangeRate + Environment.NewLine;
+                        MessageToSend += "天气查询启动：" + groupinfo[GroupInfoIndex].enableWeather + Environment.NewLine;
+                        MessageToSend += "学习启动：" + groupinfo[GroupInfoIndex].enableStudy + Environment.NewLine;
+                        MessageToSend += "行情查询启动：" + groupinfo[GroupInfoIndex].enableStock + Environment.NewLine;
+                        MessageToSend += "闲聊启动：" + groupinfo[GroupInfoIndex].enabletalk + Environment.NewLine;
+                        MessageToSend += "小黄鸡启动：" + groupinfo[GroupInfoIndex].enablexhj;
+                        return MessageToSend;
+                    }
                     if (HaveRight == false)
                     {
                         MessageToSend = "账号" + SmartQQ.GetRealQQ(uin) + "不是群管理，无权进行此操作";
@@ -621,12 +638,6 @@ namespace SmartQQ
                     }
                     else
                     {
-                        if (groupinfo[GroupInfoIndex].enable == null)
-                        {
-                            GetGroupSetting(GroupInfoIndex);
-                        }
-                        if (tmp.Length != 2 || tmp[1] == null)
-                            return "";
                         if (tmp[1].Equals("启动机器人"))
                         {
                             if (groupinfo[GroupInfoIndex].enable.Equals("true"))
@@ -843,7 +854,6 @@ namespace SmartQQ
                             return MessageToSend;
                         }
                     }
-
                 }
             }
             return MessageToSend;
@@ -916,8 +926,6 @@ namespace SmartQQ
         }
         private void ActionWhenResivedGroupMessage(string gid, string message, string emojis, string uin, string gno)
         {
-            string MessageToSend = GroupManage(message, uin, gid, gno);
-
             for (int i = 0; i <= groupinfMaxIndex; i++)
             {
                 if (groupinfo[i].gid == gid)
@@ -929,6 +937,7 @@ namespace SmartQQ
                     }
                 }
             }
+            string MessageToSend = GroupManage(message, uin, gid, gno);
 
             if (!MessageToSend.Equals(""))
             {
