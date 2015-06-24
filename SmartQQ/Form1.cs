@@ -42,10 +42,10 @@ namespace SmartQQ
         bool DisableWeather = false;
         public bool StopSendingHeartPack = false;
         //多个函数要用到的变量
-        
-        string pin = string.Empty;       
-        
-        
+
+        string pin = string.Empty;
+
+
         bool IsGroupSelent = false, IsFriendSelent = false;
         bool DoNotChangeSelentGroupOrPeople = false;
         //数据存储相关
@@ -124,7 +124,7 @@ namespace SmartQQ
             string MessageFromUin = "";
             textBoxLog.Text = temp;
             JsonHeartPackMessage HeartPackMessage = (JsonHeartPackMessage)JsonConvert.DeserializeObject(temp, typeof(JsonHeartPackMessage));
-           
+
             if (HeartPackMessage.retcode == 102)
             {
                 return;
@@ -173,7 +173,7 @@ namespace SmartQQ
                     String message = "";
                     String emojis = "";
                     int j;
-                    for(j =1;j<HeartPackMessage.result[i].value.content.Count;j++)
+                    for (j = 1; j < HeartPackMessage.result[i].value.content.Count; j++)
                     {
                         string temp1 = HeartPackMessage.result[i].value.content[j].ToString();
                         temp1 = temp1.Replace(Environment.NewLine, "");
@@ -187,7 +187,7 @@ namespace SmartQQ
                         else message += (HeartPackMessage.result[i].value.content[j].ToString() + " ");
                     }
                     message = message.Replace("\\\\n", Environment.NewLine);
-                    
+
                     for (j = 0; j < user.result.info.Count; j++)
                         if (user.result.info[j].uin == HeartPackMessage.result[i].value.from_uin)
                         {
@@ -265,8 +265,8 @@ namespace SmartQQ
             temp = "[\\\"face\\\"," + emojiID + "]";
             return temp;
         }
-        private string[] Answer(string message, string uin, string gid="",string gno="")
-        {            
+        private string[] Answer(string message, string uin, string gid = "", string gno = "")
+        {
             string[] MessageToSend = new string[20];
             message = message.Remove(message.Length - 2);
             if (message.Equals(""))
@@ -281,7 +281,7 @@ namespace SmartQQ
                 return MessageToSend;
             }
             int j = 0;
-            if(!gid.Equals(""))
+            if (!gid.Equals(""))
             {
                 int i = -1;
                 string adminuin = "";
@@ -293,13 +293,13 @@ namespace SmartQQ
                         GroupInfoIndex = i;
                         adminuin = groupinfo[i].inf.result.ginfo.owner;
                         //获取群号
-                        if (groupinfo[i].no == null || !groupinfo[i].no.Equals(gno)) 
+                        if (groupinfo[i].no == null || !groupinfo[i].no.Equals(gno))
                         {
                             groupinfo[i].no = gno;
-                            for (j = 0; j < listBoxGroup.Items.Count; j++) 
+                            for (j = 0; j < listBoxGroup.Items.Count; j++)
                             {
                                 string[] tmp = listBoxGroup.Items[j].ToString().Split(':');
-                                if(tmp[0].Equals(gid))
+                                if (tmp[0].Equals(gid))
                                 {
                                     string temp = tmp[0] + ":" + gno;
                                     for (int k = 2; k < tmp.Length; k++)
@@ -309,19 +309,19 @@ namespace SmartQQ
                                     listBoxGroup.Items.Remove(listBoxGroup.Items[j]);
                                     listBoxGroup.Items.Insert(0, temp);
                                     break;
-                                }                                
+                                }
                             }
-                            
+
                         }
                         break;
                     }
-                }                               
+                }
             }
-            if(message.Contains("行情"))
+            if (message.Contains("行情"))
             {
                 bool StockFlag = true;
                 string[] tmp = message.Split('&');
-                if ((!tmp[0].Equals("行情")) || (tmp.Length != 2 && tmp.Length != 3)) 
+                if ((!tmp[0].Equals("行情")) || (tmp.Length != 2 && tmp.Length != 3))
                 {
                     StockFlag = false;
                 }
@@ -344,14 +344,14 @@ namespace SmartQQ
                 if (ExchangeRateFlag)
                 {
                     MessageToSend[0] = GetInfo.GetExchangeRate(tmp[1], tmp[2]);
-                    return MessageToSend;                       
+                    return MessageToSend;
                 }
             }
-            if (message.Contains("天气") && DisableWeather == false) 
+            if (message.Contains("天气") && DisableWeather == false)
             {
                 bool WeatherFlag = true;
                 string[] tmp = message.Split('&');
-                if ((!tmp[0].Equals("天气")) || (tmp.Length != 2 && tmp.Length != 3)) 
+                if ((!tmp[0].Equals("天气")) || (tmp.Length != 2 && tmp.Length != 3))
                 {
                     WeatherFlag = false;
                 }
@@ -379,13 +379,13 @@ namespace SmartQQ
                     if ((!tmp[0].Equals("学习")) || tmp.Length != 3)
                     {
                         StudyFlag = false;
-                        if((tmp[0].Equals("特权学习")) && tmp.Length == 3)
+                        if ((tmp[0].Equals("特权学习")) && tmp.Length == 3)
                         {
                             SuperStudy = true;
                         }
-                    }                    
+                    }
                 }
-                if (tmp.Length != 3 || tmp[1].Replace(" ", "").Equals("") || tmp[2].Replace(" ", "").Equals("")) 
+                if (tmp.Length != 3 || tmp[1].Replace(" ", "").Equals("") || tmp[2].Replace(" ", "").Equals(""))
                 {
                     StudyFlag = false;
                     SuperStudy = false;
@@ -397,7 +397,7 @@ namespace SmartQQ
                     MessageToSend[0] = GetInfo.GetStudyFlagInfo(result, QQNum, tmp[1], tmp[2]);
                     return MessageToSend;
                 }
-                if(StudyFlag)
+                if (StudyFlag)
                 {
                     string result = "";
                     for (int i = 0; i < Badwords.Length; i++)
@@ -405,9 +405,9 @@ namespace SmartQQ
                             result = "ForbiddenWord";
                     if (result.Equals(""))
                         result = AIStudy(tmp[1], tmp[2], QQNum, false);
-                    MessageToSend[0] = GetInfo.GetStudyFlagInfo(result, QQNum, tmp[1], tmp[2]);                    
+                    MessageToSend[0] = GetInfo.GetStudyFlagInfo(result, QQNum, tmp[1], tmp[2]);
                     return MessageToSend;
-                }                
+                }
             }
             MessageToSend[0] = AIGet(message, QQNum);
             if (!MessageToSend[0].Equals(""))
@@ -423,7 +423,7 @@ namespace SmartQQ
                     continue;
                 for (int k = 0; k < i; k++)
                     if (tmp1[k].Equals(tmp1[i]))
-                        RepeatFlag = true;               
+                        RepeatFlag = true;
                 if (RepeatFlag)
                 {
                     RepeatFlag = false;
@@ -465,8 +465,8 @@ namespace SmartQQ
                     }
                 }
             }
-            
-            
+
+
             if (!MsgSendFlag)
             {
                 string XiaoHuangJiMsg = GetXiaoHuangJi(message);
@@ -476,7 +476,7 @@ namespace SmartQQ
                         if (XiaoHuangJiMsg.Contains(Badwords[i]))
                             return null;
                     MessageToSend[0] = "隔壁小黄鸡说：" + XiaoHuangJiMsg;
-                    
+
                     return MessageToSend;
                 }
                 else
@@ -508,7 +508,7 @@ namespace SmartQQ
                 //获取管理员
                 if (groupinfo[GroupInfoIndex].managers == null)
                     groupinfo[GroupInfoIndex].managers = new string[30];
-                    
+
                 groupinfo[GroupInfoIndex].GroupManagerIndex = 0;
                 for (i = 0; i < groupinfo[GroupInfoIndex].inf.result.ginfo.members.Count; i++)
                 {
@@ -619,12 +619,12 @@ namespace SmartQQ
                 MessageToSend = "\\\"" + MessageToSend + "\\\"";
                 SmartQQ.SendMessageToGroup(gid, MessageToSend);
                 return;
-            }                
+            }
             for (int i = 0; i <= groupinfMaxIndex; i++)
             {
                 if (groupinfo[i].gid == gid)
                 {
-                    if (groupinfo[i].enable == null) 
+                    if (groupinfo[i].enable == null)
                     {
                         string url = DicServer + "groupmanage.php?password=" + StudyPassword + "&action=get&gno=" + groupinfo[i].no;
                         string temp = HTTP.HttpGet(url);
@@ -651,7 +651,7 @@ namespace SmartQQ
                     MessageToSend += MessageToSendArray[i];
                     MessageToSendArray[i] = "";
                 }
-            }           
+            }
             if (!MessageToSend.Equals(""))
                 MessageToSend = "\\\"" + MessageToSend + "\\\"";
             string[] tmp = emojis.Split(',');
@@ -671,20 +671,20 @@ namespace SmartQQ
             string MessageToSend = "";
             for (int i = 0; i < 10; i++)
             {
-                if (MessageToSendArray[i] != null && !MessageToSendArray[i].Equals("")) 
+                if (MessageToSendArray[i] != null && !MessageToSendArray[i].Equals(""))
                 {
                     if (MessageToSendArray[i].Equals("None3"))
                         MessageToSendArray[i] = "这句话仍在等待审核哟～～如果要大量添加语库，可以向管理员申请白名单的～";
                     if (i != 0)
                         MessageToSend += Environment.NewLine;
-                    MessageToSend += MessageToSendArray[i];  
+                    MessageToSend += MessageToSendArray[i];
                     MessageToSendArray[i] = "";
                 }
             }
             if (!MessageToSend.Equals(""))
                 MessageToSend = "\\\"" + MessageToSend + "\\\"";
             string[] tmp = emojis.Split(',');
-            for (int i = 0; i < tmp.Length - 1 && i < 10; i++) 
+            for (int i = 0; i < tmp.Length - 1 && i < 10; i++)
             {
                 if (tmp[i].Equals(""))
                     continue;
@@ -750,8 +750,8 @@ namespace SmartQQ
             return temp;
         }
 
-        
-        
+
+
         public string GetXiaoHuangJi(string msg)
         {
             string url = "http://www.xiaohuangji.com/ajax.php";
@@ -777,8 +777,8 @@ namespace SmartQQ
             }
 
         }
-        
-        
+
+
         private void pictureBoxCAPTCHA_Click(object sender, EventArgs e)
         {
             SmartQQ.GetCaptcha();
@@ -888,7 +888,7 @@ namespace SmartQQ
         public void ReLogin()
         {
             LogOut();
-            if(!textBoxCAPTCHA.Text.Equals(""))
+            if (!textBoxCAPTCHA.Text.Equals(""))
                 buttonLogIn_Click(this, EventArgs.Empty);
         }
         public void LogOut()
@@ -999,5 +999,5 @@ namespace SmartQQ
         {
             this.PopulateFunctions();
         }
-    } 
+    }
 }

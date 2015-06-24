@@ -24,7 +24,7 @@ using System.Web;
 // * 本软件作者是何相龙，使用GPL v3许可证进行授权。
 namespace SmartQQ
 {
-    
+
     public static class HTTP
     {
         //网络通信相关

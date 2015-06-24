@@ -39,7 +39,7 @@ namespace SmartQQ
         public static bool NeedCAPTCHA = false;
         public static String CaptchaCode;
 
-        static string[,] realQQ = new string[10000,2];
+        static string[,] realQQ = new string[10000, 2];
         static int realQQIndex = 0;
         public static void SecondLogin(string ID)
         {
@@ -62,7 +62,7 @@ namespace SmartQQ
 
             hash = GetHash(ID, ptwebqq);
         }
-        
+
         public static bool FirstLogin(string ID, string Password, string CAPTCHA)
         {
             //一次登录
@@ -256,10 +256,10 @@ namespace SmartQQ
         }
         public static String GetRealQQ(string uin)
         {
-            for (int i = 0; i < realQQIndex; i++) 
+            for (int i = 0; i < realQQIndex; i++)
             {
-                if (realQQ[i,0] == uin && (!realQQ[i,1].Equals("")))
-                    return realQQ[i,1];
+                if (realQQ[i, 0] == uin && (!realQQ[i, 1].Equals("")))
+                    return realQQ[i, 1];
             }
             String url = "http://s.web2.qq.com/api/get_friend_uin2?tuin=" + uin + "&type=1&vfwebqq=" + vfwebqq + "&t=" + GetTimeStamp();
 
@@ -276,8 +276,8 @@ namespace SmartQQ
             dat = dat.Replace("\n", "");
             string[] tmp = dat.Split(',');
 
-            realQQ[realQQIndex,0] = uin;
-            realQQ[realQQIndex,1] = tmp[0];
+            realQQ[realQQIndex, 0] = uin;
+            realQQ[realQQIndex, 1] = tmp[0];
             realQQIndex++;
             return tmp[0];
         }

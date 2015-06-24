@@ -12,7 +12,7 @@ namespace SmartQQ
         /// 应用程序的主入口点。
         /// </summary>
         public static FormLogin formlogin;
-        [STAThread]        
+        [STAThread]
         static void Main()
         {
             Application.EnableVisualStyles();
