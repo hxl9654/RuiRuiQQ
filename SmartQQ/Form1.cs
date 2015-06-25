@@ -42,10 +42,7 @@ namespace SmartQQ
         bool DisableWeather = false;
         public bool StopSendingHeartPack = false;
         //多个函数要用到的变量
-
         string pin = string.Empty;
-
-
         bool IsGroupSelent = false, IsFriendSelent = false;
         bool DoNotChangeSelentGroupOrPeople = false;
         //数据存储相关
@@ -61,8 +58,8 @@ namespace SmartQQ
             public String enableExchangeRate;
             public String enableStock;
             public String enableStudy;
-            public String enabletalk;
-            public String enablexhj;
+            public String enableTalk;
+            public String enableXHJ;
             public JsonGroupInfoModel inf;
             public String[] managers;
             public int GroupManagerIndex;
@@ -77,6 +74,8 @@ namespace SmartQQ
         public FriendInf[] friendinf = new FriendInf[1000];
         public int friendinfMaxIndex = 0;
         string[] Badwords;
+
+
         private void buttonLogIn_Click(object sender, EventArgs e)
         {
             if (textBoxID.Text.Length == 0)
@@ -441,9 +440,9 @@ namespace SmartQQ
             bool DisableTalkFlag = false;
             if (!gid.Equals(""))
             {
-                if (groupinfo[GroupInfoIndex].enabletalk == null)
+                if (groupinfo[GroupInfoIndex].enableTalk == null)
                     GetGroupSetting(groupinfMaxIndex);
-                if (groupinfo[GroupInfoIndex].enabletalk.Equals("false"))
+                if (groupinfo[GroupInfoIndex].enableTalk.Equals("false"))
                     DisableTalkFlag = true;
             }
             if (!DisableTalkFlag)
@@ -511,9 +510,9 @@ namespace SmartQQ
                     bool DisableFlag = false;
                     if (!gid.Equals(""))
                     {
-                        if (groupinfo[GroupInfoIndex].enablexhj == null)
+                        if (groupinfo[GroupInfoIndex].enableXHJ == null)
                             GetGroupSetting(groupinfMaxIndex);
-                        if (groupinfo[GroupInfoIndex].enablexhj.Equals("false"))
+                        if (groupinfo[GroupInfoIndex].enableXHJ.Equals("false"))
                             DisableFlag = true;
                     }
                     if (!DisableFlag)
@@ -627,8 +626,8 @@ namespace SmartQQ
                         MessageToSend += "天气查询启动：" + groupinfo[GroupInfoIndex].enableWeather + Environment.NewLine;
                         MessageToSend += "学习启动：" + groupinfo[GroupInfoIndex].enableStudy + Environment.NewLine;
                         MessageToSend += "行情查询启动：" + groupinfo[GroupInfoIndex].enableStock + Environment.NewLine;
-                        MessageToSend += "闲聊启动：" + groupinfo[GroupInfoIndex].enabletalk + Environment.NewLine;
-                        MessageToSend += "小黄鸡启动：" + groupinfo[GroupInfoIndex].enablexhj;
+                        MessageToSend += "闲聊启动：" + groupinfo[GroupInfoIndex].enableTalk + Environment.NewLine;
+                        MessageToSend += "小黄鸡启动：" + groupinfo[GroupInfoIndex].enableXHJ;
                         return MessageToSend;
                     }
                     if (HaveRight == false)
@@ -760,7 +759,7 @@ namespace SmartQQ
                         }
                         else if (tmp[1].Equals("启动聊天"))
                         {
-                            if (groupinfo[GroupInfoIndex].enabletalk.Equals("true"))
+                            if (groupinfo[GroupInfoIndex].enableTalk.Equals("true"))
                             {
                                 MessageToSend = "当前聊天已启动";
                                 return MessageToSend;
@@ -775,7 +774,7 @@ namespace SmartQQ
                         }
                         else if (tmp[1].Equals("关闭聊天"))
                         {
-                            if (groupinfo[GroupInfoIndex].enabletalk.Equals("false"))
+                            if (groupinfo[GroupInfoIndex].enableTalk.Equals("false"))
                             {
                                 MessageToSend = "当前聊天已关闭";
                                 return MessageToSend;
@@ -820,7 +819,7 @@ namespace SmartQQ
                         }
                         else if (tmp[1].Equals("启动小黄鸡"))
                         {
-                            if (groupinfo[GroupInfoIndex].enablexhj.Equals("true"))
+                            if (groupinfo[GroupInfoIndex].enableXHJ.Equals("true"))
                             {
                                 MessageToSend = "当前小黄鸡已启动";
                                 return MessageToSend;
@@ -835,7 +834,7 @@ namespace SmartQQ
                         }
                         else if (tmp[1].Equals("关闭小黄鸡"))
                         {
-                            if (groupinfo[GroupInfoIndex].enablexhj.Equals("false"))
+                            if (groupinfo[GroupInfoIndex].enableXHJ.Equals("false"))
                             {
                                 MessageToSend = "当前小黄鸡已关闭";
                                 return MessageToSend;
@@ -869,11 +868,11 @@ namespace SmartQQ
             if (option.Equals("enable"))
                 groupinfo[GroupInfoIndex].enable = value;
             else if (option.Equals("enablexhj"))
-                groupinfo[GroupInfoIndex].enablexhj = value;
+                groupinfo[GroupInfoIndex].enableXHJ = value;
             else if (option.Equals("enableWeather"))
                 groupinfo[GroupInfoIndex].enableWeather = value;
             else if (option.Equals("enabletalk"))
-                groupinfo[GroupInfoIndex].enabletalk = value;
+                groupinfo[GroupInfoIndex].enableTalk = value;
             else if (option.Equals("enableStudy"))
                 groupinfo[GroupInfoIndex].enableStudy = value;
             else if (option.Equals("enableStock"))
@@ -890,21 +889,21 @@ namespace SmartQQ
             if (GroupManageInfo.statu.Equals("success"))
             {
                 groupinfo[GroupInfoIndex].enable = GroupManageInfo.enable;
-                groupinfo[GroupInfoIndex].enablexhj = GroupManageInfo.enablexhj;
+                groupinfo[GroupInfoIndex].enableXHJ = GroupManageInfo.enablexhj;
                 groupinfo[GroupInfoIndex].enableWeather = GroupManageInfo.enableWeather;
-                groupinfo[GroupInfoIndex].enabletalk = GroupManageInfo.enabletalk;
+                groupinfo[GroupInfoIndex].enableTalk = GroupManageInfo.enabletalk;
                 groupinfo[GroupInfoIndex].enableStudy = GroupManageInfo.enableStudy;
                 groupinfo[GroupInfoIndex].enableStock = GroupManageInfo.enableStock;
                 groupinfo[GroupInfoIndex].enableExchangeRate = GroupManageInfo.enableExchangeRate;
 
                 if (groupinfo[GroupInfoIndex].enable.Equals(""))
                     groupinfo[GroupInfoIndex].enable = "true";
-                if (groupinfo[GroupInfoIndex].enablexhj.Equals(""))
-                    groupinfo[GroupInfoIndex].enablexhj = "true";
+                if (groupinfo[GroupInfoIndex].enableXHJ.Equals(""))
+                    groupinfo[GroupInfoIndex].enableXHJ = "true";
                 if (groupinfo[GroupInfoIndex].enableWeather.Equals(""))
                     groupinfo[GroupInfoIndex].enableWeather = "true";
-                if (groupinfo[GroupInfoIndex].enabletalk.Equals(""))
-                    groupinfo[GroupInfoIndex].enabletalk = "true";
+                if (groupinfo[GroupInfoIndex].enableTalk.Equals(""))
+                    groupinfo[GroupInfoIndex].enableTalk = "true";
                 if (groupinfo[GroupInfoIndex].enableStudy.Equals(""))
                     groupinfo[GroupInfoIndex].enableStudy = "true";
                 if (groupinfo[GroupInfoIndex].enableStock.Equals(""))
@@ -915,9 +914,9 @@ namespace SmartQQ
             else
             {
                 groupinfo[GroupInfoIndex].enable = "true";
-                groupinfo[GroupInfoIndex].enablexhj = "true";
+                groupinfo[GroupInfoIndex].enableXHJ = "true";
                 groupinfo[GroupInfoIndex].enableWeather = "true";
-                groupinfo[GroupInfoIndex].enabletalk = "true";
+                groupinfo[GroupInfoIndex].enableTalk = "true";
                 groupinfo[GroupInfoIndex].enableStudy = "true";
                 groupinfo[GroupInfoIndex].enableStock = "true";
                 groupinfo[GroupInfoIndex].enableExchangeRate = "true";
@@ -976,7 +975,7 @@ namespace SmartQQ
             }
             if (!MessageToSend.Equals(""))
                 MessageToSend = "\\\"" + MessageToSend + "\\\"";
-            if (groupinfo[GroupInfoIndex].enable.Equals("true") && groupinfo[GroupInfoIndex].enabletalk.Equals("true"))
+            if (groupinfo[GroupInfoIndex].enable.Equals("true") && groupinfo[GroupInfoIndex].enableTalk.Equals("true"))
             {
                 string[] tmp = emojis.Split(',');
                 for (int i = 0; i < tmp.Length - 1 && i < 10; i++)
@@ -1221,6 +1220,7 @@ namespace SmartQQ
         public void LogOut()
         {
             timerHeart.Stop();
+            System.GC.Collect();
             listBoxFriend.Items.Clear();
             listBoxGroup.Items.Clear();
             textBoxID.Enabled = true;
@@ -1231,6 +1231,7 @@ namespace SmartQQ
             label3.Visible = true;
             pictureBoxCAPTCHA.Visible = true;
             textBoxCAPTCHA.Visible = true;
+            this.AcceptButton = buttonLogIn;
             if (SmartQQ.NeedCAPTCHA) SmartQQ.GetCaptcha();
             listBoxLog.Items.Insert(0, "账号" + textBoxID.Text + "已登出");
         }
