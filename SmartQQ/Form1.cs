@@ -1067,12 +1067,14 @@ namespace SmartQQ
             {
                 return "DisableStudy";
             }
-            String url = DicServer + "addtalk.php?password=" + StudyPassword + "&source=" + source + "&aim=" + aim + "&qqnum=" + QQNum;
+            String url = DicServer + "addtalk.php";
+            string postdata = "password=" + HttpUtility.UrlEncode(StudyPassword) + "&source=" + HttpUtility.UrlEncode(source) + "&aim=" + HttpUtility.UrlEncode(aim) + "&qqnum=" + HttpUtility.UrlEncode(QQNum);
             if (superstudy)
-                url = url + "&superstudy=true";
-            else url = url + "&superstudy=false";
-            string temp = HTTP.HttpGet(url);
-            return temp;
+                postdata = postdata + "&superstudy=true";
+            else postdata = postdata + "&superstudy=false";
+
+            string MsgGet = HTTP.HttpPost(url, "", postdata, Encoding.UTF8, false);
+            return MsgGet;
         }
 
 
@@ -1247,7 +1249,7 @@ namespace SmartQQ
             if (IsGroupSelent)
             {
                 string GName = "";
-                string[] tmp = listBoxGroup.SelectedItem.ToString().Split(':'); 
+                string[] tmp = listBoxGroup.SelectedItem.ToString().Split(':');
                 string MessageToSend = textBoxSendMessage.Text;
                 MessageToSend = "\\\"" + MessageToSend + "\\\"";
 
