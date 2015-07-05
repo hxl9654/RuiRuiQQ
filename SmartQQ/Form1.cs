@@ -628,6 +628,7 @@ namespace SmartQQ
                         MessageToSend += "学习启动：" + groupinfo[GroupInfoIndex].enableStudy + Environment.NewLine;
                         MessageToSend += "行情查询启动：" + groupinfo[GroupInfoIndex].enableStock + Environment.NewLine;
                         MessageToSend += "闲聊启动：" + groupinfo[GroupInfoIndex].enableTalk + Environment.NewLine;
+                        MessageToSend += "表情启动：" + groupinfo[GroupInfoIndex].enableEmoje + Environment.NewLine;
                         MessageToSend += "小黄鸡启动：" + groupinfo[GroupInfoIndex].enableXHJ;
                         return MessageToSend;
                     }
