@@ -60,6 +60,7 @@ namespace SmartQQ
             public String enableStudy;
             public String enableTalk;
             public String enableXHJ;
+            public String enableEmoje;
             public JsonGroupInfoModel inf;
             public String[] managers;
             public int GroupManagerIndex;
@@ -757,7 +758,7 @@ namespace SmartQQ
                                 return MessageToSend;
                             }
                         }
-                        else if (tmp[1].Equals("启动聊天"))
+                        else if (tmp[1].Equals("启动聊天") || tmp[1].Equals("启动闲聊"))
                         {
                             if (groupinfo[GroupInfoIndex].enableTalk.Equals("true"))
                             {
@@ -772,7 +773,7 @@ namespace SmartQQ
                                 return MessageToSend;
                             }
                         }
-                        else if (tmp[1].Equals("关闭聊天"))
+                        else if (tmp[1].Equals("关闭聊天") || tmp[1].Equals("关闭闲聊"))
                         {
                             if (groupinfo[GroupInfoIndex].enableTalk.Equals("false"))
                             {
@@ -847,6 +848,36 @@ namespace SmartQQ
                                 return MessageToSend;
                             }
                         }
+                        else if (tmp[1].Equals("启动表情"))
+                        {
+                            if (groupinfo[GroupInfoIndex].enableEmoje.Equals("true"))
+                            {
+                                MessageToSend = "当前表情已启动";
+                                return MessageToSend;
+                            }
+                            else
+                            {
+                                SetGroupSetting(GroupInfoIndex, "enableEmoje", "true");
+
+                                MessageToSend = "表情启动成功";
+                                return MessageToSend;
+                            }
+                        }
+                        else if (tmp[1].Equals("关闭表情"))
+                        {
+                            if (groupinfo[GroupInfoIndex].enableEmoje.Equals("false"))
+                            {
+                                MessageToSend = "当前表情已关闭";
+                                return MessageToSend;
+                            }
+                            else
+                            {
+                                SetGroupSetting(GroupInfoIndex, "enableEmoje", "false");
+
+                                MessageToSend = "表情关闭成功";
+                                return MessageToSend;
+                            }
+                        }
                         else
                         {
                             MessageToSend = "没有这条指令。";
@@ -879,6 +910,8 @@ namespace SmartQQ
                 groupinfo[GroupInfoIndex].enableStock = value;
             else if (option.Equals("enableExchangeRate"))
                 groupinfo[GroupInfoIndex].enableExchangeRate = value;
+            else if (option.Equals("enableEmoje"))
+                groupinfo[GroupInfoIndex].enableEmoje = value;           
         }
 
         private void GetGroupSetting(int GroupInfoIndex)
@@ -895,6 +928,7 @@ namespace SmartQQ
                 groupinfo[GroupInfoIndex].enableStudy = GroupManageInfo.enableStudy;
                 groupinfo[GroupInfoIndex].enableStock = GroupManageInfo.enableStock;
                 groupinfo[GroupInfoIndex].enableExchangeRate = GroupManageInfo.enableExchangeRate;
+                groupinfo[GroupInfoIndex].enableEmoje = GroupManageInfo.enableEmoje;
 
                 if (groupinfo[GroupInfoIndex].enable.Equals(""))
                     groupinfo[GroupInfoIndex].enable = "true";
@@ -910,6 +944,8 @@ namespace SmartQQ
                     groupinfo[GroupInfoIndex].enableStock = "true";
                 if (groupinfo[GroupInfoIndex].enableExchangeRate.Equals(""))
                     groupinfo[GroupInfoIndex].enableExchangeRate = "true";
+                if (groupinfo[GroupInfoIndex].enableEmoje.Equals(""))
+                    groupinfo[GroupInfoIndex].enableEmoje = "true";
             }
             else
             {
@@ -920,6 +956,7 @@ namespace SmartQQ
                 groupinfo[GroupInfoIndex].enableStudy = "true";
                 groupinfo[GroupInfoIndex].enableStock = "true";
                 groupinfo[GroupInfoIndex].enableExchangeRate = "true";
+                groupinfo[GroupInfoIndex].enableEmoje = "true";
             }
 
         }
@@ -975,7 +1012,7 @@ namespace SmartQQ
             }
             if (!MessageToSend.Equals(""))
                 MessageToSend = "\\\"" + MessageToSend + "\\\"";
-            if (groupinfo[GroupInfoIndex].enable.Equals("true") && groupinfo[GroupInfoIndex].enableTalk.Equals("true"))
+            if (groupinfo[GroupInfoIndex].enable.Equals("true") && groupinfo[GroupInfoIndex].enableTalk.Equals("true") && groupinfo[GroupInfoIndex].enableEmoje.Equals("true"))
             {
                 string[] tmp = emojis.Split(',');
                 for (int i = 0; i < tmp.Length - 1 && i < 10; i++)

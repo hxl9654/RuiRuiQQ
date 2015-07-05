@@ -257,6 +257,7 @@ namespace SmartQQ
         public string enableStudy;
         public string enabletalk;
         public string enablexhj;
+        public string enableEmoje;
 
         public string gno;
         public string statu;
