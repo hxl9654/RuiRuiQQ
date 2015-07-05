@@ -580,7 +580,7 @@ namespace SmartQQ
                 groupinfo[GroupInfoIndex].GroupManagerIndex = 0;
                 for (i = 0; i < groupinfo[GroupInfoIndex].inf.result.ginfo.members.Count; i++)
                 {
-                    if (groupinfo[GroupInfoIndex].inf.result.ginfo.members[i].mflag == 1)
+                    if (groupinfo[GroupInfoIndex].inf.result.ginfo.members[i].mflag % 2 == 1) 
                     {
                         groupinfo[GroupInfoIndex].managers[groupinfo[GroupInfoIndex].GroupManagerIndex] = groupinfo[GroupInfoIndex].inf.result.ginfo.members[i].muin;
                         groupinfo[GroupInfoIndex].GroupManagerIndex++;
