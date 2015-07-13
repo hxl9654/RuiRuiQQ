@@ -1076,7 +1076,7 @@ namespace SmartQQ
             {
                 if (MessageToSendArray[i] != null && !MessageToSendArray[i].Equals("") && !MessageToSendArray[i].Equals("None3"))
                 {
-                    if (i != 0)
+                    if (!MessageToSend.Equals(""))
                         MessageToSend += Environment.NewLine;
                     MessageToSend += MessageToSendArray[i];
                     MessageToSendArray[i] = "";
@@ -1108,7 +1108,7 @@ namespace SmartQQ
                 {
                     if (MessageToSendArray[i].Equals("None3"))
                         MessageToSendArray[i] = "这句话仍在等待审核哟～～如果要大量添加语库，可以向管理员申请白名单的～";
-                    if (i != 0)
+                    if (!MessageToSend.Equals(""))
                         MessageToSend += Environment.NewLine;
                     MessageToSend += MessageToSendArray[i];
                     MessageToSendArray[i] = "";
