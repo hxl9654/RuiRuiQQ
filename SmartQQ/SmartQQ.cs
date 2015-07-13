@@ -114,6 +114,10 @@ namespace SmartQQ
             if (uid.Equals(""))
                 return false;
             MsgId++;
+            content = content.Replace("\r\n", "\n");
+            content = content.Replace("\n\r", "\n");
+            content = content.Replace("\r", "\n");
+            content = content.Replace("\n", Environment.NewLine);
             try
             {
                 string postData = "{\"to\":" + uid;
@@ -152,6 +156,10 @@ namespace SmartQQ
             if (gin.Equals(""))
                 return false;
             MsgId++;
+            content = content.Replace("\r\n", "\n");
+            content = content.Replace("\n\r", "\n");
+            content = content.Replace("\r", "\n");
+            content = content.Replace("\n", Environment.NewLine);
             try
             {
                 string postData = "{\"group_uin\":" + gin
