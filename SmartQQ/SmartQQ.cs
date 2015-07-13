@@ -336,15 +336,21 @@ namespace SmartQQ
             Program.formlogin.textBoxLog.Text = dat;
 
             Program.formlogin.group = (JsonGroupModel)JsonConvert.DeserializeObject(dat, typeof(JsonGroupModel));
-            Program.formlogin.listBoxGroup.Items.Clear();
             int i;
             for (i = 0; i < Program.formlogin.group.result.gnamelist.Count; i++)
             {
-                Program.formlogin.listBoxGroup.Items.Add(Program.formlogin.group.result.gnamelist[i].gid + "::" + Program.formlogin.group.result.gnamelist[i].name);
-                Program.formlogin.groupinfo[i].gid = Program.formlogin.group.result.gnamelist[i].gid;
-                Program.formlogin.groupinfo[i].inf = GetGroupInfo(Program.formlogin.group.result.gnamelist[i].code);
+                bool Already = false;
+                for (int j = 0; j < Program.formlogin.groupinfMaxIndex;j++ )
+                    if (Program.formlogin.groupinfo[j].gid.Equals(Program.formlogin.group.result.gnamelist[i].gid))
+                        Already = true;
+                if (!Already)
+                {
+                    Program.formlogin.listBoxGroup.Items.Add(Program.formlogin.group.result.gnamelist[i].gid + "::" + Program.formlogin.group.result.gnamelist[i].name);
+                    Program.formlogin.groupinfo[Program.formlogin.groupinfMaxIndex].gid = Program.formlogin.group.result.gnamelist[i].gid;
+                    Program.formlogin.groupinfo[Program.formlogin.groupinfMaxIndex].inf = GetGroupInfo(Program.formlogin.group.result.gnamelist[i].code);
+                    Program.formlogin.groupinfMaxIndex++;
+                }           
             }
-            Program.formlogin.groupinfMaxIndex = i;
         }
         public static JsonFriendInfModel GetFriendInf(string uin)
         {

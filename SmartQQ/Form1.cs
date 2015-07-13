@@ -245,6 +245,14 @@ namespace SmartQQ
                         }
                     for (j = 0; ; j++)
                     {
+                        if (j > groupinfMaxIndex)
+                        {
+                            SmartQQ.getGroup();
+                        }
+                        if (j > groupinfMaxIndex)
+                        {
+                            break;
+                        }
                         if (groupinfo[j].gid == gid)
                         {
                             for (int k = 0; k < groupinfo[j].inf.result.minfo.Count; k++)
@@ -1310,6 +1318,7 @@ namespace SmartQQ
         }
         public void LogOut()
         {
+            groupinfMaxIndex = 0;
             timerHeart.Stop();
             System.GC.Collect();
             listBoxFriend.Items.Clear();
