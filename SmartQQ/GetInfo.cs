@@ -57,11 +57,11 @@ namespace SmartQQ
                     ans = ans + "今天白天：" + SloveWeather(weather.f.f1[0].fa) + "，" + weather.f.f1[0].fc + "摄氏度，" + SloveWind(weather.f.f1[0].fe) + SloveWindPower(weather.f.f1[0].fg) + "。";
                 else
                     ans = ans + "今天";
-                ans = ans + "晚上：" + SloveWeather(weather.f.f1[0].fb) + "，" + weather.f.f1[0].fd + "摄氏度，" + SloveWind(weather.f.f1[0].ff) + SloveWindPower(weather.f.f1[0].fh) + "。" + Environment.NewLine;
+                ans = ans + "晚上：" + SloveWeather(weather.f.f1[0].fb) + "，" + weather.f.f1[0].fd + "摄氏度，" + SloveWind(weather.f.f1[0].ff) + SloveWindPower(weather.f.f1[0].fh) + "。日出日落时间：" + weather.f.f1[0].fi + Environment.NewLine;
                 ans = ans + "明天白天：" + SloveWeather(weather.f.f1[1].fa) + "，" + weather.f.f1[1].fc + "摄氏度，" + SloveWind(weather.f.f1[1].fe) + SloveWindPower(weather.f.f1[1].fg) + "。";
-                ans = ans + "晚上：" + SloveWeather(weather.f.f1[1].fb) + "，" + weather.f.f1[1].fd + "摄氏度，" + SloveWind(weather.f.f1[1].ff) + SloveWindPower(weather.f.f1[1].fh) + "。" + Environment.NewLine;
+                ans = ans + "晚上：" + SloveWeather(weather.f.f1[1].fb) + "，" + weather.f.f1[1].fd + "摄氏度，" + SloveWind(weather.f.f1[1].ff) + SloveWindPower(weather.f.f1[1].fh) + "。日出日落时间：" + weather.f.f1[1].fi + Environment.NewLine;
                 ans = ans + "后天白天：" + SloveWeather(weather.f.f1[2].fa) + "，" + weather.f.f1[2].fc + "摄氏度，" + SloveWind(weather.f.f1[2].fe) + SloveWindPower(weather.f.f1[2].fg) + "。";
-                ans = ans + "晚上：" + SloveWeather(weather.f.f1[2].fb) + "，" + weather.f.f1[2].fd + "摄氏度，" + SloveWind(weather.f.f1[2].ff) + SloveWindPower(weather.f.f1[2].fh) + "。";
+                ans = ans + "晚上：" + SloveWeather(weather.f.f1[2].fb) + "，" + weather.f.f1[2].fd + "摄氏度，" + SloveWind(weather.f.f1[2].ff) + SloveWindPower(weather.f.f1[2].fh) + "。日出日落时间：" + weather.f.f1[2].fi;
             }
             else if (target.Equals("index"))
             {
@@ -297,6 +297,36 @@ namespace SmartQQ
             if (tmp.Length == 1)
                 return "参数错误";
             string ans = "根据新浪财经的信息，" + tmp[0] + "：现价，" + tmp[1] + "；涨跌" + tmp[2] + "，" + tmp[3] + "%；成交量，" + tmp[4] + "手，" + tmp[5] + "万元。";
+            return ans;
+        }
+
+        internal static string GetCityInfo(string city, string target)
+        {
+            if ((!city.Equals("呼市郊区")) && (!city.Equals("津市")) && (!city.Equals("沙市")))
+            {
+                city = city.Replace("省", "");
+                city = city.Replace("市", "");
+            }
+            city = city.Replace(" ", "");
+            city = city.Replace("\r", "");
+            city = city.Replace("\n", "");
+
+            target = target.Replace(" ", "");
+            target = target.Replace("\r", "");
+            target = target.Replace("\n", "");
+            string ans = "";
+
+            string url = "http://smartqq.hxlxz.com/weather.php?city=" + city + "&type=forecast";
+            string temp = HTTP.HttpGet(url);
+            if(temp.Equals("NoCity"))
+                return "未查询到指定城市 " + city + " 的信息";
+
+            JsonWeatherModel weather = (JsonWeatherModel)JsonConvert.DeserializeObject(temp, typeof(JsonWeatherModel));
+
+            ans = "城市 " + weather.c.c3 + "（" + weather.c.c2 + "） 的信息如下：" + Environment.NewLine;
+            ans += "所在省市：" + weather.c.c7 + "省" + weather.c.c5 + "市" + "（" + weather.c.c6 + " " + weather.c.c4 + "）" + Environment.NewLine;
+            ans += "区号：" + weather.c.c11 + "，邮编：" + weather.c.c12 + "。城市级别：" + weather.c.c10 + "级城市" + Environment.NewLine;
+            ans += "经度：" + weather.c.c13 + "，维度：" + weather.c.c14 + "，海拔：" + weather.c.c15 + "。雷达站" + weather.c.c16;
             return ans;
         }
     }

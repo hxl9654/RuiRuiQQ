@@ -39,7 +39,6 @@ namespace SmartQQ
         string StudyPassword = "";
         string DicServer = "";
         bool DisableStudy = false;
-        bool DisableWeather = false;
         public bool StopSendingHeartPack = false;
         //多个函数要用到的变量
         string pin = string.Empty;
@@ -61,6 +60,7 @@ namespace SmartQQ
             public String enableTalk;
             public String enableXHJ;
             public String enableEmoje;
+            public String enableCityInfo;
             public JsonGroupInfoModel inf;
             public String[] managers;
             public int GroupManagerIndex;
@@ -354,7 +354,7 @@ namespace SmartQQ
                     }
                 }
             }
-            if (message.Contains("天气") && DisableWeather == false)
+            if (message.Contains("天气"))
             {
                 bool DisableFlag = false;
                 if (!gid.Equals(""))
@@ -378,6 +378,34 @@ namespace SmartQQ
                             MessageToSend[0] = GetInfo.GetWeather(tmp[1], "");
                         else
                             MessageToSend[0] = GetInfo.GetWeather(tmp[1], tmp[2]);
+                        return MessageToSend;
+                    }
+                }
+            }
+            if (message.Contains("城市信息"))
+            {
+                bool DisableFlag = false;
+                if (!gid.Equals(""))
+                {
+                    if (groupinfo[GroupInfoIndex].enableCityInfo == null)
+                        GetGroupSetting(groupinfMaxIndex);
+                    if (groupinfo[GroupInfoIndex].enableCityInfo.Equals("false"))
+                        DisableFlag = true;
+                }
+                if (!DisableFlag)
+                {
+                    bool CityInfoFlag = true;
+                    string[] tmp = message.Split('&');
+                    if ((!tmp[0].Equals("城市信息")) || (tmp.Length != 2 && tmp.Length != 3))
+                    {
+                        CityInfoFlag = false;
+                    }
+                    if (CityInfoFlag)
+                    {
+                        if (tmp.Length == 2)
+                            MessageToSend[0] = GetInfo.GetCityInfo(tmp[1], "");
+                        else
+                            MessageToSend[0] = GetInfo.GetCityInfo(tmp[1], tmp[2]);
                         return MessageToSend;
                     }
                 }
@@ -625,6 +653,7 @@ namespace SmartQQ
                         MessageToSend = "机器人启动：" + groupinfo[GroupInfoIndex].enable + Environment.NewLine;
                         MessageToSend += "汇率查询启动：" + groupinfo[GroupInfoIndex].enableExchangeRate + Environment.NewLine;
                         MessageToSend += "天气查询启动：" + groupinfo[GroupInfoIndex].enableWeather + Environment.NewLine;
+                        MessageToSend += "城市信息查询启动：" + groupinfo[GroupInfoIndex].enableCityInfo + Environment.NewLine;
                         MessageToSend += "学习启动：" + groupinfo[GroupInfoIndex].enableStudy + Environment.NewLine;
                         MessageToSend += "行情查询启动：" + groupinfo[GroupInfoIndex].enableStock + Environment.NewLine;
                         MessageToSend += "闲聊启动：" + groupinfo[GroupInfoIndex].enableTalk + Environment.NewLine;
@@ -666,6 +695,36 @@ namespace SmartQQ
                                 SetGroupSetting(GroupInfoIndex, "enable", "false");
 
                                 MessageToSend = "机器人关闭成功";
+                                return MessageToSend;
+                            }
+                        }
+                        else if (tmp[1].Equals("启动城市信息查询"))
+                        {
+                            if (groupinfo[GroupInfoIndex].enableCityInfo.Equals("true"))
+                            {
+                                MessageToSend = "当前城市信息查询已启动";
+                                return MessageToSend;
+                            }
+                            else
+                            {
+                                SetGroupSetting(GroupInfoIndex, "enableCityInfo", "true");
+
+                                MessageToSend = "天气查询启动成功";
+                                return MessageToSend;
+                            }
+                        }
+                        else if (tmp[1].Equals("关闭城市信息查询"))
+                        {
+                            if (groupinfo[GroupInfoIndex].enableCityInfo.Equals("false"))
+                            {
+                                MessageToSend = "当前城市信息查询已关闭";
+                                return MessageToSend;
+                            }
+                            else
+                            {
+                                SetGroupSetting(GroupInfoIndex, "enableCityInfo", "false");
+
+                                MessageToSend = "城市信息查询关闭成功";
                                 return MessageToSend;
                             }
                         }
@@ -912,7 +971,9 @@ namespace SmartQQ
             else if (option.Equals("enableExchangeRate"))
                 groupinfo[GroupInfoIndex].enableExchangeRate = value;
             else if (option.Equals("enableEmoje"))
-                groupinfo[GroupInfoIndex].enableEmoje = value;           
+                groupinfo[GroupInfoIndex].enableEmoje = value;      
+            else if (option.Equals("enableCityInfo"))
+                groupinfo[GroupInfoIndex].enableCityInfo = value;             
         }
 
         private void GetGroupSetting(int GroupInfoIndex)
@@ -930,7 +991,8 @@ namespace SmartQQ
                 groupinfo[GroupInfoIndex].enableStock = GroupManageInfo.enableStock;
                 groupinfo[GroupInfoIndex].enableExchangeRate = GroupManageInfo.enableExchangeRate;
                 groupinfo[GroupInfoIndex].enableEmoje = GroupManageInfo.enableEmoje;
-
+                groupinfo[GroupInfoIndex].enableCityInfo = GroupManageInfo.enableCityInfo;
+                
                 if (groupinfo[GroupInfoIndex].enable.Equals(""))
                     groupinfo[GroupInfoIndex].enable = "true";
                 if (groupinfo[GroupInfoIndex].enableXHJ.Equals(""))
@@ -947,6 +1009,8 @@ namespace SmartQQ
                     groupinfo[GroupInfoIndex].enableExchangeRate = "true";
                 if (groupinfo[GroupInfoIndex].enableEmoje.Equals(""))
                     groupinfo[GroupInfoIndex].enableEmoje = "true";
+                if (groupinfo[GroupInfoIndex].enableCityInfo.Equals(""))
+                    groupinfo[GroupInfoIndex].enableCityInfo = "true";
             }
             else
             {
@@ -958,6 +1022,7 @@ namespace SmartQQ
                 groupinfo[GroupInfoIndex].enableStock = "true";
                 groupinfo[GroupInfoIndex].enableExchangeRate = "true";
                 groupinfo[GroupInfoIndex].enableEmoje = "true";
+                groupinfo[GroupInfoIndex].enableCityInfo = "true";
             }
 
         }
