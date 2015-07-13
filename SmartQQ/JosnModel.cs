@@ -219,7 +219,8 @@ namespace SmartQQ
         public string enabletalk;
         public string enablexhj;
         public string enableEmoje;
-        public string enableCityInfo;       
+        public string enableCityInfo;
+        public string enableWiki;
 
         public string gno;
         public string statu;

@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Text;
+using System.Web;
 // *   This program is free software: you can redistribute it and/or modify
 // *   it under the terms of the GNU General Public License as published by
 // *   the Free Software Foundation, either version 3 of the License, or
@@ -256,7 +257,18 @@ namespace SmartQQ
                 return "根据cryptonator的信息，" + p1 + "-" + p2 + "的汇率：" + ExchangeRate.ticker.price;
             else return "Error:" + ExchangeRate.error;
         }
-
+        public static string GetWiki(string keyword)
+        {
+            string url = "http://www.baike.com/wiki/" + keyword;
+            string temp = HTTP.HttpGet(url);
+            temp = temp.Replace("<meta content=\"", "&");
+            temp = temp.Replace("\" name=\"description\">", "&");
+            string[] tmp = temp.Split('&');
+            if (!tmp[1].Equals(""))
+                return tmp[1] + Environment.NewLine + "详情请查看http://www.baike.com/wiki/" + HttpUtility.UrlEncode(keyword);
+            else
+                return "";
+        }
         public static string GetStock(string p1, string p2 = "")
         {
             string url = "";
