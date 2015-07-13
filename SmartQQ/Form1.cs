@@ -123,7 +123,7 @@ namespace SmartQQ
             textBoxCAPTCHA.Text = "";
             this.AcceptButton = this.buttonSend;
         }
-        
+
         public void HeartPackAction(string temp)
         {
             string GName = "";
@@ -643,7 +643,7 @@ namespace SmartQQ
                         adminuin = groupinfo[i].inf.result.ginfo.owner;
                         break;
                     }
-                }               
+                }
                 //获取管理员
                 if (groupinfo[GroupInfoIndex].managers == null)
                 {
@@ -660,7 +660,7 @@ namespace SmartQQ
                         }
                     }
                 }
-                    
+
                 bool GroupManageFlag = true;
                 string[] tmp = message.Split('&');
                 tmp[1] = tmp[1].Replace("\r", "");
@@ -762,7 +762,7 @@ namespace SmartQQ
                             {
                                 SetGroupSetting(GroupInfoIndex, "enableCityInfo", "true");
 
-                                MessageToSend = "天气查询启动成功";
+                                MessageToSend = "城市信息查询启动成功";
                                 return MessageToSend;
                             }
                         }
@@ -1054,11 +1054,11 @@ namespace SmartQQ
             else if (option.Equals("enableExchangeRate"))
                 groupinfo[GroupInfoIndex].enableExchangeRate = value;
             else if (option.Equals("enableEmoje"))
-                groupinfo[GroupInfoIndex].enableEmoje = value;      
+                groupinfo[GroupInfoIndex].enableEmoje = value;
             else if (option.Equals("enableCityInfo"))
                 groupinfo[GroupInfoIndex].enableCityInfo = value;
             else if (option.Equals("enableWiki"))
-                groupinfo[GroupInfoIndex].enableWiki = value; 
+                groupinfo[GroupInfoIndex].enableWiki = value;
         }
 
         private void GetGroupSetting(int GroupInfoIndex)
@@ -1078,7 +1078,7 @@ namespace SmartQQ
                 groupinfo[GroupInfoIndex].enableEmoje = GroupManageInfo.enableEmoje;
                 groupinfo[GroupInfoIndex].enableCityInfo = GroupManageInfo.enableCityInfo;
                 groupinfo[GroupInfoIndex].enableWiki = GroupManageInfo.enableWiki;
-                
+
                 if (groupinfo[GroupInfoIndex].enable.Equals(""))
                     groupinfo[GroupInfoIndex].enable = "true";
                 if (groupinfo[GroupInfoIndex].enableXHJ.Equals(""))
@@ -1277,7 +1277,7 @@ namespace SmartQQ
             string MsgGet = HTTP.HttpPost(url, "http://www.xiaohuangji.com/", postdata, Encoding.UTF8, false, 10000);
             return MsgGet;
         }
-        
+
 
         private void GetCAPTCHA()
         {

@@ -348,7 +348,7 @@ namespace SmartQQ
             for (i = 0; i < Program.formlogin.group.result.gnamelist.Count; i++)
             {
                 bool Already = false;
-                for (int j = 0; j < Program.formlogin.groupinfMaxIndex;j++ )
+                for (int j = 0; j < Program.formlogin.groupinfMaxIndex; j++)
                     if (Program.formlogin.groupinfo[j].gid.Equals(Program.formlogin.group.result.gnamelist[i].gid))
                         Already = true;
                 if (!Already)
@@ -357,7 +357,7 @@ namespace SmartQQ
                     Program.formlogin.groupinfo[Program.formlogin.groupinfMaxIndex].gid = Program.formlogin.group.result.gnamelist[i].gid;
                     Program.formlogin.groupinfo[Program.formlogin.groupinfMaxIndex].inf = GetGroupInfo(Program.formlogin.group.result.gnamelist[i].code);
                     Program.formlogin.groupinfMaxIndex++;
-                }           
+                }
             }
         }
         public static JsonFriendInfModel GetFriendInf(string uin)

@@ -41,15 +41,15 @@ namespace SmartQQ
             target = target.Replace("\n", "");
             string ans = "";
 
-            if(target.Equals("指数"))
-                target="index";
+            if (target.Equals("指数"))
+                target = "index";
             else
-                target="forecast";
+                target = "forecast";
             string url = "http://smartqq.hxlxz.com/weather.php?city=" + city + "&type=" + target;
             string temp = HTTP.HttpGet(url);
-            if(temp.Equals("NoCity"))
+            if (temp.Equals("NoCity"))
                 return "未查询到指定城市 " + city + " 的天气信息";
-  
+
             if (target.Equals("forecast"))
             {
                 JsonWeatherModel weather = (JsonWeatherModel)JsonConvert.DeserializeObject(temp, typeof(JsonWeatherModel));
@@ -73,7 +73,7 @@ namespace SmartQQ
                 ans = ans + WeatherIndex.i[2].i2 + "：" + WeatherIndex.i[2].i4 + "；" + WeatherIndex.i[2].i5;
             }
             return ans;
-         
+
         }
 
         private static string SloveWind(string code)
@@ -197,7 +197,7 @@ namespace SmartQQ
                 return "霾";
             else if (code == "99")
                 return "无";
-            else 
+            else
                 return "暂时无法获取";
         }
         public static string GetStudyFlagInfo(string result, string QQNum, string tmp1, string tmp2)
@@ -244,7 +244,7 @@ namespace SmartQQ
         {
             string url = "https://query.yahooapis.com/v1/public/yql?q=select%20id,Rate%20from%20yahoo.finance.xchange%20where%20pair%20in%20%28%22";
             url += p1 + p2 + "%22%29&env=store://datatables.org/alltableswithkeys&format=json";
-            string temp = HTTP.HttpGet(url,100000,null,"");
+            string temp = HTTP.HttpGet(url, 100000, null, "");
             JsonYahooExchangeRateModel ExchangeRateYahoo = (JsonYahooExchangeRateModel)JsonConvert.DeserializeObject(temp, typeof(JsonYahooExchangeRateModel));
             if (!ExchangeRateYahoo.query.results.rate.Rate.Equals("N/A"))
             {
@@ -338,7 +338,7 @@ namespace SmartQQ
 
             string url = "http://smartqq.hxlxz.com/weather.php?city=" + city + "&type=forecast";
             string temp = HTTP.HttpGet(url);
-            if(temp.Equals("NoCity"))
+            if (temp.Equals("NoCity"))
                 return "未查询到指定城市 " + city + " 的信息";
 
             JsonWeatherModel weather = (JsonWeatherModel)JsonConvert.DeserializeObject(temp, typeof(JsonWeatherModel));
