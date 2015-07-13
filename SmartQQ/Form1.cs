@@ -184,6 +184,8 @@ namespace SmartQQ
                         string temp1 = HeartPackMessage.result[i].value.content[j].ToString();
                         temp1 = temp1.Replace(Environment.NewLine, "");
                         temp1 = temp1.Replace(" ", "");
+                        if (temp1.Contains("[\"cface\","))
+                            continue;
                         if (temp1.Contains("[\"face\","))
                         {
                             string emojiID = temp1.Replace("[\"face\",", "");
@@ -226,6 +228,8 @@ namespace SmartQQ
                         string temp1 = HeartPackMessage.result[i].value.content[j].ToString();
                         temp1 = temp1.Replace(Environment.NewLine, "");
                         temp1 = temp1.Replace(" ", "");
+                        if (temp1.Contains("[\"cface\","))
+                            continue;
                         if (temp1.Contains("[\"face\","))
                         {
                             string emojiID = temp1.Replace("[\"face\",", "");
