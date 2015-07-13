@@ -190,64 +190,6 @@ namespace SmartQQ
             public String price;
         }
     }
-    public class JsonWeatherCityCodeModel
-    {
-        public List<paramCitycode> citycodes;
-        public class paramCitycode
-        {
-            public String province;
-            public List<paramcities> cities;
-            public class paramcities
-            {
-                public String city;
-                public String code;
-            }
-        }
-
-    }
-    public class JsonWeatherModel
-    {
-        public paramWeatherInfo weatherinfo;
-        public class paramWeatherInfo
-        {
-            public String city;
-            public String fchh;         //发布时间
-            public String date_y;       //日期
-            public String week;         //星期
-
-            public String temp1;        //气温
-            public String temp2;
-            public String temp3;
-            public String temp4;
-            public String temp5;
-            public String temp6;
-
-            public String weather1;     //天气描述
-            public String weather2;
-            public String weather3;
-            public String weather4;
-            public String weather5;
-            public String weather6;
-
-            public String wind1;
-            public String wind2;
-            public String wind3;
-            public String wind4;
-            public String wind5;
-            public String wind6;
-
-            public String index;        //天气指数
-            public String index_d;      //穿衣指数
-            public String index_uv;     //紫外线指数
-            public String index_xc;     //洗车指数
-            public String index_tr;     //旅游指数
-            public String index_co;     //舒适指数
-            public String index_cl;     //晨练指数
-            public String index_ls;     //晾晒指数
-            public String index_ag;     //过敏指数
-        }
-
-    }
     public class JsonGroupManageModel
     {
         public string enable;
@@ -262,5 +204,59 @@ namespace SmartQQ
         public string gno;
         public string statu;
         public string error;
+    }
+    public class JsonWeatherModel
+    {
+        public paramC c;
+        public paramF f;
+        public class paramC
+        {
+            public String c1;   //区域ID
+            public String c2;   //城市英文名
+            public String c3;   //城市中文名
+            public String c4;   //城市所在市英文名
+            public String c5;   //城市所在市中文名
+            public String c6;   //城市所在省英文名
+            public String c7;   //城市所在省中文名
+            public String c8;   //城市所在国英文名
+            public String c9;   //城市所在国中文名
+            public String c10;  //城市级别
+            public String c11;  //城市区号
+            public String c12;  //邮编
+            public String c13;  //经度
+            public String c14;  //纬度
+            public String c15;  //海拔
+            public String c16;  //雷达站号
+            public String c17;  //时区
+        }
+        public class paramF
+        {
+            public String f0;   //预报发布时间
+            public List<paramF1> f1;
+        }
+        public class paramF1
+        {
+            public String fa;   //白天天气现象编号
+            public String fb;   //晚上天气现象编号
+            public String fc;   //白天气温
+            public String fd;   //晚上气温
+            public String fe;   //白天风向编号
+            public String ff;   //晚上风向编号
+            public String fg;   //白天风力编号
+            public String fh;   //晚上风力编号
+            public String fi;   //日出日落时间
+        }
+    }
+    public class JsonWeatherIndexModel
+    {
+        public List<paramI> i;
+        public class paramI
+        {
+            public string i1;   //指数简称
+            public string i2;   //指数名称
+            public string i3;   //指数别称
+            public string i4;   //指数级别
+            public string i5;   //级别说明
+        }
     }
 }

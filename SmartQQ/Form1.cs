@@ -1219,27 +1219,6 @@ namespace SmartQQ
             }
             else Badwords = new string[0];
             NoFile = false;
-            try
-            {
-                FileStream file = new FileStream(Environment.CurrentDirectory + "\\cityweathercode.txt", FileMode.Open);
-                file.Seek(0, SeekOrigin.Begin);
-                file.Read(byData, 0, 100000);
-                Decoder decoder = Encoding.UTF8.GetDecoder();
-                decoder.GetChars(byData, 0, byData.Length, charData, 0);
-                file.Close();
-            }
-            catch (System.IO.FileNotFoundException)
-            {
-                NoFile = true;
-            }
-            if (!NoFile)
-            {
-                string tmp = "";
-                for (int i = 0; i < charData.Length; i++)
-                    if (charData[i] != '\0') tmp += charData[i];
-                GetInfo.citycode = (JsonWeatherCityCodeModel)JsonConvert.DeserializeObject(tmp, typeof(JsonWeatherCityCodeModel));
-            }
-            else DisableWeather = true;
         }
         public FormLogin()
         {

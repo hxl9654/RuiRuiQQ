@@ -24,14 +24,13 @@ namespace SmartQQ
 {
     public static class GetInfo
     {
-        public static JsonWeatherCityCodeModel citycode;
         public static string GetWeather(string city, string target)
         {
-            bool FlagProvinceFound = false;
-            bool FlagCityFound = false;
-            string citycodestring = "";
-            city = city.Replace("省", "");
-            city = city.Replace("市", "");
+            if ((!city.Equals("呼市郊区")) && (!city.Equals("津市")) && (!city.Equals("沙市")))
+            {
+                city = city.Replace("省", "");
+                city = city.Replace("市", "");
+            }
             city = city.Replace(" ", "");
             city = city.Replace("\r", "");
             city = city.Replace("\n", "");
@@ -39,69 +38,167 @@ namespace SmartQQ
             target = target.Replace(" ", "");
             target = target.Replace("\r", "");
             target = target.Replace("\n", "");
+            string ans = "";
 
-            for (int i = 0; i < citycode.citycodes.Count; i++)
+            if(target.Equals("指数"))
+                target="index";
+            else
+                target="forecast";
+            string url = "http://smartqq.hxlxz.com/weather.php?city=" + city + "&type=" + target;
+            string temp = HTTP.HttpGet(url);
+            if(temp.Equals("NoCity"))
+                return "未查询到指定城市 " + city + " 的天气信息";
+  
+            if (target.Equals("forecast"))
             {
-                if (citycode.citycodes[i].province.Equals(city))
-                    FlagProvinceFound = true;
-                for (int j = 0; j < citycode.citycodes[i].cities.Count; j++)
-                {
-                    if (citycode.citycodes[i].cities[j].city.Equals(city))
-                    {
-                        citycodestring = citycode.citycodes[i].cities[j].code;
-                        FlagCityFound = true;
-                        break;
-                    }
-                }
-                if (FlagCityFound)
-                    break;
-            }
-            if (FlagCityFound)
-            {
-                string ans = "";
-                string url = "http://m.weather.com.cn/atad/" + citycodestring + ".html";
-                string temp = HTTP.HttpGet(url);
                 JsonWeatherModel weather = (JsonWeatherModel)JsonConvert.DeserializeObject(temp, typeof(JsonWeatherModel));
-                if (target.Equals("五天") || target.Equals("5天") || target.Equals("五日") || target.Equals("5日"))
-                {
-                    string[] week = { "星期一", "星期二", "星期三", "星期四", "星期五", "星期六", "星期日" };
-                    int WeekIndex = 0;
-                    for (int i = 0; i < 7; i++)
-                        if (weather.weatherinfo.week.Equals(week[i]))
-                        {
-                            WeekIndex = i;
-                            break;
-                        }
-                    ans = "根据中国天气网于今天" + weather.weatherinfo.fchh + "时发布的气象预报，" + weather.weatherinfo.city + "的气象信息如下：" + Environment.NewLine;
-                    ans = ans + "今天" + weather.weatherinfo.weather1 + "，气温" + weather.weatherinfo.temp1 + "，风力：" + weather.weatherinfo.wind1 + "。" + Environment.NewLine;
-                    ans = ans + "明天" + weather.weatherinfo.weather2 + "，气温" + weather.weatherinfo.temp2 + "，风力：" + weather.weatherinfo.wind2 + "。" + Environment.NewLine;
-                    ans = ans + "后天" + weather.weatherinfo.weather3 + "，气温" + weather.weatherinfo.temp3 + "，风力：" + weather.weatherinfo.wind3 + "。" + Environment.NewLine;
-                    ans = ans + week[(WeekIndex + 3) % 7] + weather.weatherinfo.weather4 + "，气温" + weather.weatherinfo.temp4 + "，风力：" + weather.weatherinfo.wind4 + "。" + Environment.NewLine;
-                    ans = ans + week[(WeekIndex + 4) % 7] + weather.weatherinfo.weather5 + "，气温" + weather.weatherinfo.temp5 + "，风力：" + weather.weatherinfo.wind5 + "。" + Environment.NewLine;
-                    ans = ans + week[(WeekIndex + 5) % 7] + weather.weatherinfo.weather6 + "，气温" + weather.weatherinfo.temp6 + "，风力：" + weather.weatherinfo.wind6 + "。";
-                }
-                else if (target.Equals("指数"))
-                {
-                    ans = "根据中国天气网于今天" + weather.weatherinfo.fchh + "时发布的气象预报，" + weather.weatherinfo.city + "的气象指数如下：" + Environment.NewLine;
-                    ans = ans + "天气指数：" + weather.weatherinfo.index + "，穿衣指数：" + weather.weatherinfo.index_d + "。" + Environment.NewLine;
-                    ans = ans + "紫外线指数：" + weather.weatherinfo.index_uv + "，洗车指数：" + weather.weatherinfo.index_xc + "，晾晒指数：" + weather.weatherinfo.index_ls + "，旅游指数：" + weather.weatherinfo.index_tr + "。" + Environment.NewLine;
-                    ans = ans + "晨练指数：" + weather.weatherinfo.index_cl + "，过敏指数：" + weather.weatherinfo.index_ag + "，舒适指数：" + weather.weatherinfo.index_co + "。";
-                }
+                ans = "根据中国天气网于" + weather.f.f0 + "发布的气象预报，" + weather.c.c3 + "的气象信息如下：" + Environment.NewLine;
+                if (weather.f.f1[0].fa != null && !weather.f.f1[0].fa.Equals(""))
+                    ans = ans + "今天白天：" + SloveWeather(weather.f.f1[0].fa) + "，" + weather.f.f1[0].fc + "摄氏度，" + SloveWind(weather.f.f1[0].fe) + SloveWindPower(weather.f.f1[0].fg) + "。";
                 else
-                {
-                    ans = "根据中国天气网于今天" + weather.weatherinfo.fchh + "时发布的气象预报，" + weather.weatherinfo.city + "：" + Environment.NewLine;
-                    ans = ans + "今天" + weather.weatherinfo.weather1 + "，气温" + weather.weatherinfo.temp1 + "，风力：" + weather.weatherinfo.wind1 + "。" + Environment.NewLine;
-                    ans = ans + "明天" + weather.weatherinfo.weather2 + "，气温" + weather.weatherinfo.temp2 + "，风力：" + weather.weatherinfo.wind2 + "。";
-                }
-                return ans;
+                    ans = ans + "今天";
+                ans = ans + "晚上：" + SloveWeather(weather.f.f1[0].fb) + "，" + weather.f.f1[0].fd + "摄氏度，" + SloveWind(weather.f.f1[0].ff) + SloveWindPower(weather.f.f1[0].fh) + "。" + Environment.NewLine;
+                ans = ans + "明天白天：" + SloveWeather(weather.f.f1[1].fa) + "，" + weather.f.f1[1].fc + "摄氏度，" + SloveWind(weather.f.f1[1].fe) + SloveWindPower(weather.f.f1[1].fg) + "。";
+                ans = ans + "晚上：" + SloveWeather(weather.f.f1[1].fb) + "，" + weather.f.f1[1].fd + "摄氏度，" + SloveWind(weather.f.f1[1].ff) + SloveWindPower(weather.f.f1[1].fh) + "。" + Environment.NewLine;
+                ans = ans + "后天白天：" + SloveWeather(weather.f.f1[2].fa) + "，" + weather.f.f1[2].fc + "摄氏度，" + SloveWind(weather.f.f1[2].fe) + SloveWindPower(weather.f.f1[2].fg) + "。";
+                ans = ans + "晚上：" + SloveWeather(weather.f.f1[2].fb) + "，" + weather.f.f1[2].fd + "摄氏度，" + SloveWind(weather.f.f1[2].ff) + SloveWindPower(weather.f.f1[2].fh) + "。";
             }
-            else if (FlagProvinceFound)
+            else if (target.Equals("index"))
             {
-                return "查询天气时，请指定具体的城市，而不是省份。";
+                JsonWeatherIndexModel WeatherIndex = (JsonWeatherIndexModel)JsonConvert.DeserializeObject(temp, typeof(JsonWeatherIndexModel));
+                ans = "根据中国天气网发布的气象预报，" + city + "的气象信息如下：" + Environment.NewLine;
+                ans = ans + WeatherIndex.i[0].i2 + "：" + WeatherIndex.i[0].i4 + "；" + WeatherIndex.i[0].i5 + Environment.NewLine;
+                ans = ans + WeatherIndex.i[1].i2 + "：" + WeatherIndex.i[1].i4 + "；" + WeatherIndex.i[1].i5 + Environment.NewLine;
+                ans = ans + WeatherIndex.i[2].i2 + "：" + WeatherIndex.i[2].i4 + "；" + WeatherIndex.i[2].i5;
             }
-            else return "未查询到指定城市 " + city + " 的天气信息";
+            return ans;
+         
         }
 
+        private static string SloveWind(string code)
+        {
+            if (code == "0")
+                return "";
+            else if (code == "1")
+                return "东北风";
+            else if (code == "2")
+                return "东风";
+            else if (code == "3")
+                return "东南风";
+            else if (code == "4")
+                return "南风";
+            else if (code == "5")
+                return "西南风";
+            else if (code == "6")
+                return "西风";
+            else if (code == "7")
+                return "西北风";
+            else if (code == "8")
+                return "北风";
+            else if (code == "9")
+                return "旋转风";
+            else
+                return "";
+        }
+
+        private static string SloveWindPower(string code)
+        {
+            if (code == "0")
+                return "微风";
+            else if (code == "1")
+                return "3-4级";
+            else if (code == "2")
+                return "4-5级";
+            else if (code == "3")
+                return "5-6级";
+            else if (code == "4")
+                return "6-7级";
+            else if (code == "5")
+                return "7-8级";
+            else if (code == "6")
+                return "8-9级";
+            else if (code == "7")
+                return "9-10级";
+            else if (code == "8")
+                return "10-11级";
+            else if (code == "9")
+                return "11-12级";
+            else
+                return "";
+        }
+        public static string SloveWeather(string code)
+        {
+            if (code == "00")
+                return "晴";
+            else if (code == "01")
+                return "多云";
+            else if (code == "02")
+                return "阴";
+            else if (code == "03")
+                return "阵雨";
+            else if (code == "04")
+                return "雷阵雨";
+            else if (code == "05")
+                return "雷阵雨伴有冰雹";
+            else if (code == "06")
+                return "雨夹雪";
+            else if (code == "07")
+                return "小雨";
+            else if (code == "08")
+                return "中雨";
+            else if (code == "09")
+                return "大雨";
+            else if (code == "10")
+                return "暴雨";
+            else if (code == "11")
+                return "大暴雨";
+            else if (code == "12")
+                return "特大暴雨";
+            else if (code == "13")
+                return "阵雪";
+            else if (code == "14")
+                return "小雪";
+            else if (code == "15")
+                return "中雪";
+            else if (code == "16")
+                return "大雪";
+            else if (code == "17")
+                return "暴雪";
+            else if (code == "18")
+                return "雾";
+            else if (code == "19")
+                return "冻雨";
+            else if (code == "20")
+                return "沙尘暴";
+            else if (code == "21")
+                return "小到中雨";
+            else if (code == "22")
+                return "中到大雨";
+            else if (code == "23")
+                return "大到暴雨";
+            else if (code == "24")
+                return "暴雨到大暴雨";
+            else if (code == "25")
+                return "大暴雨到特大暴雨";
+            else if (code == "26")
+                return "小到中雪";
+            else if (code == "27")
+                return "中到大雪";
+            else if (code == "28")
+                return "大到暴雪";
+            else if (code == "29")
+                return "浮尘";
+            else if (code == "30")
+                return "扬沙";
+            else if (code == "31")
+                return "强沙尘暴";
+            else if (code == "53")
+                return "霾";
+            else if (code == "99")
+                return "无";
+            else 
+                return "暂时无法获取";
+        }
         public static string GetStudyFlagInfo(string result, string QQNum, string tmp1, string tmp2)
         {
             if (result.Equals("Success"))
