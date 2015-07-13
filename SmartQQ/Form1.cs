@@ -674,6 +674,8 @@ namespace SmartQQ
                     }
                     else
                     {
+                        tmp[1] = tmp[1].Replace("开启", "启动");
+                        tmp[1] = tmp[1].Replace("开起", "启动");
                         if (tmp[1].Equals("启动机器人"))
                         {
                             if (groupinfo[GroupInfoIndex].enable.Equals("true"))
