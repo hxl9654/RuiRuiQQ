@@ -33,7 +33,6 @@ namespace SmartQQ
 
     public partial class FormLogin : Form
     {
-
         //系统配置相关
         string MasterQQ = "";
         string StudyPassword = "";
@@ -47,7 +46,7 @@ namespace SmartQQ
         //数据存储相关
         public JsonGroupModel group;
         public JsonFriendModel user;
-
+        private int Count103 = 0;
         public struct GroupInf
         {
             public String gid;
@@ -76,8 +75,7 @@ namespace SmartQQ
         public int friendinfMaxIndex = 0;
         string[] Badwords;
 
-
-        private void buttonLogIn_Click(object sender, EventArgs e)
+        private void LogIn()
         {
             if (textBoxID.Text.Length == 0)
             {
@@ -124,13 +122,15 @@ namespace SmartQQ
             textBoxCAPTCHA.Text = "";
             this.AcceptButton = this.buttonSend;
         }
+        
         public void HeartPackAction(string temp)
         {
             string GName = "";
             string MessageFromUin = "";
             textBoxLog.Text = temp;
             JsonHeartPackMessage HeartPackMessage = (JsonHeartPackMessage)JsonConvert.DeserializeObject(temp, typeof(JsonHeartPackMessage));
-
+            int TempCount103 = Count103;
+            Count103 = 0;
             if (HeartPackMessage.retcode == 102)
             {
                 return;
@@ -138,6 +138,9 @@ namespace SmartQQ
             else if (HeartPackMessage.retcode == 103)
             {
                 listBoxLog.Items.Insert(0, temp);
+                Count103 = TempCount103 + 1;
+                if (Count103 > 20)
+                    ReLogin();
                 return;
             }
             else if (HeartPackMessage.retcode == 116)
@@ -1208,7 +1211,9 @@ namespace SmartQQ
             string MsgGet = HTTP.HttpPost(url, "http://www.xiaohuangji.com/", postdata, Encoding.UTF8, false, 10000);
             return MsgGet;
         }
-        private void textBoxID_LostFocus(object sender, EventArgs e)
+        
+
+        private void GetCAPTCHA()
         {
             if (textBoxID.Text.Length == 0)
                 return;
@@ -1224,7 +1229,6 @@ namespace SmartQQ
                 textBoxCAPTCHA.Visible = false;
                 label3.Visible = false;
             }
-
         }
 
 
@@ -1260,8 +1264,6 @@ namespace SmartQQ
                 for (int i = 0; i < charData.Length; i++)
                     tmp += charData[i];
                 tmp += '\0';
-                //tmp.Replace(Environment.NewLine, "");
-                //tmp.Replace(" ", "");
                 JosnConfigFileModel dat = (JosnConfigFileModel)JsonConvert.DeserializeObject(tmp, typeof(JosnConfigFileModel));
                 textBoxID.Text = dat.QQNum;
                 textBoxPassword.Text = dat.QQPassword;
@@ -1305,6 +1307,14 @@ namespace SmartQQ
             }
             else Badwords = new string[0];
             NoFile = false;
+
+            GetCAPTCHA();
+            LogIn();
+        }
+
+        private void buttonLogIn_Click(object sender, EventArgs e)
+        {
+            LogIn();
         }
         public FormLogin()
         {
@@ -1317,8 +1327,8 @@ namespace SmartQQ
         public void ReLogin()
         {
             LogOut();
-            if (!textBoxCAPTCHA.Text.Equals(""))
-                buttonLogIn_Click(this, EventArgs.Empty);
+            GetCAPTCHA();
+            LogIn();
         }
         public void LogOut()
         {
@@ -1392,7 +1402,10 @@ namespace SmartQQ
             StopSendingHeartPack = false;
             textBoxSendMessage.Text = "";
         }
-
+        private void textBoxID_LostFocus(object sender, EventArgs e)
+        {
+            GetCAPTCHA();
+        }
         private void listBoxFriend_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (DoNotChangeSelentGroupOrPeople) return;
