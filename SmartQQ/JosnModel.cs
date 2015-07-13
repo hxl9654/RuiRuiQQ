@@ -191,6 +191,24 @@ namespace SmartQQ
             public String price;
         }
     }
+    public class JsonYahooExchangeRateModel
+    {
+        public paramQuery query;
+        public class paramQuery
+        {
+            public String created;
+            public paramResults results;
+            public class paramResults
+            {
+                public paramRate rate;
+                public class paramRate
+                {
+                    public String id;
+                    public String Rate;
+                }
+            }
+        }
+    }
     public class JsonGroupManageModel
     {
         public string enable;

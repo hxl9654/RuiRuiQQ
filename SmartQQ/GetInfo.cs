@@ -241,11 +241,19 @@ namespace SmartQQ
 
         public static string GetExchangeRate(string p1, string p2)
         {
-            string url = "https://www.cryptonator.com/api/ticker/" + p1 + "-" + p2;
-            string temp = HTTP.HttpGet(url);
+            string url = "https://query.yahooapis.com/v1/public/yql?q=select%20id,Rate%20from%20yahoo.finance.xchange%20where%20pair%20in%20%28%22";
+            url += p1 + p2 + "%22%29&env=store://datatables.org/alltableswithkeys&format=json";
+            string temp = HTTP.HttpGet(url,100000,null,"");
+            JsonYahooExchangeRateModel ExchangeRateYahoo = (JsonYahooExchangeRateModel)JsonConvert.DeserializeObject(temp, typeof(JsonYahooExchangeRateModel));
+            if (!ExchangeRateYahoo.query.results.rate.Rate.Equals("N/A"))
+            {
+                return "根据Yahoo的信息，" + ExchangeRateYahoo.query.results.rate.id + "在UTC" + ExchangeRateYahoo.query.created + "的汇率是：" + ExchangeRateYahoo.query.results.rate.Rate + "。";
+            }
+            url = "https://www.cryptonator.com/api/ticker/" + p1 + "-" + p2;
+            temp = HTTP.HttpGet(url);
             JsonExchangeRateModel ExchangeRate = (JsonExchangeRateModel)JsonConvert.DeserializeObject(temp, typeof(JsonExchangeRateModel));
             if (ExchangeRate.success == true)
-                return p1 + "-" + p2 + "的汇率：" + ExchangeRate.ticker.price;
+                return "根据cryptonator的信息，" + p1 + "-" + p2 + "的汇率：" + ExchangeRate.ticker.price;
             else return "Error:" + ExchangeRate.error;
         }
 
