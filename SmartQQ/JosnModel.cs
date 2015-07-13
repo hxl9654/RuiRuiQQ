@@ -174,6 +174,7 @@ namespace SmartQQ
     }
     public class JosnConfigFileModel
     {
+        public String AdminQQ;
         public String DicServer;
         public String DicPassword;
         public String QQNum;

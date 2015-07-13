@@ -35,7 +35,7 @@ namespace SmartQQ
     {
 
         //系统配置相关
-
+        string MasterQQ = "";
         string StudyPassword = "";
         string DicServer = "";
         bool DisableStudy = false;
@@ -599,22 +599,24 @@ namespace SmartQQ
                         adminuin = groupinfo[i].inf.result.ginfo.owner;
                         break;
                     }
-                }
-                groupinfo[GroupInfoIndex].inf = SmartQQ.GetGroupInfo(groupinfo[GroupInfoIndex].inf.result.ginfo.code);
+                }               
                 //获取管理员
                 if (groupinfo[GroupInfoIndex].managers == null)
+                {
+                    groupinfo[GroupInfoIndex].inf = SmartQQ.GetGroupInfo(groupinfo[GroupInfoIndex].inf.result.ginfo.code);
                     groupinfo[GroupInfoIndex].managers = new string[30];
 
-                groupinfo[GroupInfoIndex].GroupManagerIndex = 0;
-                for (i = 0; i < groupinfo[GroupInfoIndex].inf.result.ginfo.members.Count; i++)
-                {
-                    if (groupinfo[GroupInfoIndex].inf.result.ginfo.members[i].mflag % 2 == 1) 
+                    groupinfo[GroupInfoIndex].GroupManagerIndex = 0;
+                    for (i = 0; i < groupinfo[GroupInfoIndex].inf.result.ginfo.members.Count; i++)
                     {
-                        groupinfo[GroupInfoIndex].managers[groupinfo[GroupInfoIndex].GroupManagerIndex] = groupinfo[GroupInfoIndex].inf.result.ginfo.members[i].muin;
-                        groupinfo[GroupInfoIndex].GroupManagerIndex++;
+                        if (groupinfo[GroupInfoIndex].inf.result.ginfo.members[i].mflag % 2 == 1)
+                        {
+                            groupinfo[GroupInfoIndex].managers[groupinfo[GroupInfoIndex].GroupManagerIndex] = groupinfo[GroupInfoIndex].inf.result.ginfo.members[i].muin;
+                            groupinfo[GroupInfoIndex].GroupManagerIndex++;
+                        }
                     }
                 }
-
+                    
                 bool GroupManageFlag = true;
                 string[] tmp = message.Split('&');
                 tmp[1] = tmp[1].Replace("\r", "");
@@ -628,6 +630,10 @@ namespace SmartQQ
                 {
                     bool HaveRight = false;
                     if (uin.Equals(adminuin))
+                    {
+                        HaveRight = true;
+                    }
+                    if (SmartQQ.GetRealQQ(uin).Equals(MasterQQ))
                     {
                         HaveRight = true;
                     }
@@ -1247,6 +1253,7 @@ namespace SmartQQ
                 textBoxPassword.Text = dat.QQPassword;
                 StudyPassword = dat.DicPassword;
                 DicServer = dat.DicServer;
+                MasterQQ = dat.AdminQQ;
                 SmartQQ.ClientID = dat.ClientID;
             }
             else

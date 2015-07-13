@@ -326,7 +326,7 @@ namespace SmartQQ
             ans = "城市 " + weather.c.c3 + "（" + weather.c.c2 + "） 的信息如下：" + Environment.NewLine;
             ans += "所在省市：" + weather.c.c7 + "省" + weather.c.c5 + "市" + "（" + weather.c.c6 + " " + weather.c.c4 + "）" + Environment.NewLine;
             ans += "区号：" + weather.c.c11 + "，邮编：" + weather.c.c12 + "。城市级别：" + weather.c.c10 + "级城市" + Environment.NewLine;
-            ans += "经度：" + weather.c.c13 + "，维度：" + weather.c.c14 + "，海拔：" + weather.c.c15 + "。雷达站" + weather.c.c16;
+            ans += "经度：" + weather.c.c13 + "，纬度：" + weather.c.c14 + "，海拔：" + weather.c.c15 + "。雷达站" + weather.c.c16;
             return ans;
         }
     }
