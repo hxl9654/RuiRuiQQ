@@ -89,8 +89,7 @@ namespace SmartQQ
             url = tmp[2];
             if (url == "")
             {
-                MessageBox.Show("登录失败，请重试");
-                if (NeedCAPTCHA) GetCaptcha();
+                Program.formlogin.ReLogin();
                 return false;
             }
 

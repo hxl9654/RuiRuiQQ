@@ -199,7 +199,7 @@ namespace SmartQQ
                         else message += (HeartPackMessage.result[i].value.content[j].ToString() + " ");
                     }
                     message = message.Replace("\\\\n", Environment.NewLine);
-
+                    message = message.Replace("＆", "&");                    
                     for (j = 0; j < user.result.info.Count; j++)
                         if (user.result.info[j].uin == HeartPackMessage.result[i].value.from_uin)
                         {
@@ -243,6 +243,7 @@ namespace SmartQQ
                         else message += (HeartPackMessage.result[i].value.content[j].ToString() + " ");
                     }
                     message = message.Replace("\\\\n", Environment.NewLine);
+                    message = message.Replace("＆", "&"); 
                     string gno = HeartPackMessage.result[i].value.info_seq;
                     string gid = HeartPackMessage.result[i].value.from_uin;
                     for (j = 0; j < group.result.gnamelist.Count; j++)
@@ -1237,7 +1238,7 @@ namespace SmartQQ
                     Gender = "哥哥 ";
                 else
                     Gender = " ";
-                SmartQQ.SendMessageToFriend(uin, "\\\"" + SenderName + Gender + "～ 小睿睿听不懂你在说什么呢。。。教教我吧～～" + Environment.NewLine + "格式 学习^语句^设定的回复" + "\\\"");
+                SmartQQ.SendMessageToFriend(uin, "\\\"" + SenderName + Gender + "～ 小睿睿听不懂你在说什么呢。。。教教我吧～～" + Environment.NewLine + "格式 学习&语句&设定的回复" + "\\\"");
             }
             else SmartQQ.SendMessageToFriend(uin, MessageToSend);
 
