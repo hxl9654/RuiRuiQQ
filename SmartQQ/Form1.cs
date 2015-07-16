@@ -1284,6 +1284,7 @@ namespace SmartQQ
         {
             if (textBoxID.Text.Length == 0)
                 return;
+            textBoxCAPTCHA.Text = "";
             if (SmartQQ.GetCAPTCHAInf(textBoxID.Text) == true)
             {
                 pictureBoxCAPTCHA.Visible = true;
@@ -1376,7 +1377,8 @@ namespace SmartQQ
             NoFile = false;
 
             GetCAPTCHA();
-            LogIn();
+            if (!textBoxCAPTCHA.Text.Equals(""))
+                LogIn();
         }
 
         private void buttonLogIn_Click(object sender, EventArgs e)
@@ -1395,7 +1397,8 @@ namespace SmartQQ
         {
             LogOut();
             GetCAPTCHA();
-            LogIn();
+            if (!textBoxCAPTCHA.Text.Equals(""))
+                LogIn();
         }
         public void LogOut()
         {
