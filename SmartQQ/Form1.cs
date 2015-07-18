@@ -298,7 +298,7 @@ namespace SmartQQ
             for (int i = 0; i < 20; i++)
                 MessageToSend[i] = "";
             bool MsgSendFlag = false;
-            if (message.Equals("源码") || message.Equals("作者") || message.Equals("代码") || message.Equals("开源许可证") || message.Equals("许可证"))
+            if (message.Equals("源码") || message.Equals("作者") || message.Equals("代码"))
             {
                 MessageToSend[0] = "本程序作者是何相龙，网站：https://tec.hxlxz.com 。本程序采用GPL v3许可证授权，源码获取地址：https://github.com/qwgg9654/RuiRuiQQ";
                 return MessageToSend;
@@ -319,7 +319,7 @@ namespace SmartQQ
                     }
                 }
             }
-            if (message.Contains("行情"))
+            if (message.StartsWith("行情"))
             {
                 bool DisableFlag = false;
                 if (!gid.Equals(""))
@@ -346,7 +346,7 @@ namespace SmartQQ
                     }
                 }
             }
-            if (message.Contains("汇率"))
+            if (message.StartsWith("汇率"))
             {
                 bool DisableFlag = false;
                 if (!gid.Equals(""))
@@ -371,7 +371,7 @@ namespace SmartQQ
                     }
                 }
             }
-            if (message.Contains("天气"))
+            if (message.StartsWith("天气"))
             {
                 bool DisableFlag = false;
                 if (!gid.Equals(""))
@@ -399,7 +399,7 @@ namespace SmartQQ
                     }
                 }
             }
-            if (message.Contains("城市信息"))
+            if (message.StartsWith("城市信息"))
             {
                 bool DisableFlag = false;
                 if (!gid.Equals(""))
@@ -427,7 +427,7 @@ namespace SmartQQ
                     }
                 }
             }
-            if (message.Contains("百科"))
+            if (message.StartsWith("百科"))
             {
                 bool DisableFlag = false;
                 if (!gid.Equals(""))
@@ -455,7 +455,7 @@ namespace SmartQQ
                     }
                 }
             }
-            if (message.Contains("学习"))
+            if (message.StartsWith("学习"))
             {
                 bool DisableFlag = false;
                 if (!gid.Equals(""))
@@ -633,7 +633,7 @@ namespace SmartQQ
             int GroupInfoIndex = -1;
             string MessageToSend = "";
             int i;
-            if (message.Contains("群管理"))
+            if (message.StartsWith("群管理"))
             {
                 SmartQQ.getGroup();
                 for (i = 0; i <= groupinfMaxIndex; i++)
