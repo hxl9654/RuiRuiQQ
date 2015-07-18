@@ -199,7 +199,7 @@ namespace SmartQQ
                         else message += (HeartPackMessage.result[i].value.content[j].ToString() + " ");
                     }
                     message = message.Replace("\\\\n", Environment.NewLine);
-                    message = message.Replace("＆", "&");                    
+                    message = message.Replace("＆", "&");
                     for (j = 0; j < user.result.info.Count; j++)
                         if (user.result.info[j].uin == HeartPackMessage.result[i].value.from_uin)
                         {
@@ -243,7 +243,7 @@ namespace SmartQQ
                         else message += (HeartPackMessage.result[i].value.content[j].ToString() + " ");
                     }
                     message = message.Replace("\\\\n", Environment.NewLine);
-                    message = message.Replace("＆", "&"); 
+                    message = message.Replace("＆", "&");
                     string gno = HeartPackMessage.result[i].value.info_seq;
                     string gid = HeartPackMessage.result[i].value.from_uin;
                     for (j = 0; j < group.result.gnamelist.Count; j++)
@@ -441,16 +441,16 @@ namespace SmartQQ
                 {
                     bool WikiFlag = true;
                     string[] tmp = message.Split('&');
-                    if ((!tmp[0].Equals("百科")) || tmp.Length != 2)
+                    if ((!tmp[0].Equals("百科")) || (tmp.Length != 2) && tmp.Length != 3)
                     {
                         WikiFlag = false;
                     }
                     if (WikiFlag)
                     {
                         if (tmp.Length == 2)
-                            MessageToSend[0] = GetInfo.GetWiki(tmp[1]);
+                            MessageToSend[0] = GetInfo.GetWiki(tmp[1], "");
                         else
-                            MessageToSend[0] = GetInfo.GetWiki(tmp[1]);
+                            MessageToSend[0] = GetInfo.GetWiki(tmp[1], tmp[2]);
                         return MessageToSend;
                     }
                 }

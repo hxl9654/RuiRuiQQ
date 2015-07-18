@@ -257,17 +257,48 @@ namespace SmartQQ
                 return "根据cryptonator的信息，" + p1 + "-" + p2 + "的汇率：" + ExchangeRate.ticker.price;
             else return "Error:" + ExchangeRate.error;
         }
-        public static string GetWiki(string keyword)
+        public static string GetWiki(string keyword, string aim = "")
         {
-            string url = "http://www.baike.com/wiki/" + keyword;
-            string temp = HTTP.HttpGet(url);
-            temp = temp.Replace("<meta content=\"", "&");
-            temp = temp.Replace("\" name=\"description\">", "&");
-            string[] tmp = temp.Split('&');
-            if (!tmp[1].Equals(""))
-                return tmp[1] + Environment.NewLine + "详情请查看http://www.baike.com/wiki/" + HttpUtility.UrlEncode(keyword);
+            if (aim.Equals("互动百科") || aim.Equals("互动"))
+            {
+                string url = "http://www.baike.com/wiki/" + keyword;
+                string temp = HTTP.HttpGet(url);
+                temp = temp.Replace("<meta content=\"", "&");
+                temp = temp.Replace("\" name=\"description\">", "&");
+                string[] tmp = temp.Split('&');
+                if (!tmp[1].Equals(""))
+                    return tmp[1] + Environment.NewLine + "详情请查看http://www.baike.com/wiki/" + HttpUtility.UrlEncode(keyword);
+                else
+                    return "";
+            }
             else
-                return "";
+            {
+                string url = "http://wapbaike.baidu.com/item/" + keyword;
+                string temp = HTTP.HttpGet(url);
+                temp = temp.Replace("&", "");
+                temp = temp.Replace("百科名片", "&");
+                string[] tmp = temp.Split('&');
+
+                temp = tmp[1];
+                temp = temp.Replace("<p>", "&");
+                temp = temp.Replace("</p>", "&");
+                tmp = temp.Split('&');
+
+                temp = tmp[1].Replace("</a>", "");
+
+                temp = temp.Replace("<a href=", "&");
+                temp = temp.Replace("\">", "&");
+                tmp = temp.Split('&');
+
+                temp = "";
+                for (int i = 0; i < tmp.Length; i++)
+                    if (i % 2 == 0)
+                        temp += tmp[i];
+                if (!temp.Equals(""))
+                    return temp + Environment.NewLine + "详情请查看http://wapbaike.baidu.com/item/" + HttpUtility.UrlEncode(keyword);
+                else
+                    return "";
+            }
         }
         public static string GetStock(string p1, string p2 = "")
         {
