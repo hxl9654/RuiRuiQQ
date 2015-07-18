@@ -60,7 +60,8 @@ namespace SmartQQ
             res.Close();
             req.Abort();
             Program.formlogin.textBoxLog.Text = dat;
-            Program.formlogin.listBoxLog.Items.Insert(0, dat);
+            if (!dat.Equals(""))
+                Program.formlogin.listBoxLog.Items.Insert(0, dat);
             return dat;
         }
         //http://www.itokit.com/2012/0721/74607.html
@@ -109,7 +110,8 @@ namespace SmartQQ
             }
 
             Program.formlogin.textBoxLog.Text = dat;
-            Program.formlogin.listBoxLog.Items.Insert(0, dat);
+            if (!dat.Equals(""))
+                Program.formlogin.listBoxLog.Items.Insert(0, dat);
             AmountOfRunningPosting--;
             return dat;
         }
