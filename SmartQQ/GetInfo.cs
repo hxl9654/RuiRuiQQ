@@ -275,6 +275,7 @@ namespace SmartQQ
             {
                 string url = "http://wapbaike.baidu.com/item/" + keyword;
                 string temp = HTTP.HttpGet(url);
+                temp = temp.Replace("&quot;", "");
                 temp = temp.Replace("&", "");
                 temp = temp.Replace("百科名片", "&");
                 string[] tmp = temp.Split('&');
@@ -286,7 +287,7 @@ namespace SmartQQ
 
                 temp = tmp[1].Replace("</a>", "");
 
-                temp = temp.Replace("<a href=", "&");
+                temp = temp.Replace("<a", "&");
                 temp = temp.Replace("\">", "&");
                 tmp = temp.Split('&');
 
