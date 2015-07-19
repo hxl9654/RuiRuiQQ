@@ -275,30 +275,35 @@ namespace SmartQQ
             {
                 string url = "http://wapbaike.baidu.com/item/" + keyword;
                 string temp = HTTP.HttpGet(url);
-                temp = temp.Replace("&quot;", "");
-                temp = temp.Replace("&", "");
-                temp = temp.Replace("百科名片", "&");
-                string[] tmp = temp.Split('&');
 
-                temp = tmp[1];
-                temp = temp.Replace("<p>", "&");
-                temp = temp.Replace("</p>", "&");
-                tmp = temp.Split('&');
+                if (temp.Contains("百科名片"))
+                {
+                    temp = temp.Replace("&quot;", "");
+                    temp = temp.Replace("&", "");
+                    temp = temp.Replace("百科名片", "&");
+                    string[] tmp = temp.Split('&');
 
-                temp = tmp[1].Replace("</a>", "");
+                    temp = tmp[1];
+                    temp = temp.Replace("<p>", "&");
+                    temp = temp.Replace("</p>", "&");
+                    tmp = temp.Split('&');
 
-                temp = temp.Replace("<a", "&");
-                temp = temp.Replace("\">", "&");
-                tmp = temp.Split('&');
+                    temp = tmp[1].Replace("</a>", "");
 
-                temp = "";
-                for (int i = 0; i < tmp.Length; i++)
-                    if (i % 2 == 0)
-                        temp += tmp[i];
-                if (!temp.Equals(""))
-                    return temp + Environment.NewLine + "详情请查看http://wapbaike.baidu.com/item/" + HttpUtility.UrlEncode(keyword);
-                else
-                    return "";
+                    temp = temp.Replace("<a", "&");
+                    temp = temp.Replace("\">", "&");
+                    tmp = temp.Split('&');
+
+                    temp = "";
+                    for (int i = 0; i < tmp.Length; i++)
+                        if (i % 2 == 0)
+                            temp += tmp[i];
+                    if (!temp.Equals(""))
+                        return temp + Environment.NewLine + "详情请查看http://wapbaike.baidu.com/item/" + HttpUtility.UrlEncode(keyword);
+                    else
+                        return "";
+                }
+                else return "没有找到这个词条哦～";
             }
         }
         public static string GetStock(string p1, string p2 = "")
