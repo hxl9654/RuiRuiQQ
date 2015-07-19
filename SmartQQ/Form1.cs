@@ -526,7 +526,10 @@ namespace SmartQQ
                         string result = "";
                         for (int i = 0; i < Badwords.Length; i++)
                             if (tmp[1].Contains(Badwords[i]) || tmp[2].Contains(Badwords[i]))
+                            {
                                 result = "ForbiddenWord";
+                                break;
+                            }
                         if (result.Equals(""))
                             result = AIStudy(tmp[1], tmp[2], QQNum, gno, false);
                         MessageToSend[0] = GetInfo.GetStudyFlagInfo(result, QQNum, tmp[1], tmp[2]);
@@ -1312,6 +1315,9 @@ namespace SmartQQ
             string url = "http://www.xiaohuangji.com/ajax.php";
             string postdata = "para=" + HttpUtility.UrlEncode(msg);
             string MsgGet = HTTP.HttpPost(url, "http://www.xiaohuangji.com/", postdata, Encoding.UTF8, false, 10000);
+            for (int i = 0; i < Badwords.Length; i++)
+                if (MsgGet.Contains(Badwords[i]))
+                    return "";
             return MsgGet;
         }
 
