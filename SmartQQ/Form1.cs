@@ -317,6 +317,11 @@ namespace SmartQQ
                 MessageToSend[0] = "本程序作者是何相龙，网站：https://tec.hxlxz.com 。本程序采用GPL v3许可证授权，源码获取地址：https://github.com/qwgg9654/RuiRuiQQ";
                 return MessageToSend;
             }
+            if (message.Equals("帮助") || message.Equals("说明") || message.Equals("使用说明"))
+            {
+                MessageToSend[0] = "本程序使用说明请参见：https://github.com/qwgg9654/RuiRuiQQ/wiki";
+                return MessageToSend;
+            }
             int j = 0;
             int GroupInfoIndex = -1;
             if (!gid.Equals(""))
