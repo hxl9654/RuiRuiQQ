@@ -245,21 +245,25 @@ namespace SmartQQ
             Program.formlogin.textBoxLog.Text = dat;
 
             Program.formlogin.user = (JsonFriendModel)JsonConvert.DeserializeObject(dat, typeof(JsonFriendModel));
-            Program.formlogin.listBoxFriend.Items.Clear();
             for (int i = 0; i < Program.formlogin.user.result.info.Count; i++)
-            {               
-                Program.formlogin.friendinf[i].uin = Program.formlogin.user.result.info[i].uin;                
-                if (Program.formlogin.friendinfMaxIndex < i)
-                    Program.formlogin.friendinfMaxIndex = i;
-                /*string gender;
-                Program.formlogin.friendinf[i].Inf = SmartQQ.GetFriendInf(Program.formlogin.user.result.info[i].uin);
-                if (Program.formlogin.friendinf[i].Inf.result.gender.Equals("female"))
-                    gender = "妹纸";
-                else if (Program.formlogin.friendinf[i].Inf.result.gender.Equals("male"))
-                    gender = "汉子";
-                else gender = "未知";
-                Program.formlogin.listBoxFriend.Items.Add(Program.formlogin.user.result.info[i].uin + ":" + GetRealQQ(Program.formlogin.user.result.info[i].uin) + ":" + Program.formlogin.user.result.info[i].nick + ":" + gender);*/
-                Program.formlogin.listBoxFriend.Items.Add(Program.formlogin.user.result.info[i].uin + ":" + GetRealQQ(Program.formlogin.user.result.info[i].uin) + ":" + Program.formlogin.user.result.info[i].nick);
+            {
+                bool flag = false;
+                for (int j = 0; j <= Program.formlogin.friendinfMaxIndex; j++)
+                {
+                    if (Program.formlogin.friendinf[j].uin == Program.formlogin.user.result.info[i].uin)
+                    {
+                        flag = true;
+                        break;
+                    }
+                }
+                if (flag)
+                    continue;
+                else
+                {
+                    Program.formlogin.friendinfMaxIndex++;
+                    Program.formlogin.friendinf[Program.formlogin.friendinfMaxIndex].uin = Program.formlogin.user.result.info[i].uin;
+                    Program.formlogin.listBoxFriend.Items.Add(Program.formlogin.user.result.info[i].uin + ":" + GetRealQQ(Program.formlogin.user.result.info[i].uin) + ":" + Program.formlogin.user.result.info[i].nick);
+                }
             }
         }
         public static String GetRealQQ(string uin)
