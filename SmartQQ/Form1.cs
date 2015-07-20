@@ -494,7 +494,7 @@ namespace SmartQQ
                     }
                 }
             }
-            if (message.StartsWith("学习"))
+            if (message.StartsWith("学习") || message.StartsWith("特权学习"))
             {
                 bool DisableFlag = false;
                 if (!gid.Equals(""))
