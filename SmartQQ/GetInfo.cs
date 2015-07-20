@@ -276,6 +276,8 @@ namespace SmartQQ
                 string url = "http://wapbaike.baidu.com/item/" + keyword;
                 string temp = HTTP.HttpGet(url);
 
+                if (temp.Contains("您所访问的页面不存在"))
+                    return "没有找到这个词条哦～";
                 if (temp.Contains("百科名片"))
                 {
                     temp = temp.Replace("&quot;", "");
@@ -295,13 +297,13 @@ namespace SmartQQ
                     tmp = temp.Split('&');
 
                     temp = "";
-                    for (int i = 0; i < tmp.Length; i++)
-                        if (i % 2 == 0)
+                    for (int i = 0; i < tmp.Length; i+=2)
+                        if ((!tmp[i].Contains("card-info"))&&(!tmp[i].Contains("div class")))
                             temp += tmp[i];
                     if (!temp.Equals(""))
                         return temp + Environment.NewLine + "详情请查看http://wapbaike.baidu.com/item/" + HttpUtility.UrlEncode(keyword);
                     else
-                        return "";
+                        return "词条 " + keyword + " 请查看http://wapbaike.baidu.com/item/" + HttpUtility.UrlEncode(keyword);
                 }
                 else return "没有找到这个词条哦～";
             }
