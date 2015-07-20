@@ -247,18 +247,19 @@ namespace SmartQQ
             Program.formlogin.user = (JsonFriendModel)JsonConvert.DeserializeObject(dat, typeof(JsonFriendModel));
             Program.formlogin.listBoxFriend.Items.Clear();
             for (int i = 0; i < Program.formlogin.user.result.info.Count; i++)
-            {
-                string gender;
-                Program.formlogin.friendinf[i].uin = Program.formlogin.user.result.info[i].uin;
-                Program.formlogin.friendinf[i].Inf = SmartQQ.GetFriendInf(Program.formlogin.user.result.info[i].uin);
+            {               
+                Program.formlogin.friendinf[i].uin = Program.formlogin.user.result.info[i].uin;                
                 if (Program.formlogin.friendinfMaxIndex < i)
                     Program.formlogin.friendinfMaxIndex = i;
+                /*string gender;
+                Program.formlogin.friendinf[i].Inf = SmartQQ.GetFriendInf(Program.formlogin.user.result.info[i].uin);
                 if (Program.formlogin.friendinf[i].Inf.result.gender.Equals("female"))
                     gender = "妹纸";
                 else if (Program.formlogin.friendinf[i].Inf.result.gender.Equals("male"))
                     gender = "汉子";
                 else gender = "未知";
-                Program.formlogin.listBoxFriend.Items.Add(Program.formlogin.user.result.info[i].uin + ":" + GetRealQQ(Program.formlogin.user.result.info[i].uin) + ":" + Program.formlogin.user.result.info[i].nick + ":" + gender);
+                Program.formlogin.listBoxFriend.Items.Add(Program.formlogin.user.result.info[i].uin + ":" + GetRealQQ(Program.formlogin.user.result.info[i].uin) + ":" + Program.formlogin.user.result.info[i].nick + ":" + gender);*/
+                Program.formlogin.listBoxFriend.Items.Add(Program.formlogin.user.result.info[i].uin + ":" + GetRealQQ(Program.formlogin.user.result.info[i].uin) + ":" + Program.formlogin.user.result.info[i].nick);
             }
         }
         public static String GetRealQQ(string uin)

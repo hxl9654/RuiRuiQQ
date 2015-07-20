@@ -40,6 +40,7 @@ namespace SmartQQ
         bool DisableStudy = false;
         public bool StopSendingHeartPack = false;
         //多个函数要用到的变量
+        bool Loging = false;
         string pin = string.Empty;
         bool IsGroupSelent = false, IsFriendSelent = false;
         bool DoNotChangeSelentGroupOrPeople = false;
@@ -101,7 +102,9 @@ namespace SmartQQ
                 MessageBox.Show("验证码错误");
                 return;
             }
-
+            if (Loging)
+                return;
+            Loging = true;
             SmartQQ.FirstLogin(textBoxID.Text, textBoxPassword.Text, textBoxCAPTCHA.Text);
             SmartQQ.SecondLogin(textBoxID.Text);
 
@@ -122,6 +125,7 @@ namespace SmartQQ
             textBoxCAPTCHA.Visible = false;
             textBoxCAPTCHA.Text = "";
             this.AcceptButton = this.buttonSend;
+            Loging = false;
         }
 
         public void HeartPackAction(string temp)
@@ -150,15 +154,22 @@ namespace SmartQQ
                 SmartQQ.ptwebqq = HeartPackMessage.p;
                 return;
             }
-            else if (HeartPackMessage.retcode == 108)
+            else if (HeartPackMessage.retcode == 108 || HeartPackMessage.retcode == 114)
             {
                 listBoxLog.Items.Insert(0, temp);
+                ReLogin();
                 return;
             }
             else if (HeartPackMessage.retcode == 120 || HeartPackMessage.retcode == 121)
             {
                 listBoxLog.Items.Insert(0, temp);
                 listBoxLog.Items.Insert(0, HeartPackMessage.t);
+                ReLogin();
+                return;
+            }
+            else if (HeartPackMessage.retcode == 100006 || HeartPackMessage.retcode == 100003)
+            {
+                listBoxLog.Items.Insert(0, temp);
                 ReLogin();
                 return;
             }
@@ -589,7 +600,7 @@ namespace SmartQQ
                     RepeatFlag = false;
                     for (int i = 0; i < tmp2.Length && i < 10; i++)
                     {
-                        if (tmp1[i].Equals(message))
+                        if (tmp2[i].Equals(message))
                             continue;
                         for (int k = 0; k < i; k++)
                             if (tmp2[k].Equals(tmp2[i]))
@@ -1256,6 +1267,8 @@ namespace SmartQQ
                 for (i = 0; i <= friendinfMaxIndex; i++)
                     if (friendinf[i].uin == uin)
                     {
+                        if (friendinf[i].Inf == null)
+                            friendinf[i].Inf = SmartQQ.GetFriendInf(friendinf[i].uin);
                         SenderName = friendinf[i].Inf.result.nick;
                         Gender = friendinf[i].Inf.result.gender;
                         break;
@@ -1266,6 +1279,8 @@ namespace SmartQQ
                     for (i = 0; i <= friendinfMaxIndex; i++)
                         if (friendinf[i].uin == uin)
                         {
+                            if (friendinf[i].Inf == null)
+                                friendinf[i].Inf = SmartQQ.GetFriendInf(friendinf[i].uin);
                             SenderName = friendinf[i].Inf.result.nick;
                             Gender = friendinf[i].Inf.result.gender;
                             break;
