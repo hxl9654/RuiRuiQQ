@@ -291,6 +291,10 @@ namespace SmartQQ
                     tmp = temp.Split('&');
 
                     temp = tmp[1].Replace("</a>", "");
+                    temp = temp.Replace("<b>", "");
+                    temp = temp.Replace("</b>", "");
+                    temp = temp.Replace("<i>", "");
+                    temp = temp.Replace("</i>", "");
 
                     temp = temp.Replace("<a", "&");
                     temp = temp.Replace("\">", "&");
