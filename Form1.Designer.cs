@@ -307,7 +307,7 @@
             this.MaximumSize = new System.Drawing.Size(916, 540);
             this.MinimumSize = new System.Drawing.Size(916, 540);
             this.Name = "FormLogin";
-            this.Text = "Smart QQ Robot";
+            this.Text = "RuiRui QQ Robot";
             this.Load += new System.EventHandler(this.FormLogin_Load);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxCAPTCHA)).EndInit();
             this.groupbox1.ResumeLayout(false);
