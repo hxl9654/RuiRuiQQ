@@ -154,7 +154,7 @@ namespace SmartQQ
 
         public class paramResult
         {
-            public String poll_type;
+            public string poll_type;
             public paramValue value;
             public class paramValue
             {
@@ -174,11 +174,11 @@ namespace SmartQQ
     }
     public class JosnConfigFileModel
     {
-        public String AdminQQ;
-        public String DicServer;
-        public String DicPassword;
-        public String QQNum;
-        public String QQPassword;
+        public string AdminQQ;
+        public string DicServer;
+        public string DicPassword;
+        public string QQNum;
+        public string QQPassword;
         public int ClientID;
     }
     public class JsonExchangeRateModel
@@ -188,7 +188,7 @@ namespace SmartQQ
         public paramTicker ticker;
         public class paramTicker
         {
-            public String price;
+            public string price;
         }
     }
     public class JsonYahooExchangeRateModel
@@ -196,15 +196,15 @@ namespace SmartQQ
         public paramQuery query;
         public class paramQuery
         {
-            public String created;
+            public string created;
             public paramResults results;
             public class paramResults
             {
                 public paramRate rate;
                 public class paramRate
                 {
-                    public String id;
-                    public String Rate;
+                    public string id;
+                    public string Rate;
                 }
             }
         }
@@ -232,40 +232,40 @@ namespace SmartQQ
         public paramF f;
         public class paramC
         {
-            public String c1;   //区域ID
-            public String c2;   //城市英文名
-            public String c3;   //城市中文名
-            public String c4;   //城市所在市英文名
-            public String c5;   //城市所在市中文名
-            public String c6;   //城市所在省英文名
-            public String c7;   //城市所在省中文名
-            public String c8;   //城市所在国英文名
-            public String c9;   //城市所在国中文名
-            public String c10;  //城市级别
-            public String c11;  //城市区号
-            public String c12;  //邮编
-            public String c13;  //经度
-            public String c14;  //纬度
-            public String c15;  //海拔
-            public String c16;  //雷达站号
-            public String c17;  //时区
+            public string c1;   //区域ID
+            public string c2;   //城市英文名
+            public string c3;   //城市中文名
+            public string c4;   //城市所在市英文名
+            public string c5;   //城市所在市中文名
+            public string c6;   //城市所在省英文名
+            public string c7;   //城市所在省中文名
+            public string c8;   //城市所在国英文名
+            public string c9;   //城市所在国中文名
+            public string c10;  //城市级别
+            public string c11;  //城市区号
+            public string c12;  //邮编
+            public string c13;  //经度
+            public string c14;  //纬度
+            public string c15;  //海拔
+            public string c16;  //雷达站号
+            public string c17;  //时区
         }
         public class paramF
         {
-            public String f0;   //预报发布时间
+            public string f0;   //预报发布时间
             public List<paramF1> f1;
         }
         public class paramF1
         {
-            public String fa;   //白天天气现象编号
-            public String fb;   //晚上天气现象编号
-            public String fc;   //白天气温
-            public String fd;   //晚上气温
-            public String fe;   //白天风向编号
-            public String ff;   //晚上风向编号
-            public String fg;   //白天风力编号
-            public String fh;   //晚上风力编号
-            public String fi;   //日出日落时间
+            public string fa;   //白天天气现象编号
+            public string fb;   //晚上天气现象编号
+            public string fc;   //白天气温
+            public string fd;   //晚上气温
+            public string fe;   //白天风向编号
+            public string ff;   //晚上风向编号
+            public string fg;   //白天风力编号
+            public string fh;   //晚上风力编号
+            public string fi;   //日出日落时间
         }
     }
     public class JsonWeatherIndexModel

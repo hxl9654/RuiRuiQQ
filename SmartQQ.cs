@@ -31,13 +31,13 @@ namespace SmartQQ
         //通信参数相关
         public static int MsgId;
         public static int ClientID;
-        public static String ptvsession = "";
-        public static String p_skey, MyUin, skey, p_uin, vfwebqq, hash;
-        public static String ptwebqq, psessionid;
-        public static String pt_uin = "";
+        public static string ptvsession = "";
+        public static string p_skey, MyUin, skey, p_uin, vfwebqq, hash;
+        public static string ptwebqq, psessionid;
+        public static string pt_uin = "";
 
         public static bool NeedCAPTCHA = false;
-        public static String CaptchaCode;
+        public static string CaptchaCode;
 
         static string[,] realQQ = new string[10000, 2];
         static int realQQIndex = 0;
@@ -46,7 +46,7 @@ namespace SmartQQ
             //二次登录
             string url = "http://d.web2.qq.com/channel/login2";
             string url1 = string.Format("r={{\"ptwebqq\":\"{0}\",\"clientid\":{1},\"psessionid\":\"\",\"status\":\"online\"}}", ptwebqq, ClientID);
-            String dat = HTTP.HttpPost(url, "http://d.web2.qq.com/proxy.html?v=20130916001&callback=1&id=2", url1, Encoding.UTF8, true);
+            string dat = HTTP.HttpPost(url, "http://d.web2.qq.com/proxy.html?v=20130916001&callback=1&id=2", url1, Encoding.UTF8, true);
 
             Program.formlogin.textBoxLog.Text = dat;
             char[] t = new char[2];
@@ -66,18 +66,18 @@ namespace SmartQQ
         public static bool FirstLogin(string ID, string Password, string CAPTCHA)
         {
             //一次登录
-            String tokentemp = System.Text.RegularExpressions.Regex.Replace(pt_uin, @"\\x", "");
-            String token = HexString2Ascii(tokentemp);
+            string tokentemp = System.Text.RegularExpressions.Regex.Replace(pt_uin, @"\\x", "");
+            string token = HexString2Ascii(tokentemp);
             string key = EncodePassword(Password, token, CAPTCHA.ToUpper());
 
-            String url1 = "https://ssl.ptlogin2.qq.com/login?u=";
-            String url2 = "&p=";
-            String url3 = "&verifycode=";
-            String url4 = "&webqq_type=10&remember_uin=1&login2qq=1&aid=501004106&u1=http%3A%2F%2Fw.qq.com%2Fproxy.html";
-            String url5 = "%3Flogin2qq%3D1%26webqq_type%3D10&h=1&ptredirect=0&ptlang=2052&daid=164&from_ui=1&pttype=1";
-            String url6 = "&dumy=&fp=loginerroralert&action=0-15-19190&mibao_css=m_webqq&t=1&g=1&js_type=0&js_ver=10123&";
-            String url7 = "login_sig=&pt_randsalt=0&pt_vcode_v1=0&pt_verifysession_v1=";
-            String url = url1 + ID + url2 + key + url3 + CAPTCHA + url4 + url5 + url6 + url7 + ptvsession;
+            string url1 = "https://ssl.ptlogin2.qq.com/login?u=";
+            string url2 = "&p=";
+            string url3 = "&verifycode=";
+            string url4 = "&webqq_type=10&remember_uin=1&login2qq=1&aid=501004106&u1=http%3A%2F%2Fw.qq.com%2Fproxy.html";
+            string url5 = "%3Flogin2qq%3D1%26webqq_type%3D10&h=1&ptredirect=0&ptlang=2052&daid=164&from_ui=1&pttype=1";
+            string url6 = "&dumy=&fp=loginerroralert&action=0-15-19190&mibao_css=m_webqq&t=1&g=1&js_type=0&js_ver=10123&";
+            string url7 = "login_sig=&pt_randsalt=0&pt_vcode_v1=0&pt_verifysession_v1=";
+            string url = url1 + ID + url2 + key + url3 + CAPTCHA + url4 + url5 + url6 + url7 + ptvsession;
 
             string temp = HTTP.HttpGet(url);
 
@@ -192,9 +192,9 @@ namespace SmartQQ
         {
             Program.formlogin.textBoxCAPTCHA.Text = "";
 
-            String strimg1 = "https://ssl.captcha.qq.com/getimage?aid=501004106&r=0.005933324107900262&uin=";
-            String strimg2 = "&cap_cd=";
-            String strimg = strimg1 + Program.formlogin.textBoxID.Text + strimg2 + CaptchaCode;
+            string strimg1 = "https://ssl.captcha.qq.com/getimage?aid=501004106&r=0.005933324107900262&uin=";
+            string strimg2 = "&cap_cd=";
+            string strimg = strimg1 + Program.formlogin.textBoxID.Text + strimg2 + CaptchaCode;
 
             HttpWebRequest req = (HttpWebRequest)WebRequest.Create(strimg);
             req.CookieContainer = HTTP.cookies;
@@ -207,9 +207,9 @@ namespace SmartQQ
         }
         public static bool GetCAPTCHAInf(string ID)
         {
-            String str1 = "https://ssl.ptlogin2.qq.com/check?pt_tea=1&uin=";
-            String str2 = "&appid=501004106&js_ver=10121&js_type=0&login_sig=&u1=http%3A%2F%2Fw.qq.com%2Fproxy.html&r=0.4053995015565306";
-            String url = str1 + ID + str2;
+            string str1 = "https://ssl.ptlogin2.qq.com/check?pt_tea=1&uin=";
+            string str2 = "&appid=501004106&js_ver=10121&js_type=0&login_sig=&u1=http%3A%2F%2Fw.qq.com%2Fproxy.html&r=0.4053995015565306";
+            string url = str1 + ID + str2;
 
             string dat = HTTP.HttpGet(url);
 
@@ -239,9 +239,9 @@ namespace SmartQQ
         }
         public static void getFrienf()
         {
-            String url = "http://s.web2.qq.com/api/get_user_friends2";
-            String sendData = string.Format("r={{\"vfwebqq\":\"{0}\",\"hash\":\"{1}\"}}", vfwebqq, hash);
-            String dat = HTTP.HttpPost(url, "http://s.web2.qq.com/proxy.html?v=20130916001&callback=1&id=1", sendData, Encoding.UTF8, true);
+            string url = "http://s.web2.qq.com/api/get_user_friends2";
+            string sendData = string.Format("r={{\"vfwebqq\":\"{0}\",\"hash\":\"{1}\"}}", vfwebqq, hash);
+            string dat = HTTP.HttpPost(url, "http://s.web2.qq.com/proxy.html?v=20130916001&callback=1&id=1", sendData, Encoding.UTF8, true);
             Program.formlogin.textBoxLog.Text = dat;
 
             Program.formlogin.user = (JsonFriendModel)JsonConvert.DeserializeObject(dat, typeof(JsonFriendModel));
@@ -266,14 +266,14 @@ namespace SmartQQ
                 }
             }
         }
-        public static String GetRealQQ(string uin)
+        public static string GetRealQQ(string uin)
         {
             for (int i = 0; i < realQQIndex; i++)
             {
                 if (realQQ[i, 0] == uin && (!realQQ[i, 1].Equals("")))
                     return realQQ[i, 1];
             }
-            String url = "http://s.web2.qq.com/api/get_friend_uin2?tuin=" + uin + "&type=1&vfwebqq=" + vfwebqq + "&t=" + GetTimeStamp();
+            string url = "http://s.web2.qq.com/api/get_friend_uin2?tuin=" + uin + "&type=1&vfwebqq=" + vfwebqq + "&t=" + GetTimeStamp();
 
             string dat = HTTP.HttpGet(url);
 
@@ -304,7 +304,7 @@ namespace SmartQQ
         //感谢QQBOT群（346167134） 杨小泡的热心帮助！
         public static string HexString2Ascii(string hexString)
         {
-            string res = String.Empty;
+            string res = string.Empty;
             for (int a = 0; a < hexString.Length; a = a + 2)
             {
                 string Char2Convert = hexString.Substring(a, 2);
@@ -314,7 +314,7 @@ namespace SmartQQ
             }
             return res;
         }
-        public static String GetHash(String no, String ptwebqq)
+        public static string GetHash(string no, string ptwebqq)
         {
             var scriptEngine = new Jurassic.ScriptEngine();
             scriptEngine.EnableDebugging = true;
@@ -334,7 +334,7 @@ namespace SmartQQ
         }
         public static JsonGroupInfoModel GetGroupInfo(string gcode)
         {
-            String url = "http://s.web2.qq.com/api/get_group_info_ext2?gcode=" + gcode + "&vfwebqq=" + vfwebqq + "&t=" + GetTimeStamp();
+            string url = "http://s.web2.qq.com/api/get_group_info_ext2?gcode=" + gcode + "&vfwebqq=" + vfwebqq + "&t=" + GetTimeStamp();
             string dat = HTTP.HttpGet(url);
 
             JsonGroupInfoModel ans = (JsonGroupInfoModel)JsonConvert.DeserializeObject(dat, typeof(JsonGroupInfoModel));
@@ -342,9 +342,9 @@ namespace SmartQQ
         }
         public static void getGroup()
         {
-            String url = "http://s.web2.qq.com/api/get_group_name_list_mask2";
-            String sendData = string.Format("r={{\"vfwebqq\":\"{0}\",\"hash\":\"{1}\"}}", vfwebqq, hash);
-            String dat = HTTP.HttpPost(url, "http://s.web2.qq.com/proxy.html?v=20130916001&callback=1&id=1", sendData, Encoding.UTF8, true);
+            string url = "http://s.web2.qq.com/api/get_group_name_list_mask2";
+            string sendData = string.Format("r={{\"vfwebqq\":\"{0}\",\"hash\":\"{1}\"}}", vfwebqq, hash);
+            string dat = HTTP.HttpPost(url, "http://s.web2.qq.com/proxy.html?v=20130916001&callback=1&id=1", sendData, Encoding.UTF8, true);
             Program.formlogin.textBoxLog.Text = dat;
 
             Program.formlogin.group = (JsonGroupModel)JsonConvert.DeserializeObject(dat, typeof(JsonGroupModel));
@@ -366,7 +366,7 @@ namespace SmartQQ
         }
         public static JsonFriendInfModel GetFriendInf(string uin)
         {
-            String url = "http://s.web2.qq.com/api/get_friend_info2?tuin=" + uin + "&vfwebqq=" + vfwebqq + "&clientid=" + ClientID + "&psessionid=" + psessionid + "&t=" + GetTimeStamp();
+            string url = "http://s.web2.qq.com/api/get_friend_info2?tuin=" + uin + "&vfwebqq=" + vfwebqq + "&clientid=" + ClientID + "&psessionid=" + psessionid + "&t=" + GetTimeStamp();
 
             string dat = HTTP.HttpGet(url);
             JsonFriendInfModel ans = (JsonFriendInfModel)JsonConvert.DeserializeObject(dat, typeof(JsonFriendInfModel));

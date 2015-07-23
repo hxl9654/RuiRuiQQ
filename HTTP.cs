@@ -32,7 +32,7 @@ namespace SmartQQ
         static CookieCollection CookieCollection = new CookieCollection();
         static CookieContainer CookieContainer = new CookieContainer();
 
-        static public String HeartPackdata;
+        static public string HeartPackdata;
         static int AmountOfRunningPosting = 0;
         public static string HttpGet(string url, int timeout = 100000, Encoding encode = null, string referer = "http://d.web2.qq.com/proxy.html?v=20130916001&callback=1&id=2")
         {
@@ -118,11 +118,11 @@ namespace SmartQQ
         public static void HeartPack()
         {
             System.GC.Collect();
-            String url = "http://d.web2.qq.com/channel/poll2";
-            String sendData1 = "r= {\"ptwebqq\":\"";
-            String sendData2 = "\",\"clientid\":";
-            String sendData3 = ",\"psessionid\":\"";
-            String sendData4 = "\",\"key\":\"\"}";
+            string url = "http://d.web2.qq.com/channel/poll2";
+            string sendData1 = "r= {\"ptwebqq\":\"";
+            string sendData2 = "\",\"clientid\":";
+            string sendData3 = ",\"psessionid\":\"";
+            string sendData4 = "\",\"key\":\"\"}";
             HeartPackdata = sendData1 + SmartQQ.ptwebqq + sendData2 + SmartQQ.ClientID.ToString() + sendData3 + SmartQQ.psessionid + sendData4;
 
             Encoding encode = Encoding.UTF8;
@@ -169,7 +169,7 @@ namespace SmartQQ
                 HttpWebRequest req = ar.AsyncState as HttpWebRequest;
                 HttpWebResponse res = req.GetResponse() as HttpWebResponse;
                 reader = new StreamReader(res.GetResponseStream());
-                String temp = reader.ReadToEnd();
+                string temp = reader.ReadToEnd();
                 res.Close();
                 req.Abort();
                 Program.formlogin.HeartPackAction(temp);

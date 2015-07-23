@@ -2,10 +2,7 @@
 using Jurassic.Library;
 using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
-using System.Net;
 using System.Text;
 using System.Web;
 using System.Windows.Forms;
@@ -50,27 +47,27 @@ namespace SmartQQ
         private int Count103 = 0;
         public struct GroupInf
         {
-            public String gid;
-            public String no;
-            public String enable;
-            public String enableWeather;
-            public String enableExchangeRate;
-            public String enableStock;
-            public String enableStudy;
-            public String enableTalk;
-            public String enableXHJ;
-            public String enableEmoje;
-            public String enableCityInfo;
-            public String enableWiki;
+            public string gid;
+            public string no;
+            public string enable;
+            public string enableWeather;
+            public string enableExchangeRate;
+            public string enableStock;
+            public string enableStudy;
+            public string enableTalk;
+            public string enableXHJ;
+            public string enableEmoje;
+            public string enableCityInfo;
+            public string enableWiki;
             public JsonGroupInfoModel inf;
-            public String[] managers;
+            public string[] managers;
             public int GroupManagerIndex;
         };
         public GroupInf[] groupinfo = new GroupInf[100];
         public int groupinfMaxIndex = 0;
         public struct FriendInf
         {
-            public String uin;
+            public string uin;
             public JsonFriendInfModel Inf;
         };
         public FriendInf[] friendinf = new FriendInf[1000];
@@ -124,7 +121,7 @@ namespace SmartQQ
             pictureBoxCAPTCHA.Visible = false;
             textBoxCAPTCHA.Visible = false;
             textBoxCAPTCHA.Text = "";
-            this.AcceptButton = this.buttonSend;
+            AcceptButton = buttonSend;
             Loging = false;
         }
 
@@ -191,8 +188,8 @@ namespace SmartQQ
                 }
                 else if (HeartPackMessage.result[i].poll_type == "message")
                 {
-                    String message = "";
-                    String emojis = "";
+                    string message = "";
+                    string emojis = "";
                     int j;
                     for (j = 1; j < HeartPackMessage.result[i].value.content.Count; j++)
                     {
@@ -235,7 +232,7 @@ namespace SmartQQ
                 }
                 else if (HeartPackMessage.result[i].poll_type == "group_message")
                 {
-                    String emojis = "";
+                    string emojis = "";
                     string message = "";
                     int j;
                     for (j = 1; j < HeartPackMessage.result[i].value.content.Count; j++)
@@ -362,7 +359,7 @@ namespace SmartQQ
                             MessageToSend[0] = GetInfo.GetStock(tmp[1], "");
                         else MessageToSend[0] = GetInfo.GetStock(tmp[1], tmp[2]);
 
-                        String url = DicServer + "log.php";
+                        string url = DicServer + "log.php";
                         string postdata = "password=" + HttpUtility.UrlEncode(StudyPassword) + "&qqnum=" + HttpUtility.UrlEncode(QQNum) + "&qunnum=" + HttpUtility.UrlEncode(qunnum) + "&action=stock&p1=" + HttpUtility.UrlEncode(tmp[tmp.Length - 1]) + "&p2=NULL&p3=NULL&p4=NULL";
                         HTTP.HttpPost(url, "", postdata, Encoding.UTF8, false);
                         return MessageToSend;
@@ -391,7 +388,7 @@ namespace SmartQQ
                     {
                         MessageToSend[0] = GetInfo.GetExchangeRate(tmp[1], tmp[2]);
 
-                        String url = DicServer + "log.php";
+                        string url = DicServer + "log.php";
                         string postdata = "password=" + HttpUtility.UrlEncode(StudyPassword) + "&qqnum=" + HttpUtility.UrlEncode(QQNum) + "&qunnum=" + HttpUtility.UrlEncode(qunnum) + "&action=exchangerate&p1=" + HttpUtility.UrlEncode(tmp[1]) + "&p2=" + HttpUtility.UrlEncode(tmp[2]) + "&p3=NULL&p4=NULL";
                         HTTP.HttpPost(url, "", postdata, Encoding.UTF8, false);
                         return MessageToSend;
@@ -423,7 +420,7 @@ namespace SmartQQ
                         else
                             MessageToSend[0] = GetInfo.GetWeather(tmp[1], tmp[2]);
 
-                        String url = DicServer + "log.php";
+                        string url = DicServer + "log.php";
                         string postdata = "password=" + HttpUtility.UrlEncode(StudyPassword) + "&qqnum=" + HttpUtility.UrlEncode(QQNum) + "&qunnum=" + HttpUtility.UrlEncode(qunnum) + "&action=weather&p1=" + HttpUtility.UrlEncode(tmp[1]) + "&p2=NULL&p3=NULL&p4=NULL";
                         HTTP.HttpPost(url, "", postdata, Encoding.UTF8, false);
                         return MessageToSend;
@@ -455,7 +452,7 @@ namespace SmartQQ
                         else
                             MessageToSend[0] = GetInfo.GetCityInfo(tmp[1], tmp[2]);
 
-                        String url = DicServer + "log.php";
+                        string url = DicServer + "log.php";
                         string postdata = "password=" + HttpUtility.UrlEncode(StudyPassword) + "&qqnum=" + HttpUtility.UrlEncode(QQNum) + "&qunnum=" + HttpUtility.UrlEncode(qunnum) + "&action=cityinfo&p1=" + HttpUtility.UrlEncode(tmp[1]) + "&p2=NULL&p3=NULL&p4=NULL";
                         HTTP.HttpPost(url, "", postdata, Encoding.UTF8, false);
                         return MessageToSend;
@@ -487,7 +484,7 @@ namespace SmartQQ
                         else
                             MessageToSend[0] = GetInfo.GetWiki(tmp[1], tmp[2]);
 
-                        String url = DicServer + "log.php";
+                        string url = DicServer + "log.php";
                         string postdata = "password=" + HttpUtility.UrlEncode(StudyPassword) + "&qqnum=" + HttpUtility.UrlEncode(QQNum) + "&qunnum=" + HttpUtility.UrlEncode(qunnum) + "&action=wiki&p1=" + HttpUtility.UrlEncode(tmp[1]) + "&p2=NULL&p3=NULL&p4=NULL";
                         HTTP.HttpPost(url, "", postdata, Encoding.UTF8, false);
                         return MessageToSend;
@@ -550,7 +547,7 @@ namespace SmartQQ
                             result = AIStudy(tmp[1], tmp[2], QQNum, gno, false);
                         MessageToSend[0] = GetInfo.GetStudyFlagInfo(result, QQNum, tmp[1], tmp[2]);
 
-                        String url = DicServer + "log.php";
+                        string url = DicServer + "log.php";
                         string postdata = "password=" + HttpUtility.UrlEncode(StudyPassword) + "&qqnum=" + HttpUtility.UrlEncode(QQNum) + "&qunnum=" + HttpUtility.UrlEncode(qunnum) + "&action=study&p1=" + HttpUtility.UrlEncode(tmp[1]) + "&p2=" + HttpUtility.UrlEncode(tmp[2]) + "&p3=NULL&p4=NULL";
                         HTTP.HttpPost(url, "", postdata, Encoding.UTF8, false);
                         return MessageToSend;
@@ -571,7 +568,7 @@ namespace SmartQQ
                 MessageToSend[0] = AIGet(message, QQNum, gno);
                 if (!MessageToSend[0].Equals(""))
                 {
-                    String url = DicServer + "log.php";
+                    string url = DicServer + "log.php";
                     string postdata = "password=" + HttpUtility.UrlEncode(StudyPassword) + "&qqnum=" + HttpUtility.UrlEncode(QQNum) + "&qunnum=" + HttpUtility.UrlEncode(qunnum) + "&action=talk&p1=" + HttpUtility.UrlEncode(message) + "&p2=NULL&p3=NULL&p4=NULL";
                     HTTP.HttpPost(url, "", postdata, Encoding.UTF8, false);
                     return MessageToSend;
@@ -654,7 +651,7 @@ namespace SmartQQ
                 }
                 if (!MessageToSend[0].Equals(""))
                 {
-                    String url = DicServer + "log.php";
+                    string url = DicServer + "log.php";
                     string postdata = "password=" + HttpUtility.UrlEncode(StudyPassword) + "&qqnum=" + HttpUtility.UrlEncode(QQNum) + "&qunnum=" + HttpUtility.UrlEncode(qunnum) + "&action=talk&p1=" + HttpUtility.UrlEncode(message) + "&p2=NULL&p3=NULL&p4=NULL";
                     HTTP.HttpPost(url, "", postdata, Encoding.UTF8, false);
                 }
@@ -1304,7 +1301,7 @@ namespace SmartQQ
         }
         private string AIGet(string message, string QQNum, string QunNum = "NULL")
         {
-            String url = DicServer + "gettalk.php?source=" + message + "&qqnum=" + QQNum + "&qunnum=" + QunNum;
+            string url = DicServer + "gettalk.php?source=" + message + "&qqnum=" + QQNum + "&qunnum=" + QunNum;
             string temp = HTTP.HttpGet(url);
             if (temp.Equals("None1") || temp.Equals("None2") || temp.Equals("None4"))
                 temp = "";
@@ -1318,7 +1315,7 @@ namespace SmartQQ
             {
                 return "DisableStudy";
             }
-            String url = DicServer + "addtalk.php";
+            string url = DicServer + "addtalk.php";
             string postdata = "password=" + HttpUtility.UrlEncode(StudyPassword) + "&source=" + HttpUtility.UrlEncode(source) + "&aim=" + HttpUtility.UrlEncode(aim) + "&qqnum=" + HttpUtility.UrlEncode(QQNum) + "&qunnum=" + HttpUtility.UrlEncode(QunNum);
             if (superstudy)
                 postdata = postdata + "&superstudy=true";
