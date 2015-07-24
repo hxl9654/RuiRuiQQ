@@ -1155,7 +1155,7 @@ namespace SmartQQ
             }
             else
             {
-                groupinfo[GroupInfoIndex].enable = "true";
+                groupinfo[GroupInfoIndex].enable = "false";
                 groupinfo[GroupInfoIndex].enableXHJ = "true";
                 groupinfo[GroupInfoIndex].enableWeather = "true";
                 groupinfo[GroupInfoIndex].enableTalk = "true";
