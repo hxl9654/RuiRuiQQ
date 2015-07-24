@@ -63,7 +63,7 @@ namespace SmartQQ
             public string[] managers;
             public int GroupManagerIndex;
         };
-        public GroupInf[] groupinfo = new GroupInf[100];
+        public GroupInf[] groupinfo = new GroupInf[200];
         public int groupinfMaxIndex = 0;
         public struct FriendInf
         {
