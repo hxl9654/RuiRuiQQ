@@ -1336,6 +1336,8 @@ namespace SmartQQ
             for (int i = 0; i < Badwords.Length; i++)
                 if (MsgGet.Contains(Badwords[i]))
                     return "";
+            if (MsgGet.ToLower().Contains("mysql"))
+                return "";
             return MsgGet;
         }
 
