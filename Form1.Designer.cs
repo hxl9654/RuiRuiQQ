@@ -186,7 +186,7 @@
             this.textBoxResiveMessage.AcceptsTab = true;
             this.textBoxResiveMessage.BackColor = System.Drawing.SystemColors.Window;
             this.textBoxResiveMessage.Location = new System.Drawing.Point(6, 17);
-            this.textBoxResiveMessage.MaxLength = 327670000;
+            this.textBoxResiveMessage.MaxLength = 2147483647;
             this.textBoxResiveMessage.Multiline = true;
             this.textBoxResiveMessage.Name = "textBoxResiveMessage";
             this.textBoxResiveMessage.ReadOnly = true;
