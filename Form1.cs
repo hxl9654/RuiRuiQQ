@@ -1165,6 +1165,7 @@ namespace SmartQQ
                 groupinfo[GroupInfoIndex].enableEmoje = "true";
                 groupinfo[GroupInfoIndex].enableCityInfo = "true";
                 groupinfo[GroupInfoIndex].enableWiki = "true";
+                SmartQQ.SendMessageToGroup(groupinfo[GroupInfoIndex].gid, "\\\"如果需要使用小睿睿机器人，请群管理发送 群管理&启动机器人\\\"");
             }
 
         }
