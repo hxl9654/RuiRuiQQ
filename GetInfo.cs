@@ -234,6 +234,10 @@ namespace SmartQQ
             {
                 return "小睿睿拒绝学习这句话，原因是：" + Environment.NewLine + "账号" + QQNum + "不是特权用户，不能使用特权学习命令。";
             }
+            else if (result.Equals("pending"))
+            {
+                return "小睿睿记录下了账号" + QQNum + "提交的学习请求，请耐心等待审核，欢迎加入小睿睿的小窝，群137777833。";
+            }
             else
             {
                 return "小睿睿出错了，也许主人卖个萌就好了～～";
