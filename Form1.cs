@@ -34,7 +34,7 @@ namespace SmartQQ
         string MasterQQ = "";
         string StudyPassword = "";
         string DicServer = "";
-        bool DisableStudy = false;
+        bool NoDicPassword = false;
         public bool StopSendingHeartPack = false;
         //多个函数要用到的变量
         bool Loging = false;
@@ -210,7 +210,7 @@ namespace SmartQQ
                     message = message.Replace("＆", "&");
                     for (j = 0; j < user.result.info.Count; j++)
                         if (user.result.info[j].uin == HeartPackMessage.result[i].value.from_uin)
-                        {                              
+                        {
                             textBoxResiveMessage.Text += (user.result.info[j].nick + "  " + SmartQQ.GetRealQQ(user.result.info[j].uin) + Environment.NewLine + message + "   " + emojis + Environment.NewLine + Environment.NewLine);
                             textBoxResiveMessage.SelectionStart = textBoxResiveMessage.TextLength;
                             textBoxResiveMessage.ScrollToCaret();
@@ -1312,11 +1312,11 @@ namespace SmartQQ
         private string AIStudy(string source, string aim, string QQNum, string QunNum = "", bool superstudy = false)
         {
             listBoxLog.Items.Insert(0, "学习 " + source + " " + aim);
-            if (DisableStudy)
-            {
-                return "DisableStudy";
-            }
-            string url = DicServer + "addtalk.php";
+            string url;
+            if (NoDicPassword)
+                url = DicServer + "AddTalkRequest.php";
+            else
+                url = DicServer + "addtalk.php";
             string postdata = "password=" + HttpUtility.UrlEncode(StudyPassword) + "&source=" + HttpUtility.UrlEncode(source) + "&aim=" + HttpUtility.UrlEncode(aim) + "&qqnum=" + HttpUtility.UrlEncode(QQNum) + "&qunnum=" + HttpUtility.UrlEncode(QunNum);
             if (superstudy)
                 postdata = postdata + "&superstudy=true";
@@ -1405,7 +1405,7 @@ namespace SmartQQ
             else
             {
                 DicServer = "http://smartqq.hxlxz.com/";
-                DisableStudy = true;
+                NoDicPassword = true;
                 SmartQQ.ClientID = rd.Next(1000000, 9999999); ;
             }
             if (textBoxID.Text.Length > 0)
