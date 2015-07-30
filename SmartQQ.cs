@@ -30,7 +30,7 @@ namespace SmartQQ
     {
         //通信参数相关
         public static int MsgId;
-        public static int ClientID;
+        public static int ClientID = 0;
         public static string ptvsession = "";
         public static string p_skey, MyUin, skey, p_uin, vfwebqq, hash;
         public static string ptwebqq, psessionid;

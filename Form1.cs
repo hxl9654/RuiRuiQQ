@@ -32,7 +32,7 @@ namespace SmartQQ
     {
         //系统配置相关
         string MasterQQ = "";
-        string StudyPassword = "";
+        string DicPassword = "";
         string DicServer = "";
         bool NoDicPassword = false;
         public bool StopSendingHeartPack = false;
@@ -362,7 +362,7 @@ namespace SmartQQ
                         else MessageToSend[0] = GetInfo.GetStock(tmp[1], tmp[2]);
 
                         string url = DicServer + "log.php";
-                        string postdata = "password=" + HttpUtility.UrlEncode(StudyPassword) + "&qqnum=" + HttpUtility.UrlEncode(QQNum) + "&qunnum=" + HttpUtility.UrlEncode(qunnum) + "&action=stock&p1=" + HttpUtility.UrlEncode(tmp[tmp.Length - 1]) + "&p2=NULL&p3=NULL&p4=NULL";
+                        string postdata = "password=" + HttpUtility.UrlEncode(DicPassword) + "&qqnum=" + HttpUtility.UrlEncode(QQNum) + "&qunnum=" + HttpUtility.UrlEncode(qunnum) + "&action=stock&p1=" + HttpUtility.UrlEncode(tmp[tmp.Length - 1]) + "&p2=NULL&p3=NULL&p4=NULL";
                         HTTP.HttpPost(url, "", postdata, Encoding.UTF8, false);
                         return MessageToSend;
                     }
@@ -391,7 +391,7 @@ namespace SmartQQ
                         MessageToSend[0] = GetInfo.GetExchangeRate(tmp[1], tmp[2]);
 
                         string url = DicServer + "log.php";
-                        string postdata = "password=" + HttpUtility.UrlEncode(StudyPassword) + "&qqnum=" + HttpUtility.UrlEncode(QQNum) + "&qunnum=" + HttpUtility.UrlEncode(qunnum) + "&action=exchangerate&p1=" + HttpUtility.UrlEncode(tmp[1]) + "&p2=" + HttpUtility.UrlEncode(tmp[2]) + "&p3=NULL&p4=NULL";
+                        string postdata = "password=" + HttpUtility.UrlEncode(DicPassword) + "&qqnum=" + HttpUtility.UrlEncode(QQNum) + "&qunnum=" + HttpUtility.UrlEncode(qunnum) + "&action=exchangerate&p1=" + HttpUtility.UrlEncode(tmp[1]) + "&p2=" + HttpUtility.UrlEncode(tmp[2]) + "&p3=NULL&p4=NULL";
                         HTTP.HttpPost(url, "", postdata, Encoding.UTF8, false);
                         return MessageToSend;
                     }
@@ -423,7 +423,7 @@ namespace SmartQQ
                             MessageToSend[0] = GetInfo.GetWeather(tmp[1], tmp[2]);
 
                         string url = DicServer + "log.php";
-                        string postdata = "password=" + HttpUtility.UrlEncode(StudyPassword) + "&qqnum=" + HttpUtility.UrlEncode(QQNum) + "&qunnum=" + HttpUtility.UrlEncode(qunnum) + "&action=weather&p1=" + HttpUtility.UrlEncode(tmp[1]) + "&p2=NULL&p3=NULL&p4=NULL";
+                        string postdata = "password=" + HttpUtility.UrlEncode(DicPassword) + "&qqnum=" + HttpUtility.UrlEncode(QQNum) + "&qunnum=" + HttpUtility.UrlEncode(qunnum) + "&action=weather&p1=" + HttpUtility.UrlEncode(tmp[1]) + "&p2=NULL&p3=NULL&p4=NULL";
                         HTTP.HttpPost(url, "", postdata, Encoding.UTF8, false);
                         return MessageToSend;
                     }
@@ -455,7 +455,7 @@ namespace SmartQQ
                             MessageToSend[0] = GetInfo.GetCityInfo(tmp[1], tmp[2]);
 
                         string url = DicServer + "log.php";
-                        string postdata = "password=" + HttpUtility.UrlEncode(StudyPassword) + "&qqnum=" + HttpUtility.UrlEncode(QQNum) + "&qunnum=" + HttpUtility.UrlEncode(qunnum) + "&action=cityinfo&p1=" + HttpUtility.UrlEncode(tmp[1]) + "&p2=NULL&p3=NULL&p4=NULL";
+                        string postdata = "password=" + HttpUtility.UrlEncode(DicPassword) + "&qqnum=" + HttpUtility.UrlEncode(QQNum) + "&qunnum=" + HttpUtility.UrlEncode(qunnum) + "&action=cityinfo&p1=" + HttpUtility.UrlEncode(tmp[1]) + "&p2=NULL&p3=NULL&p4=NULL";
                         HTTP.HttpPost(url, "", postdata, Encoding.UTF8, false);
                         return MessageToSend;
                     }
@@ -487,7 +487,7 @@ namespace SmartQQ
                             MessageToSend[0] = GetInfo.GetWiki(tmp[1], tmp[2]);
 
                         string url = DicServer + "log.php";
-                        string postdata = "password=" + HttpUtility.UrlEncode(StudyPassword) + "&qqnum=" + HttpUtility.UrlEncode(QQNum) + "&qunnum=" + HttpUtility.UrlEncode(qunnum) + "&action=wiki&p1=" + HttpUtility.UrlEncode(tmp[1]) + "&p2=NULL&p3=NULL&p4=NULL";
+                        string postdata = "password=" + HttpUtility.UrlEncode(DicPassword) + "&qqnum=" + HttpUtility.UrlEncode(QQNum) + "&qunnum=" + HttpUtility.UrlEncode(qunnum) + "&action=wiki&p1=" + HttpUtility.UrlEncode(tmp[1]) + "&p2=NULL&p3=NULL&p4=NULL";
                         HTTP.HttpPost(url, "", postdata, Encoding.UTF8, false);
                         return MessageToSend;
                     }
@@ -550,7 +550,7 @@ namespace SmartQQ
                         MessageToSend[0] = GetInfo.GetStudyFlagInfo(result, QQNum, tmp[1], tmp[2]);
 
                         string url = DicServer + "log.php";
-                        string postdata = "password=" + HttpUtility.UrlEncode(StudyPassword) + "&qqnum=" + HttpUtility.UrlEncode(QQNum) + "&qunnum=" + HttpUtility.UrlEncode(qunnum) + "&action=study&p1=" + HttpUtility.UrlEncode(tmp[1]) + "&p2=" + HttpUtility.UrlEncode(tmp[2]) + "&p3=NULL&p4=NULL";
+                        string postdata = "password=" + HttpUtility.UrlEncode(DicPassword) + "&qqnum=" + HttpUtility.UrlEncode(QQNum) + "&qunnum=" + HttpUtility.UrlEncode(qunnum) + "&action=study&p1=" + HttpUtility.UrlEncode(tmp[1]) + "&p2=" + HttpUtility.UrlEncode(tmp[2]) + "&p3=NULL&p4=NULL";
                         HTTP.HttpPost(url, "", postdata, Encoding.UTF8, false);
                         return MessageToSend;
                     }
@@ -571,7 +571,7 @@ namespace SmartQQ
                 if (!MessageToSend[0].Equals(""))
                 {
                     string url = DicServer + "log.php";
-                    string postdata = "password=" + HttpUtility.UrlEncode(StudyPassword) + "&qqnum=" + HttpUtility.UrlEncode(QQNum) + "&qunnum=" + HttpUtility.UrlEncode(qunnum) + "&action=talk&p1=" + HttpUtility.UrlEncode(message) + "&p2=NULL&p3=NULL&p4=NULL";
+                    string postdata = "password=" + HttpUtility.UrlEncode(DicPassword) + "&qqnum=" + HttpUtility.UrlEncode(QQNum) + "&qunnum=" + HttpUtility.UrlEncode(qunnum) + "&action=talk&p1=" + HttpUtility.UrlEncode(message) + "&p2=NULL&p3=NULL&p4=NULL";
                     HTTP.HttpPost(url, "", postdata, Encoding.UTF8, false);
                     return MessageToSend;
                 }
@@ -654,7 +654,7 @@ namespace SmartQQ
                 if (!MessageToSend[0].Equals(""))
                 {
                     string url = DicServer + "log.php";
-                    string postdata = "password=" + HttpUtility.UrlEncode(StudyPassword) + "&qqnum=" + HttpUtility.UrlEncode(QQNum) + "&qunnum=" + HttpUtility.UrlEncode(qunnum) + "&action=talk&p1=" + HttpUtility.UrlEncode(message) + "&p2=NULL&p3=NULL&p4=NULL";
+                    string postdata = "password=" + HttpUtility.UrlEncode(DicPassword) + "&qqnum=" + HttpUtility.UrlEncode(QQNum) + "&qunnum=" + HttpUtility.UrlEncode(qunnum) + "&action=talk&p1=" + HttpUtility.UrlEncode(message) + "&p2=NULL&p3=NULL&p4=NULL";
                     HTTP.HttpPost(url, "", postdata, Encoding.UTF8, false);
                 }
                 return MessageToSend;
@@ -1089,7 +1089,7 @@ namespace SmartQQ
 
         private void SetGroupSetting(int GroupInfoIndex, string option, string value)
         {
-            string url = DicServer + "groupmanage.php?password=" + StudyPassword + "&action=set&gno=" + groupinfo[GroupInfoIndex].no + "&option=" + option + "&value=" + value;
+            string url = DicServer + "groupmanage.php?password=" + DicPassword + "&action=set&gno=" + groupinfo[GroupInfoIndex].no + "&option=" + option + "&value=" + value;
             string temp = HTTP.HttpGet(url);
             JsonGroupManageModel GroupManageInfo = (JsonGroupManageModel)JsonConvert.DeserializeObject(temp, typeof(JsonGroupManageModel));
             if (GroupManageInfo.statu.Equals("fail"))
@@ -1118,7 +1118,7 @@ namespace SmartQQ
 
         private void GetGroupSetting(int GroupInfoIndex)
         {
-            string url = DicServer + "groupmanage.php?password=" + StudyPassword + "&action=get&gno=" + groupinfo[GroupInfoIndex].no;
+            string url = DicServer + "groupmanage.php?password=" + DicPassword + "&action=get&gno=" + groupinfo[GroupInfoIndex].no;
             string temp = HTTP.HttpGet(url);
             JsonGroupManageModel GroupManageInfo = (JsonGroupManageModel)JsonConvert.DeserializeObject(temp, typeof(JsonGroupManageModel));
             if (GroupManageInfo.statu.Equals("success"))
@@ -1319,7 +1319,7 @@ namespace SmartQQ
                 url = DicServer + "AddTalkRequest.php";
             else
                 url = DicServer + "addtalk.php";
-            string postdata = "password=" + HttpUtility.UrlEncode(StudyPassword) + "&source=" + HttpUtility.UrlEncode(source) + "&aim=" + HttpUtility.UrlEncode(aim) + "&qqnum=" + HttpUtility.UrlEncode(QQNum) + "&qunnum=" + HttpUtility.UrlEncode(QunNum);
+            string postdata = "password=" + HttpUtility.UrlEncode(DicPassword) + "&source=" + HttpUtility.UrlEncode(source) + "&aim=" + HttpUtility.UrlEncode(aim) + "&qqnum=" + HttpUtility.UrlEncode(QQNum) + "&qunnum=" + HttpUtility.UrlEncode(QunNum);
             if (superstudy)
                 postdata = postdata + "&superstudy=true";
             else postdata = postdata + "&superstudy=false";
@@ -1399,17 +1399,17 @@ namespace SmartQQ
                 JosnConfigFileModel dat = (JosnConfigFileModel)JsonConvert.DeserializeObject(tmp, typeof(JosnConfigFileModel));
                 textBoxID.Text = dat.QQNum;
                 textBoxPassword.Text = dat.QQPassword;
-                StudyPassword = dat.DicPassword;
+                DicPassword = dat.DicPassword;
                 DicServer = dat.DicServer;
                 MasterQQ = dat.AdminQQ;
                 SmartQQ.ClientID = dat.ClientID;
             }
-            else
-            {
+            if (DicServer == null || DicServer.Equals(""))
                 DicServer = "http://smartqq.hxlxz.com/";
+            if (SmartQQ.ClientID == 0)
+                SmartQQ.ClientID = rd.Next(1000000, 9999999);
+            if (DicPassword == null || DicPassword.Equals(""))
                 NoDicPassword = true;
-                SmartQQ.ClientID = rd.Next(1000000, 9999999); ;
-            }
             if (textBoxID.Text.Length > 0)
             {
                 SmartQQ.GetCaptcha();
