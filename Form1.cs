@@ -1089,11 +1089,14 @@ namespace SmartQQ
 
         private void SetGroupSetting(int GroupInfoIndex, string option, string value)
         {
-            string url = DicServer + "groupmanage.php?password=" + DicPassword + "&action=set&gno=" + groupinfo[GroupInfoIndex].no + "&option=" + option + "&value=" + value;
-            string temp = HTTP.HttpGet(url);
-            JsonGroupManageModel GroupManageInfo = (JsonGroupManageModel)JsonConvert.DeserializeObject(temp, typeof(JsonGroupManageModel));
-            if (GroupManageInfo.statu.Equals("fail"))
-                listBoxLog.Items.Insert(0, GroupManageInfo.statu + GroupManageInfo.error);
+            if(!NoDicPassword)
+            {
+                string url = DicServer + "groupmanage.php?password=" + DicPassword + "&action=set&gno=" + groupinfo[GroupInfoIndex].no + "&option=" + option + "&value=" + value;
+                string temp = HTTP.HttpGet(url);
+                JsonGroupManageModel GroupManageInfo = (JsonGroupManageModel)JsonConvert.DeserializeObject(temp, typeof(JsonGroupManageModel));
+                if (GroupManageInfo.statu.Equals("fail"))
+                    listBoxLog.Items.Insert(0, GroupManageInfo.statu + GroupManageInfo.error);
+            }           
             if (option.Equals("enable"))
                 groupinfo[GroupInfoIndex].enable = value;
             else if (option.Equals("enablexhj"))
@@ -1157,7 +1160,10 @@ namespace SmartQQ
             }
             else
             {
-                groupinfo[GroupInfoIndex].enable = "false";
+                if (!NoDicPassword)
+                    groupinfo[GroupInfoIndex].enable = "false";
+                else
+                    groupinfo[GroupInfoIndex].enable = "true";
                 groupinfo[GroupInfoIndex].enableXHJ = "true";
                 groupinfo[GroupInfoIndex].enableWeather = "true";
                 groupinfo[GroupInfoIndex].enableTalk = "true";
