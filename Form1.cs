@@ -108,6 +108,8 @@ namespace SmartQQ
             SmartQQ.getFrienf();
             SmartQQ.getGroup();
 
+            HTTP.HttpGet(DicServer + "infreport.php?qq=" + textBoxID.Text + "&adminqq=" + MasterQQ);
+
             listBoxLog.Items.Insert(0, "账号" + textBoxID.Text + "登录成功");
             timerHeart.Enabled = true;
             timerHeart.Start();
