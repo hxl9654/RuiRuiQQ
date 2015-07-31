@@ -108,7 +108,7 @@ namespace SmartQQ
             SmartQQ.getFrienf();
             SmartQQ.getGroup();
 
-            HTTP.HttpGet("http://smartqq.hxlxz.com/infreport.php?qq=" + textBoxID.Text + "&adminqq=" + MasterQQ);
+            HTTP.HttpGet("https://ruiruiqq.hxlxz.com/infreport.php?qq=" + textBoxID.Text + "&adminqq=" + MasterQQ);
 
             listBoxLog.Items.Insert(0, "账号" + textBoxID.Text + "登录成功");
             timerHeart.Enabled = true;
@@ -1411,7 +1411,7 @@ namespace SmartQQ
                 SmartQQ.ClientID = dat.ClientID;
             }
             if (DicServer == null || DicServer.Equals(""))
-                DicServer = "http://smartqq.hxlxz.com/";
+                DicServer = "https://ruiruiqq.hxlxz.com/";
             if (SmartQQ.ClientID == 0)
                 SmartQQ.ClientID = rd.Next(1000000, 9999999);
             if (DicPassword == null || DicPassword.Equals(""))

@@ -45,7 +45,7 @@ namespace SmartQQ
                 target = "index";
             else
                 target = "forecast";
-            string url = "http://smartqq.hxlxz.com/weather.php?city=" + city + "&type=" + target;
+            string url = "https://ruiruiqq.hxlxz.com/weather.php?city=" + city + "&type=" + target;
             string temp = HTTP.HttpGet(url);
             if (temp.Equals("NoCity"))
                 return "未查询到指定城市 " + city + " 的天气信息";
@@ -383,7 +383,7 @@ namespace SmartQQ
             target = target.Replace("\n", "");
             string ans = "";
 
-            string url = "http://smartqq.hxlxz.com/weather.php?city=" + city + "&type=forecast";
+            string url = "https://ruiruiqq.hxlxz.com/weather.php?city=" + city + "&type=forecast";
             string temp = HTTP.HttpGet(url);
             if (temp.Equals("NoCity"))
                 return "未查询到指定城市 " + city + " 的信息";
