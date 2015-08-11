@@ -267,6 +267,8 @@ namespace SmartQQ
             {
                 string url = "http://www.baike.com/wiki/" + keyword;
                 string temp = HTTP.HttpGet(url);
+                if(temp.Contains("尚未收录"))
+                    return "没有找到这个词条哦～";
                 temp = temp.Replace("<meta content=\"", "&");
                 temp = temp.Replace("\" name=\"description\">", "&");
                 string[] tmp = temp.Split('&');
@@ -275,7 +277,7 @@ namespace SmartQQ
                 else
                     return "";
             }
-            if (aim.Equals("维基百科") || aim.Equals("维基"))
+            else if (aim.Equals("维基百科") || aim.Equals("维基"))
             {
                 string url = "https://zh.wikipedia.org/w/api.php?action=query&prop=extracts&format=json&exsentences=2&exintro=&explaintext=&exsectionformat=plain&exvariant=zh&titles=" + keyword;
                 string temp = HTTP.HttpGet(url);
@@ -288,12 +290,12 @@ namespace SmartQQ
                 string[] tmp = temp1.query.pages.ToString().Split("{}".ToCharArray());
                 JsonWikipediaPageModel pages = (JsonWikipediaPageModel)JsonConvert.DeserializeObject("{" + tmp[2] + "}", typeof(JsonWikipediaPageModel));
 
-                if (pages.extract != null) 
+                if (pages.extract != null)
                     return pages.extract + Environment.NewLine + "详情请查看https://zh.wikipedia.org/wiki/" + HttpUtility.UrlEncode(keyword);
                 else
                     return "没有找到这个Wiki哦～";
             }
-            else
+            else if (aim.Equals("百度百科") || aim.Equals("百度"))
             {
                 string url = "http://wapbaike.baidu.com/item/" + keyword;
                 string temp = HTTP.HttpGet(url);
@@ -323,14 +325,30 @@ namespace SmartQQ
                     tmp = temp.Split('&');
 
                     temp = "";
-                    for (int i = 0; i < tmp.Length; i+=2)
-                        if ((!tmp[i].Contains("card-info"))&&(!tmp[i].Contains("div class")))
+                    for (int i = 0; i < tmp.Length; i += 2)
+                        if ((!tmp[i].Contains("card-info")) && (!tmp[i].Contains("div class")))
                             temp += tmp[i];
                     if (!temp.Equals(""))
                         return temp + Environment.NewLine + "详情请查看http://wapbaike.baidu.com/item/" + HttpUtility.UrlEncode(keyword);
                     else
                         return "词条 " + keyword + " 请查看http://wapbaike.baidu.com/item/" + HttpUtility.UrlEncode(keyword);
                 }
+                else return "没有找到这个词条哦～";
+            }
+            else
+            {
+                string temp1 = GetWiki(keyword, "百度");
+                if (temp1.Contains("查看"))
+                    return temp1 + " --百度百科";
+
+                temp1 = GetWiki(keyword, "互动");
+                if (temp1.Contains("查看"))
+                    return temp1 + " --互动百科";
+
+                temp1 = GetWiki(keyword, "维基");
+                if (temp1.Contains("查看"))
+                    return temp1 + " --维基百科";
+
                 else return "没有找到这个词条哦～";
             }
         }
