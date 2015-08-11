@@ -280,4 +280,19 @@ namespace SmartQQ
             public string i5;   //级别说明
         }
     }
+    public class JsonWikipediaModel
+    {
+        public string batchcomplete;
+        public paramQuery query;
+        public class paramQuery
+        {
+            public object pages;
+        }
+    }
+    public class JsonWikipediaPageModel
+    {
+        public int pageid;
+        public string title;
+        public string extract;
+    }
 }

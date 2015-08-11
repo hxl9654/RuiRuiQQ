@@ -275,6 +275,24 @@ namespace SmartQQ
                 else
                     return "";
             }
+            if (aim.Equals("维基百科") || aim.Equals("维基"))
+            {
+                string url = "https://zh.wikipedia.org/w/api.php?action=query&prop=extracts&format=json&exsentences=2&exintro=&explaintext=&exsectionformat=plain&exvariant=zh&titles=" + keyword;
+                string temp = HTTP.HttpGet(url);
+                for (int i = 0; i < Program.formlogin.Badwords.Length; i++)
+                    if (temp.Contains(Program.formlogin.Badwords[i]) || keyword.Contains(Program.formlogin.Badwords[i]))
+                    {
+                        return "这个Wiki被河蟹吃掉了 QAQ";
+                    }
+                JsonWikipediaModel temp1 = (JsonWikipediaModel)JsonConvert.DeserializeObject(temp, typeof(JsonWikipediaModel));
+                string[] tmp = temp1.query.pages.ToString().Split("{}".ToCharArray());
+                JsonWikipediaPageModel pages = (JsonWikipediaPageModel)JsonConvert.DeserializeObject("{" + tmp[2] + "}", typeof(JsonWikipediaPageModel));
+
+                if (pages.extract != null) 
+                    return pages.extract + Environment.NewLine + "详情请查看https://zh.wikipedia.org/wiki/" + HttpUtility.UrlEncode(keyword);
+                else
+                    return "没有找到这个Wiki哦～";
+            }
             else
             {
                 string url = "http://wapbaike.baidu.com/item/" + keyword;

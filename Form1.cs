@@ -72,7 +72,7 @@ namespace SmartQQ
         };
         public FriendInf[] friendinf = new FriendInf[1000];
         public int friendinfMaxIndex = 0;
-        string[] Badwords;
+        public string[] Badwords;
 
         private void LogIn()
         {
