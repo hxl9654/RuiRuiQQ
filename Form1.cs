@@ -36,6 +36,7 @@ namespace RuiRuiQQRobot
         bool NoDicPassword = false;
         //多个函数要用到的变量
         string pin = string.Empty;
+        bool messagewait = false;
         //数据存储相关
         private int Count103 = 0;
 
@@ -255,7 +256,7 @@ namespace RuiRuiQQRobot
                         MsgSendFlag = true;
                     }
                 }
-
+                /*
                 if (!MsgSendFlag)
                 {
                     string XiaoHuangJiMsg = GetXiaoHuangJi(message);
@@ -269,6 +270,7 @@ namespace RuiRuiQQRobot
                     }
                     return MessageToSend;
                 }
+                */
                 if (!MessageToSend[0].Equals(""))
                 {
                     string url = DicServer + "log.php";
@@ -296,15 +298,19 @@ namespace RuiRuiQQRobot
                     MessageToSendArray[i] = "";
                 }
             }
-            if (!MessageToSend.Equals(""))
-                MessageToSend = "\\\"" + MessageToSend + "\\\"";
             if (MessageToSend.Equals(""))
-            {
-                //SendMessage(id, "～ 小睿睿听不懂你在说什么呢。。。教教我吧～～" + Environment.NewLine + "格式 学习&主人的话&小睿睿的回复" + "\\\"");
-            }
-            else;//SendMessage(id, MessageToSend);
+                SendMessage(id, "～ 小睿睿听不懂你在说什么呢。。。教教我吧～～" + Environment.NewLine + "格式 学习&主人的话&小睿睿的回复");
+            else SendMessage(id, MessageToSend);
 
         }
+
+        private void SendMessage(string id, string messageToSend)
+        {
+            string url = DicServer + "response.php";
+            string data = "password=" + DicPassword + "&id=" + id + "&res=" + HttpUtility.UrlEncode(messageToSend);
+            HTTP.HttpPost(url, "", data, Encoding.UTF8, false);
+        }
+
         private string AIGet(string message, string QQNum, string QunNum = "NULL")
         {
             string url = DicServer + "gettalk.php?source=" + message + "&qqnum=" + QQNum + "&qunnum=" + QunNum;
@@ -337,7 +343,7 @@ namespace RuiRuiQQRobot
         {
             string url = "http://www.xiaohuangji.com/ajax.php";
             string postdata = "para=" + HttpUtility.UrlEncode(msg);
-            string MsgGet = HTTP.HttpPost(url, "http://www.xiaohuangji.com/", postdata, Encoding.UTF8, false, 10000);
+            string MsgGet = HTTP.HttpPost(url, "http://www.xiaohuangji.com/", postdata, Encoding.UTF8, false);
             for (int i = 0; i < Badwords.Length; i++)
                 if (MsgGet.Contains(Badwords[i]))
                     return "";
@@ -415,7 +421,10 @@ namespace RuiRuiQQRobot
         }
         private void timerHeart_Tick(object sender, EventArgs e)
         {
-            string url = "https://ruirui.hxlxz.com/lookup.php?password=" + DicPassword;
+            if (messagewait)
+                return;
+            messagewait = true;
+            string url = DicServer + "lookup.php?password=" + DicPassword;
             string temp = HTTP.HttpGet(url);
             string[] tmp = temp.Split('▲');
             for (int i = 0; i < tmp.Length; i++)
@@ -423,11 +432,11 @@ namespace RuiRuiQQRobot
                 string[] tmp1 = tmp[i].Split('★');
                 if (tmp1.Length != 4)
                     continue;
-                textBoxMessage.Text +=( GetTime(tmp1[1]) + "   " + tmp1[2] + Environment.NewLine + tmp1[3] + Environment.NewLine);
+                textBoxMessage.Text += (GetTime(tmp1[1]) + "   " + tmp1[2] + Environment.NewLine + tmp1[3] + Environment.NewLine);
 
                 ActionWhenResivedMessage(tmp1[2], tmp1[3], tmp1[0]);
             }
-
+            messagewait = false;
         }
 
         private void listBoxLog_SelectedIndexChanged(object sender, EventArgs e)

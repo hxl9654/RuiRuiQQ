@@ -97,7 +97,6 @@
             // timerHeart
             // 
             this.timerHeart.Enabled = true;
-            this.timerHeart.Interval = 1000;
             this.timerHeart.Tick += new System.EventHandler(this.timerHeart_Tick);
             // 
             // groupbox1
