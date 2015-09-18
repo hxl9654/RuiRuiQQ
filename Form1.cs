@@ -306,7 +306,7 @@ namespace RuiRuiQQRobot
 
         private void SendMessage(string id, string messageToSend)
         {
-            string url = DicServer + "response.php";
+            string url = DicServer + "wechat-response.php";
             string data = "password=" + DicPassword + "&id=" + id + "&res=" + HttpUtility.UrlEncode(messageToSend);
             HTTP.HttpPost(url, "", data, Encoding.UTF8, false);
         }
@@ -424,7 +424,7 @@ namespace RuiRuiQQRobot
             if (messagewait)
                 return;
             messagewait = true;
-            string url = DicServer + "lookup.php?password=" + DicPassword;
+            string url = DicServer + "wechat-lookup.php?password=" + DicPassword;
             string temp = HTTP.HttpGet(url);
             string[] tmp = temp.Split('▲');
             for (int i = 0; i < tmp.Length; i++)
@@ -433,7 +433,8 @@ namespace RuiRuiQQRobot
                 if (tmp1.Length != 4)
                     continue;
                 textBoxMessage.Text += (GetTime(tmp1[1]) + "   " + tmp1[2] + Environment.NewLine + tmp1[3] + Environment.NewLine);
-
+                textBoxMessage.SelectionStart = textBoxMessage.TextLength;
+                textBoxMessage.ScrollToCaret();
                 ActionWhenResivedMessage(tmp1[2], tmp1[3], tmp1[0]);
             }
             messagewait = false;
