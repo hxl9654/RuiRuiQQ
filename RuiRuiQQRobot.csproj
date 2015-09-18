@@ -87,7 +87,7 @@
     <Compile Include="JosnModel.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SmartQQ.cs" />
+    <Compile Include="Wechat.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Form1.resx">

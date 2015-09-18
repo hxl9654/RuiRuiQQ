@@ -21,7 +21,7 @@ using System.Web;
 // * @version    1.0
 // * @discribe   RuiRuiQQRobot服务端
 // * 本软件作者是何相龙，使用GPL v3许可证进行授权。
-namespace SmartQQ
+namespace RuiRuiQQRobot
 {
     public static class GetInfo
     {
@@ -267,7 +267,7 @@ namespace SmartQQ
             {
                 string url = "http://www.baike.com/wiki/" + keyword;
                 string temp = HTTP.HttpGet(url);
-                if(temp.Contains("尚未收录"))
+                if (temp.Contains("尚未收录"))
                     return "没有找到这个词条哦～";
                 temp = temp.Replace("<meta content=\"", "&");
                 temp = temp.Replace("\" name=\"description\">", "&");

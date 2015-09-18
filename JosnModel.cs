@@ -19,167 +19,21 @@ using System.Collections.Generic;
 // * @version    1.0
 // * @discribe   RuiRuiQQRobot服务端
 // * 本软件作者是何相龙，使用GPL v3许可证进行授权。
-namespace SmartQQ
+namespace RuiRuiQQRobot
 {
-    public class JsonFriendModel
+    public class WechatTokenModel
     {
-        public int retcode;
-        public paramResult result;
-        public class paramResult
-        {
-            /// 分组信息
-            public List<paramCategories> categories;
-            /// 好友汇总
-            public List<paramFriends> friends;
-            /// 好友信息
-            public List<paramInfo> info;
-            /// 备注
-            public List<paramMarkNames> marknames;
-            /// 分组
-            public class paramCategories
-            {
-                public int index;
-                public int sort;
-                public string name;
-            }
-            /// 好友汇总 
-            public class paramFriends
-            {
-                public int flag;
-                public string uin;
-                public int categories;
-            }
-            /// 好友信息
-            public class paramInfo
-            {
-                public int face;
-                public string nick;
-                public string uin;
-            }
-            /// 备注 
-            public class paramMarkNames
-            {
-                public string uin;
-                public string markname;
-            }
-        }
-    }
-    public class JsonGroupModel
-    {
-        public int retcode;
-        public paramResult result;
-        public class paramResult
-        {
-            public List<paramGnamelist> gnamelist;
-            public class paramGnamelist
-            {
-                public string flag;
-                public string gid;
-                public string code;
-                public string name;
-            }
-        }
-    }
-    public class JsonFriendInfModel
-    {
-        public int retcode;
-        public paramResult result;
-        public class paramResult
-        {
-            public paramBirthday birthday;
-            public string occupation;
-            public string phone;
-            public string college;
-            public int constel;
-            public int blood;
-            public string homepage;
-            public int stat;
-            public string city;
-            public string personal;
-            public string nick;
-            public int shengxiao;
-            public string email;
-            public string province;
-            public string gender;
-            public string mobile;
-            public class paramBirthday
-            {
-                public int month;
-                public int year;
-                public int day;
-            }
-        }
-    }
-    public class JsonGroupInfoModel
-    {
-        public int retcode;
-        public paramResult result;
-        public class paramResult
-        {
-            public List<paramMinfo> minfo;
-            public paramGinfo ginfo;
-            public class paramMinfo
-            {
-                public string nick;
-                public string province;
-                public string gender;
-                public string uin;
-                public string country;
-                public string city;
-            }
-            public class paramGinfo
-            {
-                public string code;
-                public string createtime;
-                public string flag;
-                public string name;
-                public string gid;
-                public string owner;
-                public List<paramMembers> members;
-                public class paramMembers
-                {
-                    public string muin;
-                    public int mflag;
-                }
-            }
-        }
-    }
-    public class JsonHeartPackMessage
-    {
-        public int retcode;     //状态码
-        public string errmsg;   //错误信息
-        public string t;        //被迫下线说明
-        public string p;        //需要更换的ptwebqq
-        public List<paramResult> result;
-
-        public class paramResult
-        {
-            public string poll_type;
-            public paramValue value;
-            public class paramValue
-            {
-                //收到消息
-                public List<object> content;
-                public string from_uin;
-                //群消息有send_uin，为特征群号；info_seq为群号
-                public string send_uin;
-                public string info_seq;
-                //上线提示
-                public string uin;
-                public string status;
-                //异地登录
-                public string reason;
-            }
-        }
+        public string access_token;
+        public int expires_in;
+        public int errcode;
+        public string errmsg;
     }
     public class JosnConfigFileModel
     {
-        public string AdminQQ;
         public string DicServer;
         public string DicPassword;
-        public string QQNum;
-        public string QQPassword;
-        public int ClientID;
+        public string ID;
+        public string Secrect;
     }
     public class JsonExchangeRateModel
     {
@@ -209,23 +63,7 @@ namespace SmartQQ
             }
         }
     }
-    public class JsonGroupManageModel
-    {
-        public string enable;
-        public string enableWeather;
-        public string enableExchangeRate;
-        public string enableStock;
-        public string enableStudy;
-        public string enabletalk;
-        public string enablexhj;
-        public string enableEmoje;
-        public string enableCityInfo;
-        public string enableWiki;
 
-        public string gno;
-        public string statu;
-        public string error;
-    }
     public class JsonWeatherModel
     {
         public paramC c;

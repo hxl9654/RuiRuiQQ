@@ -22,7 +22,7 @@ using System.Web;
 // * @version    1.0
 // * @discribe   RuiRuiQQRobot服务端
 // * 本软件作者是何相龙，使用GPL v3许可证进行授权。
-namespace SmartQQ
+namespace RuiRuiQQRobot
 {
 
     public static class HTTP
@@ -114,70 +114,6 @@ namespace SmartQQ
                 Program.formlogin.listBoxLog.Items.Insert(0, dat);
             AmountOfRunningPosting--;
             return dat;
-        }
-        public static void HeartPack()
-        {
-            System.GC.Collect();
-            string url = "http://d.web2.qq.com/channel/poll2";
-            string sendData1 = "r= {\"ptwebqq\":\"";
-            string sendData2 = "\",\"clientid\":";
-            string sendData3 = ",\"psessionid\":\"";
-            string sendData4 = "\",\"key\":\"\"}";
-            HeartPackdata = sendData1 + SmartQQ.ptwebqq + sendData2 + SmartQQ.ClientID.ToString() + sendData3 + SmartQQ.psessionid + sendData4;
-
-            Encoding encode = Encoding.UTF8;
-            string Referer = "http://d.web2.qq.com/proxy.html?v=20130916001&callback=1&id=2";
-            try
-            {
-                HttpWebRequest req = WebRequest.Create(url) as HttpWebRequest;
-                req.CookieContainer = cookies;
-                req.ContentType = "application/x-www-form-urlencoded";
-                req.Method = "POST";
-                req.UserAgent = "Mozilla/5.0 (Windows NT 5.1; rv:30.0) Gecko/20100101 Firefox/30.0";
-                req.Proxy = null;
-                req.ProtocolVersion = HttpVersion.Version10;
-                if (!string.IsNullOrEmpty(Referer))
-                    req.Referer = Referer;
-
-                req.BeginGetRequestStream(new AsyncCallback(RequestProceed), req);
-            }
-            catch (WebException)
-            {
-                return;
-            }
-        }
-        public static void RequestProceed(IAsyncResult asyncResult)
-        {
-            try
-            {
-                HttpWebRequest request = (HttpWebRequest)asyncResult.AsyncState;
-                StreamWriter postDataWriter = new StreamWriter(request.EndGetRequestStream(asyncResult));
-                postDataWriter.Write(HeartPackdata);
-                postDataWriter.Close();
-                request.BeginGetResponse(new AsyncCallback(ResponesProceed), request);
-            }
-            catch (WebException)
-            {
-                return;
-            }
-        }
-        public static void ResponesProceed(IAsyncResult ar)
-        {
-            try
-            {
-                StreamReader reader = null;
-                HttpWebRequest req = ar.AsyncState as HttpWebRequest;
-                HttpWebResponse res = req.GetResponse() as HttpWebResponse;
-                reader = new StreamReader(res.GetResponseStream());
-                string temp = reader.ReadToEnd();
-                res.Close();
-                req.Abort();
-                Program.formlogin.HeartPackAction(temp);
-            }
-            catch (WebException)
-            {
-                return;
-            }
         }
     }
 }
