@@ -51,6 +51,11 @@ namespace RuiRuiQQRobot
             {
                 return "";
             }
+            catch(WebException)
+            {
+                AmountOfRunningPosting--;
+                return "";
+            }
             StreamReader reader;
             if (encode != null)
                 reader = new StreamReader(res.GetResponseStream(), encode);
@@ -108,7 +113,11 @@ namespace RuiRuiQQRobot
                 AmountOfRunningPosting--;
                 return "";
             }
-
+            catch (WebException)
+            {
+                AmountOfRunningPosting--;
+                return "";
+            }
             Program.formlogin.textBoxLog.Text = dat;
             if (!dat.Equals(""))
                 Program.formlogin.listBoxLog.Items.Insert(0, dat);
