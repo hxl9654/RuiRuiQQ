@@ -1572,13 +1572,13 @@ namespace SmartQQ
         }
         private void listBoxLog_DoubleClick(object sender, EventArgs e)
         {
-            if (listBoxGroup.SelectedIndex == -1)
+            if (listBoxLog.SelectedIndex == -1)
                 return;
             Clipboard.SetDataObject(listBoxLog.Items[listBoxLog.SelectedIndex].ToString());
         }
         private void listBoxFriend_DoubleClick(object sender, EventArgs e)
         {
-            if (listBoxGroup.SelectedIndex == -1)
+            if (listBoxFriend.SelectedIndex == -1)
                 return;
             Clipboard.SetDataObject(listBoxFriend.Items[listBoxFriend.SelectedIndex].ToString());
         }
