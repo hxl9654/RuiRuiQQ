@@ -51,6 +51,10 @@ namespace SmartQQ
             {
                 return "";
             }
+            catch (WebException)
+            {
+                return "";
+            }
             StreamReader reader;
             if (encode != null)
                 reader = new StreamReader(res.GetResponseStream(), encode);
@@ -108,7 +112,11 @@ namespace SmartQQ
                 AmountOfRunningPosting--;
                 return "";
             }
-
+            catch (WebException)
+            {
+                AmountOfRunningPosting--;
+                return "";
+            }
             Program.formlogin.textBoxLog.Text = dat;
             if (!dat.Equals(""))
                 Program.formlogin.listBoxLog.Items.Insert(0, dat);
