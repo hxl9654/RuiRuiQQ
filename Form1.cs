@@ -493,6 +493,21 @@ namespace SmartQQ
                     }
                 }
             }
+            if (message.StartsWith("弹幕"))
+            {
+                if (!gid.Equals(""))
+                {
+                    string[] tmp = message.Split('&');
+
+                    string url = DicServer + "setcomment.php";
+                    string postdata = "password=" + HttpUtility.UrlEncode(DicPassword) + "&qunnum=" + HttpUtility.UrlEncode(qunnum) + "&dat=" + HttpUtility.UrlEncode(tmp[1]);
+                    HTTP.HttpPost(url, "", postdata, Encoding.UTF8, false);
+
+                    url = DicServer + "log.php";
+                    postdata = "password=" + HttpUtility.UrlEncode(DicPassword) + "&qqnum=" + HttpUtility.UrlEncode(QQNum) + "&qunnum=" + HttpUtility.UrlEncode(qunnum) + "&action=comment&p1=" + HttpUtility.UrlEncode(tmp[1]) + "&p2=NULL&p3=NULL&p4=NULL";
+                    HTTP.HttpPost(url, "", postdata, Encoding.UTF8, false);
+                }
+            }                    
             if (message.StartsWith("学习") || message.StartsWith("特权学习"))
             {
                 bool DisableFlag = false;
