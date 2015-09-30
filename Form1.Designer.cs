@@ -30,17 +30,11 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormLogin));
-            this.buttonLogIn = new System.Windows.Forms.Button();
-            this.textBoxID = new System.Windows.Forms.TextBox();
-            this.textBoxPassword = new System.Windows.Forms.TextBox();
-            this.label1 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
-            this.textBoxCAPTCHA = new System.Windows.Forms.TextBox();
-            this.pictureBoxCAPTCHA = new System.Windows.Forms.PictureBox();
+            this.pictureBoxQRCode = new System.Windows.Forms.PictureBox();
             this.timerHeart = new System.Windows.Forms.Timer(this.components);
             this.groupbox1 = new System.Windows.Forms.GroupBox();
-            this.buttonLogout = new System.Windows.Forms.Button();
+            this.labelQRStatu = new System.Windows.Forms.Label();
+            this.buttonLogIn = new System.Windows.Forms.Button();
             this.listBoxLog = new System.Windows.Forms.ListBox();
             this.textBoxResiveMessage = new System.Windows.Forms.TextBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
@@ -52,7 +46,9 @@
             this.buttonSend = new System.Windows.Forms.Button();
             this.textBoxSendMessage = new System.Windows.Forms.TextBox();
             this.textBoxLog = new System.Windows.Forms.TextBox();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxCAPTCHA)).BeginInit();
+            this.timerLogin = new System.Windows.Forms.Timer(this.components);
+            this.labelQQNum = new System.Windows.Forms.Label();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxQRCode)).BeginInit();
             this.groupbox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -60,81 +56,14 @@
             this.groupBox5.SuspendLayout();
             this.SuspendLayout();
             // 
-            // buttonLogIn
+            // pictureBoxQRCode
             // 
-            this.buttonLogIn.Location = new System.Drawing.Point(20, 70);
-            this.buttonLogIn.Name = "buttonLogIn";
-            this.buttonLogIn.Size = new System.Drawing.Size(75, 23);
-            this.buttonLogIn.TabIndex = 0;
-            this.buttonLogIn.Text = "登录";
-            this.buttonLogIn.UseVisualStyleBackColor = true;
-            this.buttonLogIn.Click += new System.EventHandler(this.buttonLogIn_Click);
-            // 
-            // textBoxID
-            // 
-            this.textBoxID.Cursor = System.Windows.Forms.Cursors.IBeam;
-            this.textBoxID.Location = new System.Drawing.Point(41, 14);
-            this.textBoxID.MaxLength = 50;
-            this.textBoxID.Name = "textBoxID";
-            this.textBoxID.Size = new System.Drawing.Size(136, 21);
-            this.textBoxID.TabIndex = 1;
-            this.textBoxID.LostFocus += new System.EventHandler(this.textBoxID_LostFocus);
-            // 
-            // textBoxPassword
-            // 
-            this.textBoxPassword.Location = new System.Drawing.Point(41, 43);
-            this.textBoxPassword.MaxLength = 30;
-            this.textBoxPassword.Name = "textBoxPassword";
-            this.textBoxPassword.PasswordChar = '*';
-            this.textBoxPassword.Size = new System.Drawing.Size(136, 21);
-            this.textBoxPassword.TabIndex = 2;
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(6, 17);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(29, 12);
-            this.label1.TabIndex = 3;
-            this.label1.Text = "账号";
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(6, 46);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(29, 12);
-            this.label2.TabIndex = 4;
-            this.label2.Text = "密码";
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(18, 113);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(41, 12);
-            this.label3.TabIndex = 5;
-            this.label3.Text = "验证码";
-            this.label3.Visible = false;
-            // 
-            // textBoxCAPTCHA
-            // 
-            this.textBoxCAPTCHA.Location = new System.Drawing.Point(8, 142);
-            this.textBoxCAPTCHA.MaxLength = 4;
-            this.textBoxCAPTCHA.Name = "textBoxCAPTCHA";
-            this.textBoxCAPTCHA.Size = new System.Drawing.Size(68, 21);
-            this.textBoxCAPTCHA.TabIndex = 6;
-            this.textBoxCAPTCHA.Visible = false;
-            // 
-            // pictureBoxCAPTCHA
-            // 
-            this.pictureBoxCAPTCHA.Location = new System.Drawing.Point(86, 113);
-            this.pictureBoxCAPTCHA.Name = "pictureBoxCAPTCHA";
-            this.pictureBoxCAPTCHA.Size = new System.Drawing.Size(114, 50);
-            this.pictureBoxCAPTCHA.TabIndex = 7;
-            this.pictureBoxCAPTCHA.TabStop = false;
-            this.pictureBoxCAPTCHA.Visible = false;
-            this.pictureBoxCAPTCHA.Click += new System.EventHandler(this.pictureBoxCAPTCHA_Click);
+            this.pictureBoxQRCode.Location = new System.Drawing.Point(8, 20);
+            this.pictureBoxQRCode.Name = "pictureBoxQRCode";
+            this.pictureBoxQRCode.Size = new System.Drawing.Size(165, 165);
+            this.pictureBoxQRCode.TabIndex = 7;
+            this.pictureBoxQRCode.TabStop = false;
+            this.pictureBoxQRCode.Click += new System.EventHandler(this.pictureBoxQRCode_Click);
             // 
             // timerHeart
             // 
@@ -143,32 +72,34 @@
             // 
             // groupbox1
             // 
-            this.groupbox1.Controls.Add(this.buttonLogout);
-            this.groupbox1.Controls.Add(this.label1);
-            this.groupbox1.Controls.Add(this.textBoxCAPTCHA);
-            this.groupbox1.Controls.Add(this.pictureBoxCAPTCHA);
-            this.groupbox1.Controls.Add(this.textBoxID);
-            this.groupbox1.Controls.Add(this.label2);
-            this.groupbox1.Controls.Add(this.label3);
-            this.groupbox1.Controls.Add(this.textBoxPassword);
+            this.groupbox1.Controls.Add(this.labelQQNum);
+            this.groupbox1.Controls.Add(this.labelQRStatu);
             this.groupbox1.Controls.Add(this.buttonLogIn);
+            this.groupbox1.Controls.Add(this.pictureBoxQRCode);
             this.groupbox1.Location = new System.Drawing.Point(12, 12);
             this.groupbox1.Name = "groupbox1";
-            this.groupbox1.Size = new System.Drawing.Size(208, 173);
+            this.groupbox1.Size = new System.Drawing.Size(208, 193);
             this.groupbox1.TabIndex = 8;
             this.groupbox1.TabStop = false;
             this.groupbox1.Text = "登录";
             // 
-            // buttonLogout
+            // labelQRStatu
             // 
-            this.buttonLogout.Enabled = false;
-            this.buttonLogout.Location = new System.Drawing.Point(102, 70);
-            this.buttonLogout.Name = "buttonLogout";
-            this.buttonLogout.Size = new System.Drawing.Size(75, 23);
-            this.buttonLogout.TabIndex = 8;
-            this.buttonLogout.Text = "注销";
-            this.buttonLogout.UseVisualStyleBackColor = true;
-            this.buttonLogout.Click += new System.EventHandler(this.buttonLogout_Click);
+            this.labelQRStatu.AutoSize = true;
+            this.labelQRStatu.Location = new System.Drawing.Point(179, 20);
+            this.labelQRStatu.Name = "labelQRStatu";
+            this.labelQRStatu.Size = new System.Drawing.Size(0, 12);
+            this.labelQRStatu.TabIndex = 9;
+            // 
+            // buttonLogIn
+            // 
+            this.buttonLogIn.Location = new System.Drawing.Point(179, 118);
+            this.buttonLogIn.Name = "buttonLogIn";
+            this.buttonLogIn.Size = new System.Drawing.Size(23, 67);
+            this.buttonLogIn.TabIndex = 8;
+            this.buttonLogIn.Text = "登　录";
+            this.buttonLogIn.UseVisualStyleBackColor = true;
+            this.buttonLogIn.Click += new System.EventHandler(this.buttonLogIn_Click);
             // 
             // listBoxLog
             // 
@@ -176,7 +107,7 @@
             this.listBoxLog.ItemHeight = 12;
             this.listBoxLog.Location = new System.Drawing.Point(8, 20);
             this.listBoxLog.Name = "listBoxLog";
-            this.listBoxLog.Size = new System.Drawing.Size(192, 244);
+            this.listBoxLog.Size = new System.Drawing.Size(192, 220);
             this.listBoxLog.TabIndex = 9;
             this.listBoxLog.SelectedIndexChanged += new System.EventHandler(this.listBoxLog_SelectedIndexChanged);
             this.listBoxLog.DoubleClick += new System.EventHandler(this.listBoxLog_DoubleClick);
@@ -197,9 +128,9 @@
             // groupBox2
             // 
             this.groupBox2.Controls.Add(this.listBoxLog);
-            this.groupBox2.Location = new System.Drawing.Point(12, 191);
+            this.groupBox2.Location = new System.Drawing.Point(12, 211);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(208, 270);
+            this.groupBox2.Size = new System.Drawing.Size(208, 250);
             this.groupBox2.TabIndex = 11;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "系统日志";
@@ -290,9 +221,21 @@
             this.textBoxLog.Size = new System.Drawing.Size(876, 32);
             this.textBoxLog.TabIndex = 15;
             // 
+            // timerLogin
+            // 
+            this.timerLogin.Interval = 200;
+            this.timerLogin.Tick += new System.EventHandler(this.timerLogin_Tick);
+            // 
+            // labelQQNum
+            // 
+            this.labelQQNum.AutoSize = true;
+            this.labelQQNum.Location = new System.Drawing.Point(19, 36);
+            this.labelQQNum.Name = "labelQQNum";
+            this.labelQQNum.Size = new System.Drawing.Size(0, 12);
+            this.labelQQNum.TabIndex = 10;
+            // 
             // FormLogin
             // 
-            this.AcceptButton = this.buttonLogIn;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(900, 502);
@@ -309,7 +252,7 @@
             this.Name = "FormLogin";
             this.Text = "RuiRui QQ Robot";
             this.Load += new System.EventHandler(this.FormLogin_Load);
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxCAPTCHA)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxQRCode)).EndInit();
             this.groupbox1.ResumeLayout(false);
             this.groupbox1.PerformLayout();
             this.groupBox2.ResumeLayout(false);
@@ -323,15 +266,7 @@
         }
 
         #endregion
-
-        private System.Windows.Forms.Button buttonLogIn;
-        public System.Windows.Forms.TextBox textBoxID;
-        private System.Windows.Forms.TextBox textBoxPassword;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Label label3;
-        public System.Windows.Forms.TextBox textBoxCAPTCHA;
-        public System.Windows.Forms.PictureBox pictureBoxCAPTCHA;
+        public System.Windows.Forms.PictureBox pictureBoxQRCode;
         private System.Windows.Forms.Timer timerHeart;
         private System.Windows.Forms.GroupBox groupbox1;
         public System.Windows.Forms.ListBox listBoxLog;
@@ -344,8 +279,11 @@
         private System.Windows.Forms.GroupBox groupBox5;
         private System.Windows.Forms.Button buttonSend;
         private System.Windows.Forms.TextBox textBoxSendMessage;
-        private System.Windows.Forms.Button buttonLogout;
         public System.Windows.Forms.TextBox textBoxLog;
+        private System.Windows.Forms.Button buttonLogIn;
+        public System.Windows.Forms.Label labelQRStatu;
+        public System.Windows.Forms.Timer timerLogin;
+        private System.Windows.Forms.Label labelQQNum;
     }
 }
 

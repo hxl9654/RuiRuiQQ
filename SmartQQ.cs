@@ -41,7 +41,7 @@ namespace SmartQQ
 
         static string[,] realQQ = new string[10000, 2];
         static int realQQIndex = 0;
-        public static void SecondLogin(string ID)
+        public static void SecondLogin()
         {
             //二次登录
             string url = "http://d.web2.qq.com/channel/login2";
@@ -60,50 +60,35 @@ namespace SmartQQ
             vfwebqq = tmp[14];
             psessionid = tmp[16];
 
-            hash = GetHash(ID, ptwebqq);
+            hash = GetHash(Program.formlogin.QQNum, ptwebqq);
         }
-
-        public static bool FirstLogin(string ID, string Password, string CAPTCHA)
+        public static void GetQRCode()
         {
-            //一次登录
-            string tokentemp = System.Text.RegularExpressions.Regex.Replace(pt_uin, @"\\x", "");
-            string token = HexString2Ascii(tokentemp);
-            string key = EncodePassword(Password, token, CAPTCHA.ToUpper());
+            Random rd = new Random();
+            int t1 = rd.Next(100000000, 999999999);
+            int t2 = rd.Next(1000000, 9999999);
+            string url = "https://ssl.ptlogin2.qq.com/ptqrshow?appid=501004106&e=0&l=M&s=5&d=72&v=4&t=0." + t1.ToString() + t2.ToString();
+            HttpWebRequest req = (HttpWebRequest)WebRequest.Create(url);
+            req.CookieContainer = HTTP.cookies;
+            HttpWebResponse res = (HttpWebResponse)req.GetResponse();
 
-            string url1 = "https://ssl.ptlogin2.qq.com/login?u=";
-            string url2 = "&p=";
-            string url3 = "&verifycode=";
-            string url4 = "&webqq_type=10&remember_uin=1&login2qq=1&aid=501004106&u1=http%3A%2F%2Fw.qq.com%2Fproxy.html";
-            string url5 = "%3Flogin2qq%3D1%26webqq_type%3D10&h=1&ptredirect=0&ptlang=2052&daid=164&from_ui=1&pttype=1";
-            string url6 = "&dumy=&fp=loginerroralert&action=0-15-19190&mibao_css=m_webqq&t=1&g=1&js_type=0&js_ver=10123&";
-            string url7 = "login_sig=&pt_randsalt=0&pt_vcode_v1=0&pt_verifysession_v1=";
-            string url = url1 + ID + url2 + key + url3 + CAPTCHA + url4 + url5 + url6 + url7 + ptvsession;
-
-            string temp = HTTP.HttpGet(url);
-
-            //二次登录准备
-            temp = temp.Replace("ptui_checkVC(", "");
-            temp = temp.Replace(");", "");
-            temp = temp.Replace("'", "");
-            string[] tmp = temp.Split(',');
-            url = tmp[2];
-            if (url == "")
-            {
-                Program.formlogin.ReLogin();
-                return false;
-            }
-
-            HTTP.HttpGet(url);
-
-            Uri uri = new Uri("http://web2.qq.com/");
-            ptwebqq = HTTP.cookies.GetCookies(uri)["ptwebqq"].Value;
-            p_skey = HTTP.cookies.GetCookies(uri)["p_skey"].Value;
-            MyUin = HTTP.cookies.GetCookies(uri)["uin"].Value;
-            skey = HTTP.cookies.GetCookies(uri)["skey"].Value;
-            p_uin = HTTP.cookies.GetCookies(uri)["p_uin"].Value;
-
-            return true;
+            Program.formlogin.pictureBoxQRCode.Image = Image.FromStream(res.GetResponseStream());
         }
+        public static void FirstLogin()
+        {
+            GetQRCode();
+            Program.formlogin.timerLogin.Enabled = true;
+            Program.formlogin.timerLogin.Start();
+        }
+
+        public static string CheckStatu()
+        {
+            string url = "https://ssl.ptlogin2.qq.com/ptqrlogin?webqq_type=10&remember_uin=1&login2qq=1&aid=501004106&u1=http%3A%2F%2Fw.qq.com%2Fproxy.html%3Flogin2qq%3D1%26webqq_type%3D10&ptredirect=0&ptlang=2052&daid=164&from_ui=1&pttype=1&dumy=&fp=loginerroralert&action=0-0-18099&mibao_css=m_webqq&t=1&g=1&js_type=0&js_ver=10135&login_sig=&pt_randsalt=0";
+            string temp = HTTP.HttpGet(url);
+            string[] tmp = temp.Split('\'');
+            return tmp[1] + tmp[5];
+        }
+
         //http://www.cnblogs.com/lianmin/p/4257421.html
         /// 发送好友消息
         public static bool SendMessageToFriend(string uid, string content)
@@ -185,55 +170,6 @@ namespace SmartQQ
             }
             catch
             {
-                return false;
-            }
-        }
-        public static void GetCaptcha()
-        {
-            Program.formlogin.textBoxCAPTCHA.Text = "";
-
-            string strimg1 = "https://ssl.captcha.qq.com/getimage?aid=501004106&r=0.005933324107900262&uin=";
-            string strimg2 = "&cap_cd=";
-            string strimg = strimg1 + Program.formlogin.textBoxID.Text + strimg2 + CaptchaCode;
-
-            HttpWebRequest req = (HttpWebRequest)WebRequest.Create(strimg);
-            req.CookieContainer = HTTP.cookies;
-            HttpWebResponse res = (HttpWebResponse)req.GetResponse();
-
-            Program.formlogin.pictureBoxCAPTCHA.Image = Image.FromStream(res.GetResponseStream());
-
-            ptvsession = res.Cookies["verifysession"].Value;
-            res.Close();
-        }
-        public static bool GetCAPTCHAInf(string ID)
-        {
-            string str1 = "https://ssl.ptlogin2.qq.com/check?pt_tea=1&uin=";
-            string str2 = "&appid=501004106&js_ver=10121&js_type=0&login_sig=&u1=http%3A%2F%2Fw.qq.com%2Fproxy.html&r=0.4053995015565306";
-            string url = str1 + ID + str2;
-
-            string dat = HTTP.HttpGet(url);
-
-            dat = dat.Replace("ptui_checkVC(", "");
-            dat = dat.Replace(");", "");
-            dat = dat.Replace("'", "");
-            string[] tmp = dat.Split(',');
-
-            pt_uin = tmp[2];
-
-            if (tmp[0] == "1")
-            {
-                NeedCAPTCHA = true;
-
-                CaptchaCode = tmp[1];
-                GetCaptcha();
-
-                return true;
-            }
-            else
-            {
-                NeedCAPTCHA = false;
-                Program.formlogin.textBoxCAPTCHA.Text = tmp[1];
-                ptvsession = tmp[3];
                 return false;
             }
         }

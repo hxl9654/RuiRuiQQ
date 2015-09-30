@@ -41,6 +41,7 @@ namespace SmartQQ
         string pin = string.Empty;
         bool IsGroupSelent = false, IsFriendSelent = false;
         bool DoNotChangeSelentGroupOrPeople = false;
+        public string QQNum = "";
         //数据存储相关
         public JsonGroupModel group;
         public JsonFriendModel user;
@@ -76,54 +77,25 @@ namespace SmartQQ
 
         private void LogIn()
         {
-            if (textBoxID.Text.Length == 0)
-            {
-                MessageBox.Show("账号不能为空");
-                return;
-            }
-            for (int i = 0; i < textBoxID.Text.Length; i++)
-            {
-                if (textBoxID.Text.ToCharArray()[i] < '0' || textBoxID.Text.ToCharArray()[i] > '9')
-                {
-                    MessageBox.Show("账号只能为数字");
-                    return;
-                }
-            }
-            if (textBoxPassword.Text.Length == 0)
-            {
-                MessageBox.Show("密码不能为空");
-                return;
-            }
-            if (textBoxCAPTCHA.Text.Length != 4)
-            {
-                MessageBox.Show("验证码错误");
-                return;
-            }
             if (Loging)
                 return;
             Loging = true;
-            SmartQQ.FirstLogin(textBoxID.Text, textBoxPassword.Text, textBoxCAPTCHA.Text);
-            SmartQQ.SecondLogin(textBoxID.Text);
+            SmartQQ.SecondLogin();
 
             SmartQQ.getFrienf();
             SmartQQ.getGroup();
 
-            HTTP.HttpGet("https://ruiruiqq.hxlxz.com/infreport.php?qq=" + textBoxID.Text + "&adminqq=" + MasterQQ);
+            HTTP.HttpGet("https://ruiruiqq.hxlxz.com/infreport.php?qq=" + QQNum + "&adminqq=" + MasterQQ);
 
-            listBoxLog.Items.Insert(0, "账号" + textBoxID.Text + "登录成功");
+            listBoxLog.Items.Insert(0, "登录成功");
             timerHeart.Enabled = true;
             timerHeart.Start();
 
-            textBoxID.Enabled = false;
-            textBoxPassword.Enabled = false;
+            pictureBoxQRCode.Visible = false;
             buttonSend.Enabled = true;
             buttonLogIn.Enabled = false;
-            buttonLogout.Enabled = true;
-            label3.Visible = false;
-            pictureBoxCAPTCHA.Visible = false;
-            textBoxCAPTCHA.Visible = false;
-            textBoxCAPTCHA.Text = "";
             AcceptButton = buttonSend;
+            labelQQNum.Text = QQNum;
             Loging = false;
         }
 
@@ -144,7 +116,10 @@ namespace SmartQQ
                 listBoxLog.Items.Insert(0, temp);
                 Count103 = TempCount103 + 1;
                 if (Count103 > 20)
-                    ReLogin();
+                {
+                    MessageBox.Show("发送错误，请重新登录");
+                    SmartQQ.GetQRCode();
+                }
                 return;
             }
             else if (HeartPackMessage.retcode == 116)
@@ -156,20 +131,23 @@ namespace SmartQQ
             else if (HeartPackMessage.retcode == 108 || HeartPackMessage.retcode == 114)
             {
                 listBoxLog.Items.Insert(0, temp);
-                ReLogin();
+                MessageBox.Show("发送错误，请重新登录");
+                SmartQQ.GetQRCode();
                 return;
             }
             else if (HeartPackMessage.retcode == 120 || HeartPackMessage.retcode == 121)
             {
                 listBoxLog.Items.Insert(0, temp);
                 listBoxLog.Items.Insert(0, HeartPackMessage.t);
-                ReLogin();
+                MessageBox.Show("发送错误，请重新登录");
+                SmartQQ.GetQRCode();
                 return;
             }
             else if (HeartPackMessage.retcode == 100006 || HeartPackMessage.retcode == 100003)
             {
                 listBoxLog.Items.Insert(0, temp);
-                ReLogin();
+                MessageBox.Show("发送错误，请重新登录");
+                SmartQQ.GetQRCode();
                 return;
             }
             listBoxLog.Items.Insert(0, temp);
@@ -184,7 +162,8 @@ namespace SmartQQ
                 }
                 else if (HeartPackMessage.result[i].poll_type == "kick_message")
                 {
-                    ReLogin();
+                    MessageBox.Show("发送错误，请重新登录");
+                    SmartQQ.GetQRCode();
                     listBoxLog.Items.Add(HeartPackMessage.result[i].value.reason);
                     return;
                 }
@@ -515,7 +494,7 @@ namespace SmartQQ
                     HTTP.HttpPost(url, "", postdata, Encoding.UTF8, false);
                     return MessageToSend;
                 }
-            }                    
+            }
             if (message.StartsWith("学习") || message.StartsWith("特权学习"))
             {
                 bool DisableFlag = false;
@@ -1112,14 +1091,14 @@ namespace SmartQQ
 
         private void SetGroupSetting(int GroupInfoIndex, string option, string value)
         {
-            if(!NoDicPassword)
+            if (!NoDicPassword)
             {
                 string url = DicServer + "groupmanage.php?password=" + DicPassword + "&action=set&gno=" + groupinfo[GroupInfoIndex].no + "&option=" + option + "&value=" + value;
                 string temp = HTTP.HttpGet(url);
                 JsonGroupManageModel GroupManageInfo = (JsonGroupManageModel)JsonConvert.DeserializeObject(temp, typeof(JsonGroupManageModel));
                 if (GroupManageInfo.statu.Equals("fail"))
                     listBoxLog.Items.Insert(0, GroupManageInfo.statu + GroupManageInfo.error);
-            }           
+            }
             if (option.Equals("enable"))
                 groupinfo[GroupInfoIndex].enable = value;
             else if (option.Equals("enablexhj"))
@@ -1372,30 +1351,9 @@ namespace SmartQQ
             return MsgGet;
         }
 
-
-        private void GetCAPTCHA()
+        private void pictureBoxQRCode_Click(object sender, EventArgs e)
         {
-            if (textBoxID.Text.Length == 0)
-                return;
-            textBoxCAPTCHA.Text = "";
-            if (SmartQQ.GetCAPTCHAInf(textBoxID.Text) == true)
-            {
-                pictureBoxCAPTCHA.Visible = true;
-                textBoxCAPTCHA.Visible = true;
-                label3.Visible = true;
-            }
-            else
-            {
-                pictureBoxCAPTCHA.Visible = false;
-                textBoxCAPTCHA.Visible = false;
-                label3.Visible = false;
-            }
-        }
-
-
-        private void pictureBoxCAPTCHA_Click(object sender, EventArgs e)
-        {
-            SmartQQ.GetCaptcha();
+            SmartQQ.GetQRCode();
         }
         private void FormLogin_Load(object sender, EventArgs e)
         {
@@ -1426,8 +1384,6 @@ namespace SmartQQ
                     tmp += charData[i];
                 tmp += '\0';
                 JosnConfigFileModel dat = (JosnConfigFileModel)JsonConvert.DeserializeObject(tmp, typeof(JosnConfigFileModel));
-                textBoxID.Text = dat.QQNum;
-                textBoxPassword.Text = dat.QQPassword;
                 DicPassword = dat.DicPassword;
                 DicServer = dat.DicServer;
                 MasterQQ = dat.AdminQQ;
@@ -1439,12 +1395,6 @@ namespace SmartQQ
                 SmartQQ.ClientID = rd.Next(1000000, 9999999);
             if (DicPassword == null || DicPassword.Equals(""))
                 NoDicPassword = true;
-            if (textBoxID.Text.Length > 0)
-            {
-                SmartQQ.GetCaptcha();
-                if (!textBoxCAPTCHA.Text.Equals(""))
-                    buttonLogIn_Click(this, EventArgs.Empty);
-            }
             NoFile = false;
             try
             {
@@ -1468,15 +1418,6 @@ namespace SmartQQ
             }
             else Badwords = new string[0];
             NoFile = false;
-
-            GetCAPTCHA();
-            if (!textBoxCAPTCHA.Text.Equals(""))
-                LogIn();
-        }
-
-        private void buttonLogIn_Click(object sender, EventArgs e)
-        {
-            LogIn();
         }
         public FormLogin()
         {
@@ -1485,36 +1426,6 @@ namespace SmartQQ
         private void timerHeart_Tick(object sender, EventArgs e)
         {
             if (!StopSendingHeartPack) HTTP.HeartPack();
-        }
-        public void ReLogin()
-        {
-            LogOut();
-            GetCAPTCHA();
-            if (!textBoxCAPTCHA.Text.Equals(""))
-                LogIn();
-        }
-        public void LogOut()
-        {
-            groupinfMaxIndex = 0;
-            timerHeart.Stop();
-            System.GC.Collect();
-            listBoxFriend.Items.Clear();
-            listBoxGroup.Items.Clear();
-            textBoxID.Enabled = true;
-            textBoxPassword.Enabled = true;
-            buttonSend.Enabled = false;
-            buttonLogIn.Enabled = true;
-            buttonLogout.Enabled = false;
-            label3.Visible = true;
-            pictureBoxCAPTCHA.Visible = true;
-            textBoxCAPTCHA.Visible = true;
-            this.AcceptButton = buttonLogIn;
-            if (SmartQQ.NeedCAPTCHA) SmartQQ.GetCaptcha();
-            listBoxLog.Items.Insert(0, "账号" + textBoxID.Text + "已登出");
-        }
-        private void buttonLogout_Click(object sender, EventArgs e)
-        {
-            LogOut();
         }
 
         private void buttonSend_Click(object sender, EventArgs e)
@@ -1565,10 +1476,6 @@ namespace SmartQQ
             StopSendingHeartPack = false;
             textBoxSendMessage.Text = "";
         }
-        private void textBoxID_LostFocus(object sender, EventArgs e)
-        {
-            GetCAPTCHA();
-        }
         private void listBoxFriend_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (DoNotChangeSelentGroupOrPeople) return;
@@ -1605,6 +1512,50 @@ namespace SmartQQ
                 return;
             Clipboard.SetDataObject(listBoxFriend.Items[listBoxFriend.SelectedIndex].ToString());
         }
+
+        private void buttonLogIn_Click(object sender, EventArgs e)
+        {
+            SmartQQ.FirstLogin();
+        }
+
+        private void timerLogin_Tick(object sender, EventArgs e)
+        {
+            string statu;
+            statu = SmartQQ.CheckStatu();
+            if (statu.StartsWith("0"))
+            {
+                timerLogin.Stop();
+                timerLogin.Enabled = false;
+                Program.formlogin.labelQRStatu.Text = "成功";
+                string url = statu.Remove(0, 1);
+                HTTP.HttpGet(url);
+
+                Uri uri = new Uri("http://web2.qq.com/");
+                SmartQQ.ptwebqq = HTTP.cookies.GetCookies(uri)["ptwebqq"].Value;
+                SmartQQ.p_skey = HTTP.cookies.GetCookies(uri)["p_skey"].Value;
+                SmartQQ.MyUin = HTTP.cookies.GetCookies(uri)["uin"].Value;
+                SmartQQ.skey = HTTP.cookies.GetCookies(uri)["skey"].Value;
+                SmartQQ.p_uin = HTTP.cookies.GetCookies(uri)["p_uin"].Value;
+                QQNum = SmartQQ.p_uin.Remove(0, 2);
+
+
+                LogIn();
+            }
+            else if (statu.StartsWith("65"))
+            {
+                SmartQQ.GetQRCode();
+                Program.formlogin.labelQRStatu.Text = "失效";
+            }
+            else if (statu.StartsWith("67"))
+            {
+                Program.formlogin.labelQRStatu.Text = "等待";
+            }
+            else if (statu.StartsWith("66"))
+            {
+                Program.formlogin.labelQRStatu.Text = "有效";
+            }
+        }
+
         private void listBoxGroup_DoubleClick(object sender, EventArgs e)
         {
             if (listBoxGroup.SelectedIndex == -1)
