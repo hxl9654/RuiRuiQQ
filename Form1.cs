@@ -118,6 +118,9 @@ namespace SmartQQ
                 if (Count103 > 20)
                 {
                     MessageBox.Show("发送错误，请重新登录");
+                    timerHeart.Stop();
+                    timerHeart.Enabled = false;
+                    Count103 = 0;
                     SmartQQ.GetQRCode();
                 }
                 return;
@@ -132,6 +135,8 @@ namespace SmartQQ
             {
                 listBoxLog.Items.Insert(0, temp);
                 MessageBox.Show("发送错误，请重新登录");
+                timerHeart.Stop();
+                timerHeart.Enabled = false;
                 SmartQQ.GetQRCode();
                 return;
             }
@@ -140,6 +145,8 @@ namespace SmartQQ
                 listBoxLog.Items.Insert(0, temp);
                 listBoxLog.Items.Insert(0, HeartPackMessage.t);
                 MessageBox.Show("发送错误，请重新登录");
+                timerHeart.Stop();
+                timerHeart.Enabled = false;
                 SmartQQ.GetQRCode();
                 return;
             }
@@ -147,6 +154,8 @@ namespace SmartQQ
             {
                 listBoxLog.Items.Insert(0, temp);
                 MessageBox.Show("发送错误，请重新登录");
+                timerHeart.Stop();
+                timerHeart.Enabled = false;
                 SmartQQ.GetQRCode();
                 return;
             }
@@ -163,6 +172,8 @@ namespace SmartQQ
                 else if (HeartPackMessage.result[i].poll_type == "kick_message")
                 {
                     MessageBox.Show("发送错误，请重新登录");
+                    timerHeart.Stop();
+                    timerHeart.Enabled = false;
                     SmartQQ.GetQRCode();
                     listBoxLog.Items.Add(HeartPackMessage.result[i].value.reason);
                     return;
