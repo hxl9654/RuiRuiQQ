@@ -65,7 +65,7 @@ namespace SmartQQ
             for (int i = 0; i < Program.formlogin.Badwords.Length; i++)
                 if (messagetosend.Contains(Program.formlogin.Badwords[i]))
                 {
-                    messagetosend.Replace(Program.formlogin.Badwords[i], "***");
+                    messagetosend = messagetosend.Replace(Program.formlogin.Badwords[i], "***");
                 }
             return messagetosend;
         }
