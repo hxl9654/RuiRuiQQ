@@ -1547,8 +1547,9 @@ namespace SmartQQ
                 SmartQQ.MyUin = HTTP.cookies.GetCookies(uri)["uin"].Value;
                 SmartQQ.skey = HTTP.cookies.GetCookies(uri)["skey"].Value;
                 SmartQQ.p_uin = HTTP.cookies.GetCookies(uri)["p_uin"].Value;
-                QQNum = SmartQQ.p_uin.Remove(0, 2);
-
+                QQNum = SmartQQ.p_uin.Remove(0, 1);
+                if(QQNum.StartsWith("0"))
+                    QQNum = QQNum.Remove(0, 1);
 
                 LogIn();
             }
