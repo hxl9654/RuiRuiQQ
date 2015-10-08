@@ -180,6 +180,8 @@ namespace SmartQQ
         public string QQNum;
         public string QQPassword;
         public int ClientID;
+        public string YoudaoKeyfrom;
+        public string YoudaoKey;
     }
     public class JsonExchangeRateModel
     {
@@ -221,6 +223,7 @@ namespace SmartQQ
         public string enableEmoje;
         public string enableCityInfo;
         public string enableWiki;
+        public string enableTranslate;
 
         public string gno;
         public string statu;
@@ -294,5 +297,11 @@ namespace SmartQQ
         public int pageid;
         public string title;
         public string extract;
+    }
+    public class JsonYoudaoTranslateModel
+    {
+        public int errorcode;
+        public string query;
+        public List<string> translation;
     }
 }

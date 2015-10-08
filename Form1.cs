@@ -35,6 +35,8 @@ namespace SmartQQ
         string DicPassword = "";
         string DicServer = "";
         bool NoDicPassword = false;
+        public string YoudaoKeyform;
+        public string YoudaoKey;
         public bool StopSendingHeartPack = false;
         //多个函数要用到的变量
         bool Loging = false;
@@ -60,6 +62,7 @@ namespace SmartQQ
             public string enableEmoje;
             public string enableCityInfo;
             public string enableWiki;
+            public string enableTranslate;
             public JsonGroupInfoModel inf;
             public string[] managers;
             public int GroupManagerIndex;
@@ -483,6 +486,35 @@ namespace SmartQQ
                     }
                 }
             }
+            if (message.StartsWith("翻译"))
+            {
+                bool DisableFlag = false;
+                if (!gid.Equals(""))
+                {
+                    if (groupinfo[GroupInfoIndex].enableTranslate == null)
+                        GetGroupSetting(groupinfMaxIndex);
+                    if (groupinfo[GroupInfoIndex].enableTranslate.Equals("false"))
+                        DisableFlag = true;
+                }
+                if (!DisableFlag)
+                {
+                    bool TranslateFlag = true;
+                    string[] tmp = message.Split('&');
+                    if ((!tmp[0].Equals("翻译")) || tmp.Length != 2)
+                    {
+                        TranslateFlag = false;
+                    }
+                    if (TranslateFlag)
+                    {
+                        MessageToSend[0] = GetInfo.GetTranslate(tmp[1]);
+
+                        string url = DicServer + "log.php";
+                        string postdata = "password=" + HttpUtility.UrlEncode(DicPassword) + "&qqnum=" + HttpUtility.UrlEncode(QQNum) + "&qunnum=" + HttpUtility.UrlEncode(qunnum) + "&action=translate&p1=" + HttpUtility.UrlEncode(tmp[1]) + "&p2=NULL&p3=NULL&p4=NULL";
+                        HTTP.HttpPost(url, "", postdata, Encoding.UTF8, false);
+                        return MessageToSend;
+                    }
+                }
+            }
             if (message.StartsWith("弹幕"))
             {
                 if (!gid.Equals(""))
@@ -775,6 +807,7 @@ namespace SmartQQ
                         MessageToSend += "城市信息查询启动：" + groupinfo[GroupInfoIndex].enableCityInfo + Environment.NewLine;
                         MessageToSend += "学习启动：" + groupinfo[GroupInfoIndex].enableStudy + Environment.NewLine;
                         MessageToSend += "行情查询启动：" + groupinfo[GroupInfoIndex].enableStock + Environment.NewLine;
+                        MessageToSend += "翻译启动：" + groupinfo[GroupInfoIndex].enableTranslate + Environment.NewLine;
                         MessageToSend += "闲聊启动：" + groupinfo[GroupInfoIndex].enableTalk + Environment.NewLine;
                         MessageToSend += "表情启动：" + groupinfo[GroupInfoIndex].enableEmoje + Environment.NewLine;
                         MessageToSend += "小黄鸡启动：" + groupinfo[GroupInfoIndex].enableXHJ;
@@ -1089,6 +1122,36 @@ namespace SmartQQ
                                 return MessageToSend;
                             }
                         }
+                        else if (tmp[1].Equals("启动翻译"))
+                        {
+                            if (groupinfo[GroupInfoIndex].enableTranslate.Equals("true"))
+                            {
+                                MessageToSend = "当前翻译已启动";
+                                return MessageToSend;
+                            }
+                            else
+                            {
+                                SetGroupSetting(GroupInfoIndex, "enableTranslate", "true");
+
+                                MessageToSend = "翻译启动成功";
+                                return MessageToSend;
+                            }
+                        }
+                        else if (tmp[1].Equals("关闭翻译"))
+                        {
+                            if (groupinfo[GroupInfoIndex].enableTranslate.Equals("false"))
+                            {
+                                MessageToSend = "当前翻译已关闭";
+                                return MessageToSend;
+                            }
+                            else
+                            {
+                                SetGroupSetting(GroupInfoIndex, "enableTranslate", "false");
+
+                                MessageToSend = "翻译关闭成功";
+                                return MessageToSend;
+                            }
+                        }
                         else
                         {
                             MessageToSend = "没有这条指令。";
@@ -1130,6 +1193,8 @@ namespace SmartQQ
                 groupinfo[GroupInfoIndex].enableCityInfo = value;
             else if (option.Equals("enableWiki"))
                 groupinfo[GroupInfoIndex].enableWiki = value;
+            else if (option.Equals("enableTranslate"))
+                groupinfo[GroupInfoIndex].enableTranslate = value;
         }
 
         private void GetGroupSetting(int GroupInfoIndex)
@@ -1149,6 +1214,7 @@ namespace SmartQQ
                 groupinfo[GroupInfoIndex].enableEmoje = GroupManageInfo.enableEmoje;
                 groupinfo[GroupInfoIndex].enableCityInfo = GroupManageInfo.enableCityInfo;
                 groupinfo[GroupInfoIndex].enableWiki = GroupManageInfo.enableWiki;
+                groupinfo[GroupInfoIndex].enableTranslate = GroupManageInfo.enableTranslate;
 
                 if (groupinfo[GroupInfoIndex].enable.Equals(""))
                     groupinfo[GroupInfoIndex].enable = "true";
@@ -1170,6 +1236,8 @@ namespace SmartQQ
                     groupinfo[GroupInfoIndex].enableCityInfo = "true";
                 if (groupinfo[GroupInfoIndex].enableWiki.Equals(""))
                     groupinfo[GroupInfoIndex].enableWiki = "true";
+                if (groupinfo[GroupInfoIndex].enableTranslate.Equals(""))
+                    groupinfo[GroupInfoIndex].enableTranslate = "true";
             }
             else
             {
@@ -1186,6 +1254,7 @@ namespace SmartQQ
                 groupinfo[GroupInfoIndex].enableEmoje = "true";
                 groupinfo[GroupInfoIndex].enableCityInfo = "true";
                 groupinfo[GroupInfoIndex].enableWiki = "true";
+                groupinfo[GroupInfoIndex].enableTranslate = "true";
                 SmartQQ.SendMessageToGroup(groupinfo[GroupInfoIndex].gid, "\\\"如果需要使用小睿睿机器人，请群管理发送 群管理&启动机器人\\\"");
             }
 
@@ -1399,6 +1468,8 @@ namespace SmartQQ
                 DicServer = dat.DicServer;
                 MasterQQ = dat.AdminQQ;
                 SmartQQ.ClientID = dat.ClientID;
+                YoudaoKey = dat.YoudaoKey;
+                YoudaoKeyform = dat.YoudaoKeyfrom;
             }
             if (DicServer == null || DicServer.Equals(""))
                 DicServer = "https://ruiruiqq.hxlxz.com/";
@@ -1548,7 +1619,7 @@ namespace SmartQQ
                 SmartQQ.skey = HTTP.cookies.GetCookies(uri)["skey"].Value;
                 SmartQQ.p_uin = HTTP.cookies.GetCookies(uri)["p_uin"].Value;
                 QQNum = SmartQQ.p_uin.Remove(0, 1);
-                if(QQNum.StartsWith("0"))
+                if (QQNum.StartsWith("0"))
                     QQNum = QQNum.Remove(0, 1);
 
                 LogIn();

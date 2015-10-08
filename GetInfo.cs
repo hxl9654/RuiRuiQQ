@@ -2,6 +2,7 @@
 using System;
 using System.Text;
 using System.Web;
+using System.Text.RegularExpressions;
 // *   This program is free software: you can redistribute it and/or modify
 // *   it under the terms of the GNU General Public License as published by
 // *   the Free Software Foundation, either version 3 of the License, or
@@ -25,6 +26,49 @@ namespace SmartQQ
 {
     public static class GetInfo
     {
+        public static string GetTranslate(string str)
+        {
+            string messagetosend = "";
+            string lang;
+            Regex rex = new Regex("[a-z0-9A-Z_]+");
+            Match ma = rex.Match(str);
+            if (ma.Success)
+                lang = "zh-CN";
+            else
+                lang = "en";
+            messagetosend = "原文：" + str;
+
+
+            string url = "https://translate.google.com/translate_a/single?client=t&sl=auto&tl=";
+            url = url + lang + "&hl=zh-CN&dt=bd&dt=ex&dt=ld&dt=md&dt=qca&dt=rw&dt=rm&dt=ss&dt=t&dt=at&ie=UTF-8&oe=UTF-8&ssel=3&tsel=3&kc=0&tk=346111|219373&q=" + str;
+            string temp = HTTP.HttpGet(url, 2000, Encoding.UTF8, "");
+            string[] tmp = temp.Split('\"');
+            if (tmp.Length != 0 && tmp[1] != null)
+                messagetosend = messagetosend + Environment.NewLine + "谷歌翻译：" + tmp[1];
+            else
+                messagetosend = messagetosend + Environment.NewLine + "谷歌翻译：异常";
+
+            url = " http://fanyi.youdao.com/openapi.do?keyfrom=" + Program.formlogin.YoudaoKeyform + "&key=" + Program.formlogin.YoudaoKey + "&type=data&doctype=json&version=1.1&q=" + str;
+            temp = HTTP.HttpGet(url);
+            JsonYoudaoTranslateModel dat = (JsonYoudaoTranslateModel)JsonConvert.DeserializeObject(temp, typeof(JsonYoudaoTranslateModel));
+            if (dat.errorcode == 0)
+            {
+                if (dat.translation[0] != null)
+                    messagetosend = messagetosend + Environment.NewLine + "有道翻译：" + dat.translation[0];
+                else messagetosend = messagetosend + Environment.NewLine + "有道翻译：异常";
+            }
+            else if (dat.errorcode == 20)
+                messagetosend = messagetosend + Environment.NewLine + "有道翻译：不支持或文本过长";
+            else if (dat.errorcode == 50)
+                messagetosend = messagetosend + Environment.NewLine + "有道翻译：有道API密钥错误";
+
+            for (int i = 0; i < Program.formlogin.Badwords.Length; i++)
+                if (messagetosend.Contains(Program.formlogin.Badwords[i]))
+                {
+                    messagetosend.Replace(Program.formlogin.Badwords[i], "***");
+                }
+            return messagetosend;
+        }
         public static string GetWeather(string city, string target)
         {
             if ((!city.Equals("呼市郊区")) && (!city.Equals("津市")) && (!city.Equals("沙市")))
@@ -267,7 +311,7 @@ namespace SmartQQ
             {
                 string url = "http://www.baike.com/wiki/" + keyword;
                 string temp = HTTP.HttpGet(url);
-                if(temp.Contains("尚未收录"))
+                if (temp.Contains("尚未收录"))
                     return "没有找到这个词条哦～";
                 temp = temp.Replace("<meta content=\"", "&");
                 temp = temp.Replace("\" name=\"description\">", "&");

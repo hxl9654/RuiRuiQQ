@@ -63,9 +63,12 @@ namespace SmartQQ
             dat = reader.ReadToEnd();
             res.Close();
             req.Abort();
-            Program.formlogin.textBoxLog.Text = dat;
-            if (!dat.Equals(""))
-                Program.formlogin.listBoxLog.Items.Insert(0, dat);
+            if (Program.formlogin != null)
+            {
+                Program.formlogin.textBoxLog.Text = dat;
+                if (!dat.Equals(""))
+                    Program.formlogin.listBoxLog.Items.Insert(0, dat);
+            }
             return dat;
         }
         //http://www.itokit.com/2012/0721/74607.html
@@ -117,9 +120,12 @@ namespace SmartQQ
                 AmountOfRunningPosting--;
                 return "";
             }
-            Program.formlogin.textBoxLog.Text = dat;
-            if (!dat.Equals(""))
-                Program.formlogin.listBoxLog.Items.Insert(0, dat);
+            if (Program.formlogin != null)
+            {
+                Program.formlogin.textBoxLog.Text = dat;
+                if (!dat.Equals(""))
+                    Program.formlogin.listBoxLog.Items.Insert(0, dat);
+            }
             AmountOfRunningPosting--;
             return dat;
         }
