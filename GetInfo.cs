@@ -28,16 +28,15 @@ namespace SmartQQ
     {
         public static string GetTranslate(string str)
         {
-            string messagetosend = "";
-            string lang;
-            Regex rex = new Regex("[a-z0-9A-Z_]+");
-            Match ma = rex.Match(str);
-            if (ma.Success)
-                lang = "zh-CN";
-            else
+            string lang = "";
+            int strLen = str.Length;
+            int bytLeng = System.Text.Encoding.UTF8.GetBytes(str).Length;
+            if (strLen < bytLeng)
                 lang = "en";
-            messagetosend = "原文：" + str;
+            if(lang.Equals(""))
+                lang = "zh-CN";
 
+            string messagetosend = "原文：" + str;
 
             string url = "https://translate.google.com/translate_a/single?client=t&sl=auto&tl=";
             url = url + lang + "&hl=zh-CN&dt=bd&dt=ex&dt=ld&dt=md&dt=qca&dt=rw&dt=rm&dt=ss&dt=t&dt=at&ie=UTF-8&oe=UTF-8&ssel=3&tsel=3&kc=0&tk=346111|219373&q=" + str;
