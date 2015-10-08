@@ -33,7 +33,7 @@ namespace SmartQQ
             int bytLeng = System.Text.Encoding.UTF8.GetBytes(str).Length;
             if (strLen < bytLeng)
                 lang = "en";
-            if(lang.Equals(""))
+            if (lang.Equals(""))
                 lang = "zh-CN";
 
             string messagetosend = "原文：" + str;
@@ -83,15 +83,32 @@ namespace SmartQQ
             target = target.Replace("\r", "");
             target = target.Replace("\n", "");
             string ans = "";
-
+            string url, temp;
+            if (target.Equals("雅虎"))
+            {
+                url = "https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20weather.forecast%20where%20woeid%20in%20%28select%20woeid%20from%20geo.places%281%29%20where%20text=\"" + city + "\") and%20u=%22c%22&format=json";
+                temp = HTTP.HttpGet(url);
+                JsonYahooWeatherModel weather = (JsonYahooWeatherModel)JsonConvert.DeserializeObject(temp, typeof(JsonYahooWeatherModel));
+                if (weather.query.results == null)
+                    return "未查询到指定城市 " + city + " 的天气信息";
+                else
+                {
+                    ans = "根据" + weather.query.results.channel.description + "提供的消息，" + city + "的气息情况如下：";
+                    for (int i = 0; i < weather.query.results.channel.item.forecast.Count; i++)
+                        ans = ans + Environment.NewLine + "周" + getYahooWeak(weather.query.results.channel.item.forecast[i].day) + "：" + getYahooWeatherCode(weather.query.results.channel.item.forecast[i].code) + "，最高气温：" + weather.query.results.channel.item.forecast[i].high + "摄氏度，最低气温：" + weather.query.results.channel.item.forecast[i].low + "摄氏度";
+                    return ans;
+                }
+            }
             if (target.Equals("指数"))
                 target = "index";
             else
                 target = "forecast";
-            string url = "https://ruiruiqq.hxlxz.com/weather.php?city=" + city + "&type=" + target;
-            string temp = HTTP.HttpGet(url);
+            url = "https://ruiruiqq.hxlxz.com/weather.php?city=" + city + "&type=" + target;
+            temp = HTTP.HttpGet(url);
             if (temp.Equals("NoCity"))
-                return "未查询到指定城市 " + city + " 的天气信息";
+            {
+                return GetWeather(city, "雅虎");
+            }
 
             if (target.Equals("forecast"))
             {
@@ -117,6 +134,77 @@ namespace SmartQQ
             }
             return ans;
 
+        }
+
+        private static string getYahooWeatherCode(string code)
+        {
+            switch (code)
+            {
+                case "0": return "龙卷风";
+                case "1": return "热带风暴";
+                case "2": return "暴风";
+                case "3": return "大雷雨";
+                case "4": return "雷阵雨";
+                case "5": return "雨夹雪";
+                case "6": return "雨夹雹";
+                case "7": return "雪夹雹";
+                case "8": return "冻雾雨";
+                case "9": return "细雨";
+                case "10": return "冻雨";
+                case "11": return "阵雨";
+                case "12": return "阵雨";
+                case "13": return "阵雪";
+                case "14": return "小阵雪";
+                case "15": return "高吹雪";
+                case "16": return "雪";
+                case "17": return "冰雹";
+                case "18": return "雨淞";
+                case "19": return "粉尘";
+                case "20": return "雾";
+                case "21": return "薄雾";
+                case "22": return "烟雾";
+                case "23": return "大风";
+                case "24": return "风";
+                case "25": return "冷";
+                case "26": return "阴";
+                case "27": return "多云";
+                case "28": return "多云";
+                case "29": return "局部多云";
+                case "30": return "局部多云";
+                case "31": return "晴";
+                case "32": return "晴";
+                case "33": return "转晴";
+                case "34": return "转晴";
+                case "35": return "雨夹冰雹";
+                case "36": return "热";
+                case "37": return "局部雷雨";
+                case "38": return "偶有雷雨";
+                case "39": return "偶有雷雨";
+                case "40": return "偶有阵雨";
+                case "41": return "大雪";
+                case "42": return "零星阵雪";
+                case "43": return "大雪";
+                case "44": return "局部多云";
+                case "45": return "雷阵雨";
+                case "46": return "阵雪";
+                case "47": return "局部雷阵雨";
+                default: return "水深火热";
+            }
+        }
+
+        private static string getYahooWeak(string day)
+        {
+            switch (day.ToLower())
+            {
+                case "mon": return "一";
+                case "tue": return "二";
+                case "wed": return "三";
+                case "thu": return "四";
+                case "fri": return "五";
+                case "sat": return "六";
+                case "sun": return "日";
+                default: return day;
+            }
         }
 
         private static string SloveWind(string code)
@@ -147,101 +235,61 @@ namespace SmartQQ
 
         private static string SloveWindPower(string code)
         {
-            if (code == "0")
-                return "微风";
-            else if (code == "1")
-                return "3-4级";
-            else if (code == "2")
-                return "4-5级";
-            else if (code == "3")
-                return "5-6级";
-            else if (code == "4")
-                return "6-7级";
-            else if (code == "5")
-                return "7-8级";
-            else if (code == "6")
-                return "8-9级";
-            else if (code == "7")
-                return "9-10级";
-            else if (code == "8")
-                return "10-11级";
-            else if (code == "9")
-                return "11-12级";
-            else
-                return "";
+            switch (code)
+            {
+                case ("0"): return "微风";
+                case ("1"): return "3-4级";
+                case ("2"): return "4-5级";
+                case ("3"): return "5-6级";
+                case ("4"): return "6-7级";
+                case ("5"): return "7-8级";
+                case ("6"): return "8-9级";
+                case ("7"): return "9-10级";
+                case ("8"): return "10-11级";
+                case ("9"): return "11-12级";
+                default: return "";
+            }
         }
         public static string SloveWeather(string code)
         {
-            if (code == "00")
-                return "晴";
-            else if (code == "01")
-                return "多云";
-            else if (code == "02")
-                return "阴";
-            else if (code == "03")
-                return "阵雨";
-            else if (code == "04")
-                return "雷阵雨";
-            else if (code == "05")
-                return "雷阵雨伴有冰雹";
-            else if (code == "06")
-                return "雨夹雪";
-            else if (code == "07")
-                return "小雨";
-            else if (code == "08")
-                return "中雨";
-            else if (code == "09")
-                return "大雨";
-            else if (code == "10")
-                return "暴雨";
-            else if (code == "11")
-                return "大暴雨";
-            else if (code == "12")
-                return "特大暴雨";
-            else if (code == "13")
-                return "阵雪";
-            else if (code == "14")
-                return "小雪";
-            else if (code == "15")
-                return "中雪";
-            else if (code == "16")
-                return "大雪";
-            else if (code == "17")
-                return "暴雪";
-            else if (code == "18")
-                return "雾";
-            else if (code == "19")
-                return "冻雨";
-            else if (code == "20")
-                return "沙尘暴";
-            else if (code == "21")
-                return "小到中雨";
-            else if (code == "22")
-                return "中到大雨";
-            else if (code == "23")
-                return "大到暴雨";
-            else if (code == "24")
-                return "暴雨到大暴雨";
-            else if (code == "25")
-                return "大暴雨到特大暴雨";
-            else if (code == "26")
-                return "小到中雪";
-            else if (code == "27")
-                return "中到大雪";
-            else if (code == "28")
-                return "大到暴雪";
-            else if (code == "29")
-                return "浮尘";
-            else if (code == "30")
-                return "扬沙";
-            else if (code == "31")
-                return "强沙尘暴";
-            else if (code == "53")
-                return "霾";
-            else if (code == "99")
-                return "无";
-            else
-                return "暂时无法获取";
+            switch (code)
+            {
+                case ("00"): return "晴";
+                case ("01"): return "多云";
+                case ("02"): return "阴";
+                case ("03"): return "阵雨";
+                case ("04"): return "雷阵雨";
+                case ("05"): return "雷阵雨伴有冰雹";
+                case ("06"): return "雨夹雪";
+                case ("07"): return "小雨";
+                case ("08"): return "中雨";
+                case ("09"): return "大雨";
+                case ("10"): return "暴雨";
+                case ("11"): return "大暴雨";
+                case ("12"): return "特大暴雨";
+                case ("13"): return "阵雪";
+                case ("14"): return "小雪";
+                case ("15"): return "中雪";
+                case ("16"): return "大雪";
+                case ("17"): return "暴雪";
+                case ("18"): return "雾";
+                case ("19"): return "冻雨";
+                case ("20"): return "沙尘暴";
+                case ("21"): return "小到中雨";
+                case ("22"): return "中到大雨";
+                case ("23"): return "大到暴雨";
+                case ("24"): return "暴雨到大暴雨";
+                case ("25"): return "大暴雨到特大暴雨";
+                case ("26"): return "小到中雪";
+                case ("27"): return "中到大雪";
+                case ("28"): return "大到暴雪";
+                case ("29"): return "浮尘";
+                case ("30"): return "扬沙";
+                case ("31"): return "强沙尘暴";
+                case ("53"): return "霾";
+                case ("99"): return "无";
+                default: return "暂时无法获取";
+            }
         }
         public static string GetStudyFlagInfo(string result, string QQNum, string tmp1, string tmp2)
         {
@@ -295,7 +343,7 @@ namespace SmartQQ
             JsonYahooExchangeRateModel ExchangeRateYahoo = (JsonYahooExchangeRateModel)JsonConvert.DeserializeObject(temp, typeof(JsonYahooExchangeRateModel));
             if (!ExchangeRateYahoo.query.results.rate.Rate.Equals("N/A"))
             {
-                return "根据Yahoo的信息，" + ExchangeRateYahoo.query.results.rate.id + "在UTC" + ExchangeRateYahoo.query.created + "的汇率是：" + ExchangeRateYahoo.query.results.rate.Rate + "。";
+                return "根据Yahoo!的信息，" + ExchangeRateYahoo.query.results.rate.id + "在UTC" + ExchangeRateYahoo.query.created + "的汇率是：" + ExchangeRateYahoo.query.results.rate.Rate + "。";
             }
             url = "https://www.cryptonator.com/api/ticker/" + p1 + "-" + p2;
             temp = HTTP.HttpGet(url);
