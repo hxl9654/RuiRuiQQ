@@ -311,7 +311,7 @@ namespace SmartQQ
             }
             else if (result.Equals("Waitting"))
             {
-                return "小睿睿记下了" + QQNum + "提交的学习请求，不过小睿睿还得去问问语文老师呢～～";
+                return "小睿睿记下了" + QQNum + "提交的学习请求，不过小睿睿还得去问问语文老师呢～～主人先等等吧～～";
             }
             else if (result.Equals("ForbiddenWord"))
             {
