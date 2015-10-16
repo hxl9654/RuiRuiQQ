@@ -101,7 +101,18 @@ namespace SmartQQ
             labelQQNum.Text = QQNum;
             Loging = false;
         }
-
+        public void LogOut()
+        {
+            groupinfMaxIndex = 0;
+            timerHeart.Stop();
+            System.GC.Collect();
+            listBoxFriend.Items.Clear();
+            listBoxGroup.Items.Clear();
+            buttonSend.Enabled = false;
+            buttonLogIn.Enabled = true;
+            this.AcceptButton = buttonLogIn;
+            listBoxLog.Items.Insert(0, "发生错误，请重新登录");
+        }
         public void HeartPackAction(string temp)
         {
             string GName = "";
@@ -120,11 +131,7 @@ namespace SmartQQ
                 Count103 = TempCount103 + 1;
                 if (Count103 > 20)
                 {
-                    MessageBox.Show("发送错误，请重新登录");
-                    timerHeart.Stop();
-                    timerHeart.Enabled = false;
-                    Count103 = 0;
-                    SmartQQ.GetQRCode();
+                    LogOut();
                 }
                 return;
             }
@@ -137,29 +144,20 @@ namespace SmartQQ
             else if (HeartPackMessage.retcode == 108 || HeartPackMessage.retcode == 114)
             {
                 listBoxLog.Items.Insert(0, temp);
-                MessageBox.Show("发送错误，请重新登录");
-                timerHeart.Stop();
-                timerHeart.Enabled = false;
-                SmartQQ.GetQRCode();
+                LogOut();
                 return;
             }
             else if (HeartPackMessage.retcode == 120 || HeartPackMessage.retcode == 121)
             {
                 listBoxLog.Items.Insert(0, temp);
                 listBoxLog.Items.Insert(0, HeartPackMessage.t);
-                MessageBox.Show("发送错误，请重新登录");
-                timerHeart.Stop();
-                timerHeart.Enabled = false;
-                SmartQQ.GetQRCode();
+                LogOut();
                 return;
             }
             else if (HeartPackMessage.retcode == 100006 || HeartPackMessage.retcode == 100003)
             {
                 listBoxLog.Items.Insert(0, temp);
-                MessageBox.Show("发送错误，请重新登录");
-                timerHeart.Stop();
-                timerHeart.Enabled = false;
-                SmartQQ.GetQRCode();
+                LogOut();
                 return;
             }
             listBoxLog.Items.Insert(0, temp);
@@ -174,10 +172,7 @@ namespace SmartQQ
                 }
                 else if (HeartPackMessage.result[i].poll_type == "kick_message")
                 {
-                    MessageBox.Show("发送错误，请重新登录");
-                    timerHeart.Stop();
-                    timerHeart.Enabled = false;
-                    SmartQQ.GetQRCode();
+                    LogOut();
                     listBoxLog.Items.Add(HeartPackMessage.result[i].value.reason);
                     return;
                 }
