@@ -110,7 +110,9 @@ namespace SmartQQ
             listBoxGroup.Items.Clear();
             buttonSend.Enabled = false;
             buttonLogIn.Enabled = true;
-            this.AcceptButton = buttonLogIn;
+            AcceptButton = buttonLogIn;
+            labelQQNum.Text = "";
+            labelQRStatu.Text = "";
             listBoxLog.Items.Insert(0, "发生错误，请重新登录");
         }
         public void HeartPackAction(string temp)

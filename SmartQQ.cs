@@ -36,9 +36,6 @@ namespace SmartQQ
         public static string ptwebqq, psessionid;
         public static string pt_uin = "";
 
-        public static bool NeedCAPTCHA = false;
-        public static string CaptchaCode;
-
         static string[,] realQQ = new string[10000, 2];
         static int realQQIndex = 0;
         public static void SecondLogin()
@@ -257,15 +254,6 @@ namespace SmartQQ
             scriptEngine.SetGlobalValue("window", new WindowObject(scriptEngine));
             scriptEngine.ExecuteFile(System.AppDomain.CurrentDomain.BaseDirectory + "hash.js");
             var ret = scriptEngine.CallGlobalFunction<string>("friendsHash", no, ptwebqq, 0);
-            return ret;
-        }
-        internal static string EncodePassword(string password, string token, string bits)
-        {
-            var scriptEngine = new Jurassic.ScriptEngine();
-            scriptEngine.EnableDebugging = true;
-            scriptEngine.SetGlobalValue("window", new WindowObject(scriptEngine));
-            scriptEngine.ExecuteFile(System.AppDomain.CurrentDomain.BaseDirectory + "encode.js");
-            var ret = scriptEngine.CallGlobalFunction<string>("getEncryption", password, token, bits, 0);
             return ret;
         }
         public static JsonGroupInfoModel GetGroupInfo(string gcode)
