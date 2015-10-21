@@ -88,7 +88,7 @@ namespace SmartQQ
 
         //http://www.cnblogs.com/lianmin/p/4257421.html
         /// 发送好友消息
-        public static bool SendMessageToFriend(string uid, string content)
+        public static bool SendMessageToFriend(string uid, string content, string sess_message = "")
         {
             if (content.Equals(""))
                 return false;
@@ -103,15 +103,33 @@ namespace SmartQQ
             {
                 string postData = "{\"to\":" + uid;
                 postData += ",\"content\":\"[" + content.Replace(Environment.NewLine, "\\\\n");
-                postData += ",[\\\"font\\\",{\\\"name\\\":\\\"宋体\\\",\\\"size\\\":10,\\\"style\\\":[0,0,0],\\\"color\\\":\\\"000000\\\"}]]\",\"face\":585,\"clientid\":" + ClientID;
+                postData += ",[\\\"font\\\",{\\\"name\\\":\\\"宋体\\\",\\\"size\\\":10,\\\"style\\\":[0,0,0],\\\"color\\\":\\\"000000\\\"}]]\",\"clientid\":" + ClientID + ",\"face\":";
+                if (sess_message == "")
+                    postData += "585";
+                else postData += "594";
                 postData += ",\"msg_id\":" + MsgId;
-                postData += ",\"psessionid\":\"" + psessionid;
-                postData += "\"}";
-
+                postData += ",\"psessionid\":\"" + psessionid +"\"";
+                string[] temp = sess_message.Split(','); ;
+                if (sess_message != "")
+                {
+                    postData += ",\"group_sig\":\"" + GetGroupSig(temp[0], temp[1], temp[2]);
+                    postData += "\",\"service_type\":" + temp[2];
+                }
+                postData += "}";
+                string url;
                 string referer = "http://d.web2.qq.com/proxy.html?v=20130916001&callback=1&id=2";
-                string url = "http://d.web2.qq.com/channel/send_buddy_msg2";
+                if (sess_message == "")
+                    url = "http://d.web2.qq.com/channel/send_buddy_msg2";
+                else url = "http://d.web2.qq.com/channel/send_sess_msg2";
                 postData = "r=" + HttpUtility.UrlEncode(postData);
-
+                //postData += "&clientid=" + ClientID;
+                //postData += "&psessionid=" + psessionid;
+                //if(sess_message!="")
+                //{
+                //    postData += "&group_sig=" + GetGroupSig(temp[0], temp[1], temp[2]);
+                //    postData += "&service_type=" + temp[2];
+                //}
+                
                 string dat = HTTP.HttpPost(url, referer, postData, Encoding.UTF8, false);
 
                 dat = dat.Replace("{\"retcode\":", "");
@@ -128,7 +146,13 @@ namespace SmartQQ
                 return false;
             }
         }
-
+        public static string GetGroupSig(string id, string uin, string service_type)
+        {
+            string url = "http://d.web2.qq.com/channel/get_c2cmsg_sig2?id=" + id + "&to_uin=" + uin + "&clientid=" + ClientID + "&psessionid=" + psessionid + "&service_type=" + service_type + "&t=" + GetTimeStamp();
+            string temp = HTTP.HttpGet(url);
+            string[] tmp = temp.Split('\"');
+            return tmp[9];
+        }
         /// 发送群消息
         public static bool SendMessageToGroup(string gin, string content)
         {

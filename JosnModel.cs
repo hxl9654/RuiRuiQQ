@@ -169,6 +169,10 @@ namespace SmartQQ
                 public string status;
                 //异地登录
                 public string reason;
+                //临时会话
+                public string id;
+                public string ruin;
+                public string service_type;
             }
         }
     }

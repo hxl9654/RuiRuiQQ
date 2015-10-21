@@ -178,7 +178,7 @@ namespace SmartQQ
                     listBoxLog.Items.Add(HeartPackMessage.result[i].value.reason);
                     return;
                 }
-                else if (HeartPackMessage.result[i].poll_type == "message")
+                else if (HeartPackMessage.result[i].poll_type == "message" || HeartPackMessage.result[i].poll_type == "sess_message")
                 {
                     string message = "";
                     string emojis = "";
@@ -201,26 +201,34 @@ namespace SmartQQ
                     message = message.Replace("\\\\n", Environment.NewLine);
                     message = message.Replace("＆", "&");
                     string nick = "未知";
-                    for (j = 0; j < user.result.info.Count; j++)
-                        if (user.result.info[j].uin == HeartPackMessage.result[i].value.from_uin)
-                        {
-                            nick = user.result.info[j].nick;
-                            break;
-                        }
-                    if (j == user.result.info.Count)
+                    if (HeartPackMessage.result[i].poll_type == "message")
                     {
-                        SmartQQ.getFrienf();
                         for (j = 0; j < user.result.info.Count; j++)
                             if (user.result.info[j].uin == HeartPackMessage.result[i].value.from_uin)
                             {
                                 nick = user.result.info[j].nick;
                                 break;
                             }
+                        if (j == user.result.info.Count)
+                        {
+                            SmartQQ.getFrienf();
+                            for (j = 0; j < user.result.info.Count; j++)
+                                if (user.result.info[j].uin == HeartPackMessage.result[i].value.from_uin)
+                                {
+                                    nick = user.result.info[j].nick;
+                                    break;
+                                }
+                        }
                     }
-                    textBoxResiveMessage.Text += (nick + "  " + SmartQQ.GetRealQQ(user.result.info[j].uin) + Environment.NewLine + message + "   " + emojis + Environment.NewLine + Environment.NewLine);
+                    else nick = "临时会话";
+
+                    textBoxResiveMessage.Text += (nick + "  " + SmartQQ.GetRealQQ(HeartPackMessage.result[i].value.from_uin) + Environment.NewLine + message + "   " + emojis + Environment.NewLine + Environment.NewLine);
                     textBoxResiveMessage.SelectionStart = textBoxResiveMessage.TextLength;
                     textBoxResiveMessage.ScrollToCaret();
-                    ActionWhenResivedMessage(HeartPackMessage.result[i].value.from_uin, message, emojis);
+                    if (HeartPackMessage.result[i].poll_type == "sess_message")
+                        ActionWhenResivedMessage(HeartPackMessage.result[i].value.from_uin, message, emojis, HeartPackMessage.result[i].value.id + "," + HeartPackMessage.result[i].value.from_uin + "," + HeartPackMessage.result[i].value.service_type);
+                    else if (HeartPackMessage.result[i].poll_type == "message")
+                        ActionWhenResivedMessage(HeartPackMessage.result[i].value.from_uin, message, emojis, "");
                 }
                 else if (HeartPackMessage.result[i].poll_type == "group_message")
                 {
@@ -1327,7 +1335,7 @@ namespace SmartQQ
             }
             SmartQQ.SendMessageToGroup(gid, MessageToSend);
         }
-        private void ActionWhenResivedMessage(string uin, string message, string emojis)
+        private void ActionWhenResivedMessage(string uin, string message, string emojis, string sess_message = "")
         {
             string[] MessageToSendArray = Answer(message, uin, "");
             string MessageToSend = "";
@@ -1354,7 +1362,7 @@ namespace SmartQQ
                     MessageToSend += ",";
                 MessageToSend += SloveEmoji(tmp[i]);
             }
-            if (MessageToSend.Equals(""))
+            if (MessageToSend.Equals("") && sess_message == "")
             {
                 int i;
                 string SenderName = "";
@@ -1389,7 +1397,8 @@ namespace SmartQQ
                     Gender = " ";
                 SmartQQ.SendMessageToFriend(uin, "\\\"" + SenderName + Gender + "～ 小睿睿听不懂你在说什么呢。。。教教我吧～～" + Environment.NewLine + "格式 学习&主人的话&小睿睿的回复" + "\\\"");
             }
-            else SmartQQ.SendMessageToFriend(uin, MessageToSend);
+            else
+                SmartQQ.SendMessageToFriend(uin, MessageToSend, sess_message);
 
         }
         private string AIGet(string message, string QQNum, string QunNum = "NULL")
