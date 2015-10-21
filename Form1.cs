@@ -200,12 +200,11 @@ namespace SmartQQ
                     }
                     message = message.Replace("\\\\n", Environment.NewLine);
                     message = message.Replace("＆", "&");
+                    string nick = "未知";
                     for (j = 0; j < user.result.info.Count; j++)
                         if (user.result.info[j].uin == HeartPackMessage.result[i].value.from_uin)
                         {
-                            textBoxResiveMessage.Text += (user.result.info[j].nick + "  " + SmartQQ.GetRealQQ(user.result.info[j].uin) + Environment.NewLine + message + "   " + emojis + Environment.NewLine + Environment.NewLine);
-                            textBoxResiveMessage.SelectionStart = textBoxResiveMessage.TextLength;
-                            textBoxResiveMessage.ScrollToCaret();
+                            nick = user.result.info[j].nick;
                             break;
                         }
                     if (j == user.result.info.Count)
@@ -214,12 +213,13 @@ namespace SmartQQ
                         for (j = 0; j < user.result.info.Count; j++)
                             if (user.result.info[j].uin == HeartPackMessage.result[i].value.from_uin)
                             {
-                                textBoxResiveMessage.Text += (user.result.info[j].nick + "  " + SmartQQ.GetRealQQ(user.result.info[j].uin) + Environment.NewLine + message + "   " + emojis + Environment.NewLine + Environment.NewLine);
-                                textBoxResiveMessage.SelectionStart = textBoxResiveMessage.TextLength;
-                                textBoxResiveMessage.ScrollToCaret();
+                                nick = user.result.info[j].nick;
                                 break;
                             }
                     }
+                    textBoxResiveMessage.Text += (nick + "  " + SmartQQ.GetRealQQ(user.result.info[j].uin) + Environment.NewLine + message + "   " + emojis + Environment.NewLine + Environment.NewLine);
+                    textBoxResiveMessage.SelectionStart = textBoxResiveMessage.TextLength;
+                    textBoxResiveMessage.ScrollToCaret();
                     ActionWhenResivedMessage(HeartPackMessage.result[i].value.from_uin, message, emojis);
                 }
                 else if (HeartPackMessage.result[i].poll_type == "group_message")
