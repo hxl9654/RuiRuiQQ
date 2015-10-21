@@ -264,15 +264,20 @@ namespace SmartQQ
                         }
                         if (groupinfo[j].gid == gid)
                         {
-                            for (int k = 0; k < groupinfo[j].inf.result.minfo.Count; k++)
-                                if (groupinfo[j].inf.result.minfo[k].uin == HeartPackMessage.result[i].value.send_uin)
+                            int k;
+                            MessageFromUin = HeartPackMessage.result[i].value.send_uin;
+                            string nick = "未知";
+                            for (k = 0; k < groupinfo[j].inf.result.minfo.Count; k++)
+                                if (groupinfo[j].inf.result.minfo[k].uin == MessageFromUin)
                                 {
-                                    MessageFromUin = groupinfo[j].inf.result.minfo[k].uin;
-                                    textBoxResiveMessage.Text += (GName + "   " + groupinfo[j].inf.result.minfo[k].nick + "  " + SmartQQ.GetRealQQ(MessageFromUin) + Environment.NewLine + message + "   " + emojis + Environment.NewLine + Environment.NewLine);
-                                    textBoxResiveMessage.SelectionStart = textBoxResiveMessage.TextLength;
-                                    textBoxResiveMessage.ScrollToCaret();
+                                    nick = groupinfo[j].inf.result.minfo[k].nick;
                                     break;
                                 }
+                            if (SmartQQ.GetRealQQ(MessageFromUin).Equals("1000000"))
+                                nick = "系统消息";
+                            textBoxResiveMessage.Text += (GName + "   " + nick + "  " + SmartQQ.GetRealQQ(MessageFromUin) + Environment.NewLine + message + "   " + emojis + Environment.NewLine + Environment.NewLine);
+                            textBoxResiveMessage.SelectionStart = textBoxResiveMessage.TextLength;
+                            textBoxResiveMessage.ScrollToCaret();
                             break;
                         }
                     }
