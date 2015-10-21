@@ -80,6 +80,28 @@ namespace SmartQQ
             }
         }
     }
+    public class JsonDissgussModel
+    {
+        public int retcode;
+        public paramResult result;
+        public class paramResult
+        {
+            public paramInfo info;
+            public List<paramMembeiInfo> mem_info;
+            public class paramInfo
+            {
+                public string discu_owner;
+                public string discu_name;
+                public string did;
+            }
+            public class paramMembeiInfo
+            {
+                public string uin;
+                public string nick;
+            }
+        }
+    }
+
     public class JsonFriendInfModel
     {
         public int retcode;
@@ -173,6 +195,8 @@ namespace SmartQQ
                 public string id;
                 public string ruin;
                 public string service_type;
+                //讨论组
+                public string did;
             }
         }
     }

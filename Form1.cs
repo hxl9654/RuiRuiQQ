@@ -68,7 +68,16 @@ namespace SmartQQ
             public int GroupManagerIndex;
         };
         public GroupInf[] groupinfo = new GroupInf[200];
+        public struct DissgussInfo
+        {
+            public string did;
+            public string dname;
+            public string downer;
+            public JsonDissgussModel inf;
+        };
+        public DissgussInfo[] discussInfo = new DissgussInfo[200];
         public int groupinfMaxIndex = 0;
+        public int discussinfMaxIndex = 0;
         public struct FriendInf
         {
             public string uin;
@@ -118,6 +127,7 @@ namespace SmartQQ
         public void HeartPackAction(string temp)
         {
             string GName = "";
+            string DName = "";
             string MessageFromUin = "";
             textBoxLog.Text = temp;
             JsonHeartPackMessage HeartPackMessage = (JsonHeartPackMessage)JsonConvert.DeserializeObject(temp, typeof(JsonHeartPackMessage));
@@ -290,6 +300,63 @@ namespace SmartQQ
                         }
                     }
                     ActionWhenResivedGroupMessage(gid, message, emojis, MessageFromUin, gno);
+                }
+                else if (HeartPackMessage.result[i].poll_type == "discu_message")
+                {
+                    string emojis = "";
+                    string message = "";
+                    int j;
+                    for (j = 1; j < HeartPackMessage.result[i].value.content.Count; j++)
+                    {
+                        string temp1 = HeartPackMessage.result[i].value.content[j].ToString();
+                        temp1 = temp1.Replace(Environment.NewLine, "");
+                        temp1 = temp1.Replace(" ", "");
+                        if (temp1.Contains("[\"cface\","))
+                            continue;
+                        if (temp1.Contains("[\"face\","))
+                        {
+                            string emojiID = temp1.Replace("[\"face\",", "");
+                            emojiID = emojiID.Replace("]", "");
+                            emojis += (emojiID + ",");
+                        }
+                        else message += (HeartPackMessage.result[i].value.content[j].ToString() + " ");
+                    }
+                    message = message.Replace("\\\\n", Environment.NewLine);
+                    message = message.Replace("＆", "&");
+                    string did = HeartPackMessage.result[i].value.did;
+                    for (j = 0; j < discussinfMaxIndex; j++)
+                        if (discussInfo[j].did == did)
+                        {
+                            DName = discussInfo[j].dname;
+                            break;
+                        }
+                    if (j == discussinfMaxIndex)
+                    {
+                        SmartQQ.GetDissInfo(did, j);
+                        if (discussInfo[j].did.Equals(did))
+                            DName = discussInfo[j].dname;
+                        else DName = "未知";
+                    }
+                    if (DName.Equals(""))
+                        DName = "未知";
+                    DName += "讨论组";
+
+                    int k;
+                    MessageFromUin = HeartPackMessage.result[i].value.send_uin;
+                    string nick = "未知";
+                    for (k = 0; k < discussInfo[j].inf.result.mem_info.Count; k++)
+                        if (discussInfo[j].inf.result.mem_info[k].uin == MessageFromUin)
+                        {
+                            nick = discussInfo[j].inf.result.mem_info[k].nick;
+                            break;
+                        }
+                    if (SmartQQ.GetRealQQ(MessageFromUin).Equals("1000000"))
+                        nick = "系统消息";
+                    textBoxResiveMessage.Text += (DName + "   " + nick + "  " + SmartQQ.GetRealQQ(MessageFromUin) + Environment.NewLine + message + "   " + emojis + Environment.NewLine + Environment.NewLine);
+                    textBoxResiveMessage.SelectionStart = textBoxResiveMessage.TextLength;
+                    textBoxResiveMessage.ScrollToCaret();
+
+                    ActionWhenResivedMessage(did, message, emojis, "disscuss," + MessageFromUin);
                 }
                 textBoxLog.Text = temp;
             }
@@ -1335,7 +1402,7 @@ namespace SmartQQ
             }
             SmartQQ.SendMessageToGroup(gid, MessageToSend);
         }
-        private void ActionWhenResivedMessage(string uin, string message, string emojis, string sess_message = "")
+        private void ActionWhenResivedMessage(string uin, string message, string emojis, string specialMessage = "")
         {
             string[] MessageToSendArray = Answer(message, uin, "");
             string MessageToSend = "";
@@ -1362,7 +1429,7 @@ namespace SmartQQ
                     MessageToSend += ",";
                 MessageToSend += SloveEmoji(tmp[i]);
             }
-            if (MessageToSend.Equals("") && sess_message == "")
+            if (MessageToSend.Equals("") && specialMessage == "")
             {
                 int i;
                 string SenderName = "";
@@ -1398,7 +1465,7 @@ namespace SmartQQ
                 SmartQQ.SendMessageToFriend(uin, "\\\"" + SenderName + Gender + "～ 小睿睿听不懂你在说什么呢。。。教教我吧～～" + Environment.NewLine + "格式 学习&主人的话&小睿睿的回复" + "\\\"");
             }
             else
-                SmartQQ.SendMessageToFriend(uin, MessageToSend, sess_message);
+                SmartQQ.SendMessageToFriend(uin, MessageToSend, specialMessage);
 
         }
         private string AIGet(string message, string QQNum, string QunNum = "NULL")

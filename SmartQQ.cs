@@ -88,12 +88,13 @@ namespace SmartQQ
 
         //http://www.cnblogs.com/lianmin/p/4257421.html
         /// 发送好友消息
-        public static bool SendMessageToFriend(string uid, string content, string sess_message = "")
+        public static bool SendMessageToFriend(string uid, string content, string specialMessage = "")
         {
             if (content.Equals(""))
                 return false;
             if (uid.Equals(""))
                 return false;
+            string[] temp = specialMessage.Split(','); ;
             MsgId++;
             content = content.Replace("\r\n", "\n");
             content = content.Replace("\n\r", "\n");
@@ -101,16 +102,21 @@ namespace SmartQQ
             content = content.Replace("\n", Environment.NewLine);
             try
             {
-                string postData = "{\"to\":" + uid;
+                string postData = "";
+                if (temp[0] != "disscuss")
+                    postData = "{\"to\":" + uid;
+                else postData = "{\"did\":" + uid;
                 postData += ",\"content\":\"[" + content.Replace(Environment.NewLine, "\\\\n");
                 postData += ",[\\\"font\\\",{\\\"name\\\":\\\"宋体\\\",\\\"size\\\":10,\\\"style\\\":[0,0,0],\\\"color\\\":\\\"000000\\\"}]]\",\"clientid\":" + ClientID + ",\"face\":";
-                if (sess_message == "")
+                if (specialMessage == "")
                     postData += "585";
+                else if (temp[0] == "disscuss")
+                    postData += "564";
                 else postData += "594";
                 postData += ",\"msg_id\":" + MsgId;
-                postData += ",\"psessionid\":\"" + psessionid +"\"";
-                string[] temp = sess_message.Split(','); ;
-                if (sess_message != "")
+                postData += ",\"psessionid\":\"" + psessionid + "\"";
+
+                if (temp[0] != "" && temp[0] != "disscuss")
                 {
                     postData += ",\"group_sig\":\"" + GetGroupSig(temp[0], temp[1], temp[2]);
                     postData += "\",\"service_type\":" + temp[2];
@@ -118,18 +124,13 @@ namespace SmartQQ
                 postData += "}";
                 string url;
                 string referer = "http://d.web2.qq.com/proxy.html?v=20130916001&callback=1&id=2";
-                if (sess_message == "")
+                if (specialMessage == "")
                     url = "http://d.web2.qq.com/channel/send_buddy_msg2";
+                else if (temp[0] == "disscuss")
+                    url= "http://d.web2.qq.com/channel/send_discu_msg2";
                 else url = "http://d.web2.qq.com/channel/send_sess_msg2";
                 postData = "r=" + HttpUtility.UrlEncode(postData);
-                //postData += "&clientid=" + ClientID;
-                //postData += "&psessionid=" + psessionid;
-                //if(sess_message!="")
-                //{
-                //    postData += "&group_sig=" + GetGroupSig(temp[0], temp[1], temp[2]);
-                //    postData += "&service_type=" + temp[2];
-                //}
-                
+
                 string dat = HTTP.HttpPost(url, referer, postData, Encoding.UTF8, false);
 
                 dat = dat.Replace("{\"retcode\":", "");
@@ -152,6 +153,16 @@ namespace SmartQQ
             string temp = HTTP.HttpGet(url);
             string[] tmp = temp.Split('\"');
             return tmp[9];
+        }
+        public static void GetDissInfo(string did, int index)
+        {
+            string url = "http://d.web2.qq.com/channel/get_discu_info?did=" + did + "&vfwebqq=" + vfwebqq + "&clientid=" + ClientID + "&psessionid=" + psessionid + "&t=" + GetTimeStamp();
+            string temp = HTTP.HttpGet(url);
+            JsonDissgussModel inf = (JsonDissgussModel)JsonConvert.DeserializeObject(temp, typeof(JsonDissgussModel));
+            Program.formlogin.discussInfo[index].did = inf.result.info.did;
+            Program.formlogin.discussInfo[index].dname = inf.result.info.discu_name;
+            Program.formlogin.discussInfo[index].downer = inf.result.info.discu_owner;
+            Program.formlogin.discussInfo[index].inf = inf;
         }
         /// 发送群消息
         public static bool SendMessageToGroup(string gin, string content)
