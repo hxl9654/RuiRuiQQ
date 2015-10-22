@@ -93,7 +93,7 @@ namespace SmartQQ
                     return "未查询到指定城市 " + city + " 的天气信息";
                 else
                 {
-                    ans = "根据" + weather.query.results.channel.description + "提供的消息，" + city + "的气息情况如下：";
+                    ans = weather.query.results.channel.description + "（请核对城市名是否正确）";
                     for (int i = 0; i < weather.query.results.channel.item.forecast.Count; i++)
                         ans = ans + Environment.NewLine + "周" + getYahooWeak(weather.query.results.channel.item.forecast[i].day) + "：" + getYahooWeatherCode(weather.query.results.channel.item.forecast[i].code) + "，最高气温：" + weather.query.results.channel.item.forecast[i].high + "摄氏度，最低气温：" + weather.query.results.channel.item.forecast[i].low + "摄氏度";
                     return ans;
