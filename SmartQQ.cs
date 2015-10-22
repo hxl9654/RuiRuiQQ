@@ -180,7 +180,7 @@ namespace SmartQQ
             {
                 string postData = "{\"group_uin\":" + gin
                     + ",\"content\":\"[" + content.Replace(Environment.NewLine, "\\\\n")
-                    + ",[\\\"font\\\",{\\\"name\\\":\\\"宋体\\\",\\\"size\\\":13,\\\"style\\\":[0,0,0],\\\"color\\\":\\\"000000\\\"}]]\",\"face\":549,\"clientid\":" + ClientID
+                    + ",[\\\"font\\\",{\\\"name\\\":\\\"宋体\\\",\\\"size\\\":11,\\\"style\\\":[0,0,0],\\\"color\\\":\\\"00FF00\\\"}]]\",\"face\":549,\"clientid\":" + ClientID
                     + ",\"msg_id\":" + MsgId
                     + ",\"psessionid\":\"" + psessionid
                     + "\"}";
