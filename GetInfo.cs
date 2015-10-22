@@ -209,28 +209,20 @@ namespace SmartQQ
 
         private static string SloveWind(string code)
         {
-            if (code == "0")
-                return "";
-            else if (code == "1")
-                return "东北风";
-            else if (code == "2")
-                return "东风";
-            else if (code == "3")
-                return "东南风";
-            else if (code == "4")
-                return "南风";
-            else if (code == "5")
-                return "西南风";
-            else if (code == "6")
-                return "西风";
-            else if (code == "7")
-                return "西北风";
-            else if (code == "8")
-                return "北风";
-            else if (code == "9")
-                return "旋转风";
-            else
-                return "";
+            switch (code)
+            {
+                case ("0"): return "";
+                case ("1"): return "东北风";
+                case ("2"): return "东风";
+                case ("3"): return "东南风";
+                case ("4"): return "南风";
+                case ("5"): return "西南风";
+                case ("6"): return "西风";
+                case ("7"): return "西北风";
+                case ("8"): return "北风";
+                case ("9"): return "旋转风";
+                default: return "";
+            }
         }
 
         private static string SloveWindPower(string code)
@@ -293,46 +285,20 @@ namespace SmartQQ
         }
         public static string GetStudyFlagInfo(string result, string QQNum, string tmp1, string tmp2)
         {
-            if (result.Equals("Success"))
+            switch (result)
             {
-                return "嗯嗯～小睿睿记住了～～" + Environment.NewLine + "主人说 " + tmp1 + " 时，小睿睿应该回答 " + tmp2;
+                case ("Success"): return "嗯嗯～小睿睿记住了～～" + Environment.NewLine + "主人说 " + tmp1 + " 时，小睿睿应该回答 " + tmp2;
+                case ("Already"): return "小睿睿知道了啦～" + Environment.NewLine + "主人说 " + tmp1 + " 时，小睿睿应该回答 " + tmp2;
+                case ("DisableStudy"): return "当前学习功能未开启";
+                case ("IDDisabled"): return "小睿睿拒绝学习这句话，原因是：" + Environment.NewLine + "妈麻说，" + QQNum + "是坏人，小睿睿不能听他的话，详询管理员。";
+                case ("Waitting"): return "小睿睿记下了" + QQNum + "提交的学习请求，不过小睿睿还得去问问语文老师呢～～主人先等等吧～～";
+                case ("ForbiddenWord"): return "小睿睿拒绝学习这句话，原因是：" + Environment.NewLine + "根据相关法律法规和政策，账号" + QQNum + "提交的学习内容包含敏感词，详询管理员";
+                case ("Forbidden"): return "小睿睿拒绝学习这句话，原因是：" + Environment.NewLine + "账号" + QQNum + "提交的学习内容被屏蔽，详询管理员";
+                case ("NotSuper"): return "小睿睿拒绝学习这句话，原因是：" + Environment.NewLine + "账号" + QQNum + "不是特权用户，不能使用特权学习命令。";
+                case ("pending"): return "小睿睿记录下了账号" + QQNum + "提交的学习请求，请耐心等待审核，欢迎加入小睿睿的小窝，群137777833。";
+                default: return "小睿睿出错了，也许主人卖个萌就好了～～";
             }
-            else if (result.Equals("Already"))
-            {
-                return "小睿睿知道了啦～" + Environment.NewLine + "主人说 " + tmp1 + " 时，小睿睿应该回答 " + tmp2;
-            }
-            else if (result.Equals("DisableStudy"))
-            {
-                return "当前学习功能未开启";
-            }
-            else if (result.Equals("IDDisabled"))
-            {
-                return "小睿睿拒绝学习这句话，原因是：" + Environment.NewLine + "妈麻说，" + QQNum + "是坏人，小睿睿不能听他的话，详询管理员。";
-            }
-            else if (result.Equals("Waitting"))
-            {
-                return "小睿睿记下了" + QQNum + "提交的学习请求，不过小睿睿还得去问问语文老师呢～～主人先等等吧～～";
-            }
-            else if (result.Equals("ForbiddenWord"))
-            {
-                return "小睿睿拒绝学习这句话，原因是：" + Environment.NewLine + "根据相关法律法规和政策，账号" + QQNum + "提交的学习内容包含敏感词，详询管理员";
-            }
-            else if (result.Equals("Forbidden"))
-            {
-                return "小睿睿拒绝学习这句话，原因是：" + Environment.NewLine + "账号" + QQNum + "提交的学习内容被屏蔽，详询管理员";
-            }
-            else if (result.Equals("NotSuper"))
-            {
-                return "小睿睿拒绝学习这句话，原因是：" + Environment.NewLine + "账号" + QQNum + "不是特权用户，不能使用特权学习命令。";
-            }
-            else if (result.Equals("pending"))
-            {
-                return "小睿睿记录下了账号" + QQNum + "提交的学习请求，请耐心等待审核，欢迎加入小睿睿的小窝，群137777833。";
-            }
-            else
-            {
-                return "小睿睿出错了，也许主人卖个萌就好了～～";
-            }
+
         }
 
         public static string GetExchangeRate(string p1, string p2)
@@ -456,34 +422,34 @@ namespace SmartQQ
                 p2 = p2.Replace("\r", "");
                 p2 = p2.Replace("\n", "");
             }
-            if (p1.Equals("上证指数"))
-                url = "http://hq.sinajs.cn/list=s_sh000001";
-            else if (p1.Equals("深证综指"))
-                url = "http://hq.sinajs.cn/list=s_sz399106";
-            else if (p1.Equals("中小板指数"))
-                url = "http://hq.sinajs.cn/list=s_sz399005";
-            else if (p1.Equals("创业板指数"))
-                url = "http://hq.sinajs.cn/list=s_sz399006";
-            else if (p1.Equals("深证成指"))
-                url = "http://hq.sinajs.cn/list=s_sz399001";
-            else if (p1.Equals("中小板综指"))
-                url = "http://hq.sinajs.cn/list=s_sz399101";
-            else if (p1.Equals("创业板综指"))
-                url = "http://hq.sinajs.cn/list=s_sz399102";
-            else if (p1.ToCharArray()[0] == '6')
-                url = "http://hq.sinajs.cn/list=s_sh" + p1;
-            else if (p1.ToCharArray()[0] == '0' || p1.ToCharArray()[0] == '3')
-                url = "http://hq.sinajs.cn/list=s_sz" + p1;
-            else if (p1.Equals("上海") || p1.Equals("沪市") || p1.Equals("上证"))
+            switch (p1)
             {
-                url = "http://hq.sinajs.cn/list=s_sh" + p2;
+                case ("上证指数"): url = "http://hq.sinajs.cn/list=s_sh000001"; break;
+                case ("深证综指"): url = "http://hq.sinajs.cn/list=s_sz399106"; break;
+                case ("中小板指数"): url = "http://hq.sinajs.cn/list=s_sz399005"; break;
+                case ("创业板指数"): url = "http://hq.sinajs.cn/list=s_sz399006"; break;
+                case ("深证成指"): url = "http://hq.sinajs.cn/list=s_sz399001"; break;
+                case ("中小板综指"): url = "http://hq.sinajs.cn/list=s_sz399101"; break;
+                case ("创业板综指"): url = "http://hq.sinajs.cn/list=s_sz399102"; break;
+                default:
+                    {
+                        if (p1.ToCharArray()[0] == '6')
+                            url = "http://hq.sinajs.cn/list=s_sh" + p1;
+                        else if (p1.ToCharArray()[0] == '0' || p1.ToCharArray()[0] == '3')
+                            url = "http://hq.sinajs.cn/list=s_sz" + p1;
+                        else if (p1.Equals("上海") || p1.Equals("沪市") || p1.Equals("上证"))
+                        {
+                            url = "http://hq.sinajs.cn/list=s_sh" + p2;
+                        }
+                        else if (p1.Equals("深圳") || p1.Equals("深市") || p1.Equals("深证") || p1.Equals("创业板") || p1.Equals("中小板"))
+                        {
+                            url = "http://hq.sinajs.cn/list=s_sz" + p2;
+                        }
+                        else
+                            return "参数错误";
+                        break;
+                    }
             }
-            else if (p1.Equals("深圳") || p1.Equals("深市") || p1.Equals("深证") || p1.Equals("创业板") || p1.Equals("中小板"))
-            {
-                url = "http://hq.sinajs.cn/list=s_sz" + p2;
-            }
-            else
-                return "参数错误";
             string dat = HTTP.HttpGet(url, 100000, Encoding.GetEncoding("GB2312"));
 
             string[] tmp = dat.Split('\"');
