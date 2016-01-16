@@ -40,15 +40,9 @@ namespace SmartQQ
         static int realQQIndex = 0;
         public static void SecondLogin()
         {
-            string url0 = string.Format("http://s.web2.qq.com/api/getvfwebqq?ptwebqq={0}&clientid={1}&psessionid=&t={2}", ptwebqq, ClientID, GetTimeStamp());
-            string temp = HTTP.HttpGet(url0);
-
-            Uri uri = new Uri("http://web2.qq.com/");
-
             //二次登录
             string url = "http://d1.web2.qq.com/channel/login2";
 
-            Uri uri1 = new Uri("http://qq.com/");
             string url1 = "{\"ptwebqq\":\"" + ptwebqq + "\",\"clientid\":" + ClientID + ",\"psessionid\":\"\",\"status\":\"online\"}";
             url1 = "r=" + HttpUtility.UrlEncode(url1);
             string dat = HTTP.HttpPost(url, "http://d1.web2.qq.com/proxy.html?v=20151105001&callback=1&id=2", url1, Encoding.UTF8, true);
@@ -61,10 +55,8 @@ namespace SmartQQ
             dat = dat.Replace("}", "");
             dat = dat.Replace("\"", "");
             string[] tmp = dat.Split(t);
-
-            vfwebqq = tmp[14];
-            psessionid = tmp[16];
-
+           
+            psessionid = tmp[10];           
             hash = GetHash(Program.formlogin.QQNum, ptwebqq);
         }
         public static void GetQRCode()
@@ -85,7 +77,13 @@ namespace SmartQQ
             Program.formlogin.timerLogin.Enabled = true;
             Program.formlogin.timerLogin.Start();
         }
-
+        public static void GetVfwebqq()
+        {
+            string url = "http://s.web2.qq.com/api/getvfwebqq?ptwebqq=" + ptwebqq + "&clientid=53999199&psessionid=&t=" + GetTimeStamp();
+            string temp = HTTP.HttpGet(url);
+            string[] tmp = temp.Split('\"');
+            vfwebqq = tmp [7];
+        }
         public static string CheckStatu()
         {
             string url = "https://ssl.ptlogin2.qq.com/ptqrlogin?webqq_type=10&remember_uin=1&login2qq=1&aid=501004106&u1=http%3A%2F%2Fw.qq.com%2Fproxy.html%3Flogin2qq%3D1%26webqq_type%3D10&ptredirect=0&ptlang=2052&daid=164&from_ui=1&pttype=1&dumy=&fp=loginerroralert&action=0-0-18099&mibao_css=m_webqq&t=1&g=1&js_type=0&js_ver=10135&login_sig=&pt_randsalt=0";
@@ -131,7 +129,7 @@ namespace SmartQQ
                 }
                 postData += "}";
                 string url;
-                string referer = "http://d1.web2.qq.com/proxy.html?v=20130916001&callback=1&id=2";
+                string referer = "http://d1.web2.qq.com/proxy.html?v=20151105001&callback=1&id=2";
                 if (specialMessage == "")
                     url = "http://d1.web2.qq.com/channel/send_buddy_msg2";
                 else if (temp[0] == "disscuss")
@@ -194,7 +192,7 @@ namespace SmartQQ
                     + "\"}";
                 postData = "r=" + HttpUtility.UrlEncode(postData);
 
-                string referer = "http://d1.web2.qq.com/proxy.html?v=20130916001&callback=1&id=2";
+                string referer = "http://d1.web2.qq.com/proxy.html?v=20151105001&callback=1&id=2";
                 string url = "http://d1.web2.qq.com/channel/send_qun_msg2";
 
                 string dat = HTTP.HttpPost(url, referer, postData, Encoding.UTF8, false);
@@ -268,7 +266,8 @@ namespace SmartQQ
             realQQ[realQQIndex, 1] = tmp[0];
             realQQIndex++;
             return tmp[0];
-        }
+        }        
+
         public static string GetTimeStamp()
         {
             TimeSpan ts = DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, 0);

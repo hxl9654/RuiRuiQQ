@@ -136,15 +136,14 @@ namespace SmartQQ
         public static void HeartPack()
         {
             System.GC.Collect();
-            string url = "http://d.web2.qq.com/channel/poll2";
-            string sendData1 = "r= {\"ptwebqq\":\"";
-            string sendData2 = "\",\"clientid\":";
-            string sendData3 = ",\"psessionid\":\"";
-            string sendData4 = "\",\"key\":\"\"}";
-            HeartPackdata = sendData1 + SmartQQ.ptwebqq + sendData2 + SmartQQ.ClientID.ToString() + sendData3 + SmartQQ.psessionid + sendData4;
-
+            string url = "http://d1.web2.qq.com/channel/poll2";
+            HeartPackdata = "{\"ptwebqq\":\""+ SmartQQ.ptwebqq;
+            HeartPackdata += "\",\"clientid\":"+ SmartQQ.ClientID.ToString();
+            HeartPackdata += ",\"psessionid\":\""+ SmartQQ.psessionid;
+            HeartPackdata += "\",\"key\":\"\"}";
+            HeartPackdata = "r=" + HttpUtility.UrlEncode(HeartPackdata);
             Encoding encode = Encoding.UTF8;
-            string Referer = "http://d.web2.qq.com/proxy.html?v=20130916001&callback=1&id=2";
+            string Referer = "http://d1.web2.qq.com/proxy.html?v=20151105001&callback=1&id=2";
             try
             {
                 HttpWebRequest req = WebRequest.Create(url) as HttpWebRequest;

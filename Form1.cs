@@ -52,6 +52,7 @@ namespace SmartQQ
         {
             public string gid;
             public string no;
+            public string GroupKey; //用于识别群，群主+创建时间
             public string enable;
             public string enableWeather;
             public string enableExchangeRate;
@@ -92,6 +93,7 @@ namespace SmartQQ
             if (Loging)
                 return;
             Loging = true;
+            SmartQQ.GetVfwebqq();
             SmartQQ.SecondLogin();
 
             SmartQQ.getFrienf();
@@ -173,6 +175,8 @@ namespace SmartQQ
                 return;
             }
             listBoxLog.Items.Insert(0, temp);
+            if (HeartPackMessage.retcode == 0 && HeartPackMessage.errmsg != null && HeartPackMessage.errmsg.Equals("") && HeartPackMessage.result == null)
+                return;
 
             if (HeartPackMessage.retcode != 0 || HeartPackMessage.result == null)
                 return;
@@ -262,8 +266,9 @@ namespace SmartQQ
                     }
                     message = message.Replace("\\\\n", Environment.NewLine);
                     message = message.Replace("＆", "&");
-                    string gno = HeartPackMessage.result[i].value.info_seq;
+                    //string gno = HeartPackMessage.result[i].value.info_seq;                   
                     string gid = HeartPackMessage.result[i].value.from_uin;
+                    string gno = getGroupKeyValue(gid);
                     for (j = 0; j < group.result.gnamelist.Count; j++)
                         if (group.result.gnamelist[j].gid == gid)
                         {
@@ -802,6 +807,24 @@ namespace SmartQQ
                     break;
                 }
             }
+        }
+        public string getGroupKeyValue(string from_uin)
+        {
+            int GroupInfoIndex = 9999;
+            string adminuin;
+            string creattime;
+            for (int i = 0; i <= groupinfMaxIndex; i++)
+            {
+                if (groupinfo[i].gid == from_uin)
+                {
+                    GroupInfoIndex = i;
+                    adminuin = groupinfo[i].inf.result.ginfo.owner;
+                    creattime = groupinfo[i].inf.result.ginfo.createtime;
+                    groupinfo[i].GroupKey = SmartQQ.GetRealQQ(adminuin) + ":" + creattime;
+                    break;
+                }
+            }
+            return groupinfo[GroupInfoIndex].GroupKey;
         }
         string GroupManage(string message, string uin, string gid, string gno)
         {
@@ -1544,7 +1567,7 @@ namespace SmartQQ
                 JosnConfigFileModel dat = (JosnConfigFileModel)JsonConvert.DeserializeObject(tmp, typeof(JosnConfigFileModel));
                 DicPassword = dat.DicPassword;
                 DicServer = dat.DicServer;
-                MasterQQ = dat.AdminQQ;               
+                MasterQQ = dat.AdminQQ;
                 YoudaoKey = dat.YoudaoKey;
                 YoudaoKeyform = dat.YoudaoKeyfrom;
             }
@@ -1685,19 +1708,21 @@ namespace SmartQQ
                 timerLogin.Enabled = false;
                 Program.formlogin.labelQRStatu.Text = "成功";
                 string url = statu.Remove(0, 1);
-                HTTP.HttpGet(url);
+                if (!Loging)
+                {
+                    HTTP.HttpGet(url);
+                    Uri uri = new Uri("http://web2.qq.com/");
+                    SmartQQ.ptwebqq = HTTP.cookies.GetCookies(uri)["ptwebqq"].Value;
+                    SmartQQ.p_skey = HTTP.cookies.GetCookies(uri)["p_skey"].Value;
+                    SmartQQ.MyUin = HTTP.cookies.GetCookies(uri)["uin"].Value;
+                    SmartQQ.skey = HTTP.cookies.GetCookies(uri)["skey"].Value;
+                    SmartQQ.p_uin = HTTP.cookies.GetCookies(uri)["p_uin"].Value;
+                    QQNum = SmartQQ.p_uin.Remove(0, 1);
+                    if (QQNum.StartsWith("0"))
+                        QQNum = QQNum.Remove(0, 1);
 
-                Uri uri = new Uri("http://web2.qq.com/");
-                SmartQQ.ptwebqq = HTTP.cookies.GetCookies(uri)["ptwebqq"].Value;
-                SmartQQ.p_skey = HTTP.cookies.GetCookies(uri)["p_skey"].Value;
-                SmartQQ.MyUin = HTTP.cookies.GetCookies(uri)["uin"].Value;
-                SmartQQ.skey = HTTP.cookies.GetCookies(uri)["skey"].Value;
-                SmartQQ.p_uin = HTTP.cookies.GetCookies(uri)["p_uin"].Value;
-                QQNum = SmartQQ.p_uin.Remove(0, 1);
-                if (QQNum.StartsWith("0"))
-                    QQNum = QQNum.Remove(0, 1);
-
-                LogIn();
+                    LogIn();
+                }
             }
             else if (statu.StartsWith("65"))
             {
