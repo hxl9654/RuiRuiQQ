@@ -379,7 +379,7 @@ namespace SmartQQ
             if (qunnum.Equals(""))
                 qunnum = "NULL";
             string[] MessageToSend = new string[20];
-            message = message.Remove(message.Length - 2);
+            //message = message.Remove(message.Length - 2);
             if (message.Equals(""))
                 return MessageToSend;
             string QQNum = SmartQQ.GetRealQQ(uin);
