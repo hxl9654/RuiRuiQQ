@@ -207,7 +207,6 @@ namespace SmartQQ
         public string DicPassword;
         public string QQNum;
         public string QQPassword;
-        public int ClientID;
         public string YoudaoKeyfrom;
         public string YoudaoKey;
     }

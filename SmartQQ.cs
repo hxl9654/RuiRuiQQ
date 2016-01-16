@@ -30,7 +30,7 @@ namespace SmartQQ
     {
         //通信参数相关
         public static int MsgId;
-        public static int ClientID = 0;
+        public static int ClientID = 53999199;
         public static string ptvsession = "";
         public static string p_skey, MyUin, skey, p_uin, vfwebqq, hash;
         public static string ptwebqq, psessionid;
@@ -40,10 +40,18 @@ namespace SmartQQ
         static int realQQIndex = 0;
         public static void SecondLogin()
         {
+            string url0 = string.Format("http://s.web2.qq.com/api/getvfwebqq?ptwebqq={0}&clientid={1}&psessionid=&t={2}", ptwebqq, ClientID, GetTimeStamp());
+            string temp = HTTP.HttpGet(url0);
+
+            Uri uri = new Uri("http://web2.qq.com/");
+
             //二次登录
-            string url = "http://d.web2.qq.com/channel/login2";
-            string url1 = string.Format("r={{\"ptwebqq\":\"{0}\",\"clientid\":{1},\"psessionid\":\"\",\"status\":\"online\"}}", ptwebqq, ClientID);
-            string dat = HTTP.HttpPost(url, "http://d.web2.qq.com/proxy.html?v=20130916001&callback=1&id=2", url1, Encoding.UTF8, true);
+            string url = "http://d1.web2.qq.com/channel/login2";
+
+            Uri uri1 = new Uri("http://qq.com/");
+            string url1 = "{\"ptwebqq\":\"" + ptwebqq + "\",\"clientid\":" + ClientID + ",\"psessionid\":\"\",\"status\":\"online\"}";
+            url1 = "r=" + HttpUtility.UrlEncode(url1);
+            string dat = HTTP.HttpPost(url, "http://d1.web2.qq.com/proxy.html?v=20151105001&callback=1&id=2", url1, Encoding.UTF8, true);
 
             Program.formlogin.textBoxLog.Text = dat;
             char[] t = new char[2];
@@ -67,8 +75,8 @@ namespace SmartQQ
             string url = "https://ssl.ptlogin2.qq.com/ptqrshow?appid=501004106&e=0&l=M&s=5&d=72&v=4&t=0." + t1.ToString() + t2.ToString();
             HttpWebRequest req = (HttpWebRequest)WebRequest.Create(url);
             req.CookieContainer = HTTP.cookies;
-            HttpWebResponse res = (HttpWebResponse)req.GetResponse();
 
+            HttpWebResponse res = (HttpWebResponse)req.GetResponse();
             Program.formlogin.pictureBoxQRCode.Image = Image.FromStream(res.GetResponseStream());
         }
         public static void FirstLogin()
@@ -123,12 +131,12 @@ namespace SmartQQ
                 }
                 postData += "}";
                 string url;
-                string referer = "http://d.web2.qq.com/proxy.html?v=20130916001&callback=1&id=2";
+                string referer = "http://d1.web2.qq.com/proxy.html?v=20130916001&callback=1&id=2";
                 if (specialMessage == "")
-                    url = "http://d.web2.qq.com/channel/send_buddy_msg2";
+                    url = "http://d1.web2.qq.com/channel/send_buddy_msg2";
                 else if (temp[0] == "disscuss")
-                    url= "http://d.web2.qq.com/channel/send_discu_msg2";
-                else url = "http://d.web2.qq.com/channel/send_sess_msg2";
+                    url = "http://d1.web2.qq.com/channel/send_discu_msg2";
+                else url = "http://d1.web2.qq.com/channel/send_sess_msg2";
                 postData = "r=" + HttpUtility.UrlEncode(postData);
 
                 string dat = HTTP.HttpPost(url, referer, postData, Encoding.UTF8, false);
@@ -149,14 +157,14 @@ namespace SmartQQ
         }
         public static string GetGroupSig(string id, string uin, string service_type)
         {
-            string url = "http://d.web2.qq.com/channel/get_c2cmsg_sig2?id=" + id + "&to_uin=" + uin + "&clientid=" + ClientID + "&psessionid=" + psessionid + "&service_type=" + service_type + "&t=" + GetTimeStamp();
+            string url = "http://d1.web2.qq.com/channel/get_c2cmsg_sig2?id=" + id + "&to_uin=" + uin + "&clientid=" + ClientID + "&psessionid=" + psessionid + "&service_type=" + service_type + "&t=" + GetTimeStamp();
             string temp = HTTP.HttpGet(url);
             string[] tmp = temp.Split('\"');
             return tmp[9];
         }
         public static void GetDissInfo(string did, int index)
         {
-            string url = "http://d.web2.qq.com/channel/get_discu_info?did=" + did + "&vfwebqq=" + vfwebqq + "&clientid=" + ClientID + "&psessionid=" + psessionid + "&t=" + GetTimeStamp();
+            string url = "http://d1.web2.qq.com/channel/get_discu_info?did=" + did + "&vfwebqq=" + vfwebqq + "&clientid=" + ClientID + "&psessionid=" + psessionid + "&t=" + GetTimeStamp();
             string temp = HTTP.HttpGet(url);
             JsonDissgussModel inf = (JsonDissgussModel)JsonConvert.DeserializeObject(temp, typeof(JsonDissgussModel));
             Program.formlogin.discussInfo[index].did = inf.result.info.did;
@@ -186,8 +194,8 @@ namespace SmartQQ
                     + "\"}";
                 postData = "r=" + HttpUtility.UrlEncode(postData);
 
-                string referer = "http://d.web2.qq.com/proxy.html?v=20130916001&callback=1&id=2";
-                string url = "http://d.web2.qq.com/channel/send_qun_msg2";
+                string referer = "http://d1.web2.qq.com/proxy.html?v=20130916001&callback=1&id=2";
+                string url = "http://d1.web2.qq.com/channel/send_qun_msg2";
 
                 string dat = HTTP.HttpPost(url, referer, postData, Encoding.UTF8, false);
 

@@ -34,7 +34,8 @@ namespace SmartQQ
 
         static public string HeartPackdata;
         static int AmountOfRunningPosting = 0;
-        public static string HttpGet(string url, int timeout = 100000, Encoding encode = null, string referer = "http://d.web2.qq.com/proxy.html?v=20130916001&callback=1&id=2")
+
+        public static string HttpGet(string url, int timeout = 100000, Encoding encode = null, string referer = "http://d1.web2.qq.com/proxy.html?v=20151105001&callback=1&id=2")
         {
             string dat;
             HttpWebResponse res = null;
@@ -43,6 +44,7 @@ namespace SmartQQ
             {
                 req = (HttpWebRequest)WebRequest.Create(url);
                 req.CookieContainer = cookies;
+                req.AllowAutoRedirect = false;
                 req.Timeout = timeout;
                 req.Referer = referer;
                 res = (HttpWebResponse)req.GetResponse();
@@ -61,6 +63,7 @@ namespace SmartQQ
             else
                 reader = new StreamReader(res.GetResponseStream());
             dat = reader.ReadToEnd();
+
             res.Close();
             req.Abort();
             if (Program.formlogin != null)
@@ -98,16 +101,17 @@ namespace SmartQQ
                 stream.Write(mybyte, 0, mybyte.Length);
 
 
-                HttpWebResponse hwr = req.GetResponse() as HttpWebResponse;
+                HttpWebResponse res = req.GetResponse() as HttpWebResponse;
                 stream.Close();
                 if (SaveCookie)
                 {
-                    CookieCollection = hwr.Cookies;
+                    CookieCollection = res.Cookies;
                     cookies.GetCookies(req.RequestUri);
                 }
-                StreamReader SR = new StreamReader(hwr.GetResponseStream(), encode);
+
+                StreamReader SR = new StreamReader(res.GetResponseStream(), encode);
                 dat = SR.ReadToEnd();
-                hwr.Close();
+                res.Close();
                 req.Abort();
             }
             catch (HttpException)

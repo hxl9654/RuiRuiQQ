@@ -1544,15 +1544,12 @@ namespace SmartQQ
                 JosnConfigFileModel dat = (JosnConfigFileModel)JsonConvert.DeserializeObject(tmp, typeof(JosnConfigFileModel));
                 DicPassword = dat.DicPassword;
                 DicServer = dat.DicServer;
-                MasterQQ = dat.AdminQQ;
-                SmartQQ.ClientID = dat.ClientID;
+                MasterQQ = dat.AdminQQ;               
                 YoudaoKey = dat.YoudaoKey;
                 YoudaoKeyform = dat.YoudaoKeyfrom;
             }
             if (DicServer == null || DicServer.Equals(""))
                 DicServer = "https://ruiruiqq.hxlxz.com/";
-            if (SmartQQ.ClientID == 0)
-                SmartQQ.ClientID = rd.Next(1000000, 9999999);
             if (DicPassword == null || DicPassword.Equals(""))
                 NoDicPassword = true;
             NoFile = false;
