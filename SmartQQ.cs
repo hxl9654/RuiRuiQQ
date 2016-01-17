@@ -30,13 +30,13 @@ namespace SmartQQ
     {
         //通信参数相关
         public static int MsgId;
-        public static int ClientID = 53999199;
+        public const int ClientID = 53999199;   //新版协议此值为定值，不能修改
         public static string ptvsession = "";
         public static string p_skey, MyUin, skey, p_uin, vfwebqq, hash;
         public static string ptwebqq, psessionid;
         public static string pt_uin = "";
 
-        static string[,] realQQ = new string[10000, 2];
+        static string[,] realQQ = new string[3000, 2];
         static int realQQIndex = 0;
         public static void SecondLogin()
         {
@@ -114,11 +114,7 @@ namespace SmartQQ
                 else postData = "{\"did\":" + uid;
                 postData += ",\"content\":\"[" + content.Replace(Environment.NewLine, "\\\\n");
                 postData += ",[\\\"font\\\",{\\\"name\\\":\\\"宋体\\\",\\\"size\\\":10,\\\"style\\\":[0,0,0],\\\"color\\\":\\\"000000\\\"}]]\",\"clientid\":" + ClientID + ",\"face\":";
-                if (specialMessage == "")
-                    postData += "585";
-                else if (temp[0] == "disscuss")
-                    postData += "564";
-                else postData += "594";
+                postData += "0";
                 postData += ",\"msg_id\":" + MsgId;
                 postData += ",\"psessionid\":\"" + psessionid + "\"";
 
@@ -186,7 +182,7 @@ namespace SmartQQ
             {
                 string postData = "{\"group_uin\":" + gin
                     + ",\"content\":\"[" + content.Replace(Environment.NewLine, "\\\\n")
-                    + ",[\\\"font\\\",{\\\"name\\\":\\\"宋体\\\",\\\"size\\\":11,\\\"style\\\":[0,0,0],\\\"color\\\":\\\"00FF00\\\"}]]\",\"face\":549,\"clientid\":" + ClientID
+                    + ",[\\\"font\\\",{\\\"name\\\":\\\"宋体\\\",\\\"size\\\":11,\\\"style\\\":[0,0,0],\\\"color\\\":\\\"00FF00\\\"}]]\",\"face\":0,\"clientid\":" + ClientID
                     + ",\"msg_id\":" + MsgId
                     + ",\"psessionid\":\"" + psessionid
                     + "\"}";

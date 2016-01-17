@@ -824,7 +824,9 @@ namespace SmartQQ
                     break;
                 }
             }
-            return groupinfo[GroupInfoIndex].GroupKey;
+            if (GroupInfoIndex != 9999)
+                return groupinfo[GroupInfoIndex].GroupKey;
+            else return "FAIL";
         }
         string GroupManage(string message, string uin, string gid, string gno)
         {
