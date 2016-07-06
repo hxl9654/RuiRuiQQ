@@ -32,10 +32,7 @@ namespace SmartQQ
         static CookieCollection CookieCollection = new CookieCollection();
         static CookieContainer CookieContainer = new CookieContainer();
 
-        static public string HeartPackdata;
-        static int AmountOfRunningPosting = 0;
-
-        public static string HttpGet(string url, int timeout = 100000, Encoding encode = null, string referer = "http://d1.web2.qq.com/proxy.html?v=20151105001&callback=1&id=2")
+        public static string HttpGet(string url, string referer = "http://d1.web2.qq.com/proxy.html?v=20151105001&callback=1&id=2", int timeout = 100000, Encoding encode = null)
         {
             string dat;
             HttpWebResponse res = null;
@@ -47,7 +44,10 @@ namespace SmartQQ
                 req.AllowAutoRedirect = false;
                 req.Timeout = timeout;
                 req.Referer = referer;
+                req.UserAgent = "Mozilla/5.0 (Windows NT 10.0;%20WOW64; rv:47.0) Gecko/20100101 Firefox/47.0";
                 res = (HttpWebResponse)req.GetResponse();
+
+                cookies.Add(res.Cookies);
             }
             catch (HttpException)
             {
@@ -58,10 +58,8 @@ namespace SmartQQ
                 return "";
             }
             StreamReader reader;
-            if (encode != null)
-                reader = new StreamReader(res.GetResponseStream(), encode);
-            else
-                reader = new StreamReader(res.GetResponseStream());
+
+            reader = new StreamReader(res.GetResponseStream(), encode == null ? Encoding.UTF8 : encode);
             dat = reader.ReadToEnd();
 
             res.Close();
@@ -75,25 +73,22 @@ namespace SmartQQ
             return dat;
         }
         //http://www.itokit.com/2012/0721/74607.html
-        public static string HttpPost(string url, string Referer, string data, Encoding encode, bool SaveCookie, int timeout = 100000)
+        public static string HttpPost(string url, string data, string Referer = "http://d1.web2.qq.com/proxy.html?v=20151105001&callback=1&id=2", int timeout = 100000, Encoding encode = null)
         {
             string dat = "";
             HttpWebRequest req;
-            if (AmountOfRunningPosting == 0)
-                System.GC.Collect();
-            AmountOfRunningPosting++;
             try
             {
                 req = WebRequest.Create(url) as HttpWebRequest;
                 req.CookieContainer = cookies;
                 req.ContentType = "application/x-www-form-urlencoded";
                 req.Method = "POST";
-                req.UserAgent = "Mozilla/5.0 (Windows NT 5.1; rv:30.0) Gecko/20100101 Firefox/30.0";
                 req.Proxy = null;
                 req.Timeout = timeout;
+                req.UserAgent = "Mozilla/5.0 (Windows NT 10.0;%20WOW64; rv:47.0) Gecko/20100101 Firefox/47.0";
                 req.ProtocolVersion = HttpVersion.Version10;
-                if (!string.IsNullOrEmpty(Referer))
-                    req.Referer = Referer;
+                req.Referer = Referer;
+
                 byte[] mybyte = Encoding.Default.GetBytes(data);
                 req.ContentLength = mybyte.Length;
 
@@ -102,26 +97,21 @@ namespace SmartQQ
 
 
                 HttpWebResponse res = req.GetResponse() as HttpWebResponse;
-                stream.Close();
-                if (SaveCookie)
-                {
-                    CookieCollection = res.Cookies;
-                    cookies.GetCookies(req.RequestUri);
-                }
 
-                StreamReader SR = new StreamReader(res.GetResponseStream(), encode);
+                cookies.Add(res.Cookies);
+                stream.Close();
+
+                StreamReader SR = new StreamReader(res.GetResponseStream(), encode == null ? Encoding.UTF8 : encode);
                 dat = SR.ReadToEnd();
                 res.Close();
                 req.Abort();
             }
             catch (HttpException)
             {
-                AmountOfRunningPosting--;
                 return "";
             }
             catch (WebException)
             {
-                AmountOfRunningPosting--;
                 return "";
             }
             if (Program.formlogin != null)
@@ -130,71 +120,49 @@ namespace SmartQQ
                 if (!dat.Equals(""))
                     Program.formlogin.listBoxLog.Items.Insert(0, dat);
             }
-            AmountOfRunningPosting--;
             return dat;
         }
-        public static void HeartPack()
+        public delegate void HttpPost_Async_Action(string data);
+        private class HttpPost_Async_Data
         {
-            System.GC.Collect();
-            string url = "http://d1.web2.qq.com/channel/poll2";
-            HeartPackdata = "{\"ptwebqq\":\""+ SmartQQ.ptwebqq;
-            HeartPackdata += "\",\"clientid\":"+ SmartQQ.ClientID.ToString();
-            HeartPackdata += ",\"psessionid\":\""+ SmartQQ.psessionid;
-            HeartPackdata += "\",\"key\":\"\"}";
-            HeartPackdata = "r=" + HttpUtility.UrlEncode(HeartPackdata);
-            Encoding encode = Encoding.UTF8;
-            string Referer = "http://d1.web2.qq.com/proxy.html?v=20151105001&callback=1&id=2";
-            try
-            {
-                HttpWebRequest req = WebRequest.Create(url) as HttpWebRequest;
-                req.CookieContainer = cookies;
-                req.ContentType = "application/x-www-form-urlencoded";
-                req.Method = "POST";
-                req.UserAgent = "Mozilla/5.0 (Windows NT 5.1; rv:30.0) Gecko/20100101 Firefox/30.0";
-                req.Proxy = null;
-                req.ProtocolVersion = HttpVersion.Version10;
-                if (!string.IsNullOrEmpty(Referer))
-                    req.Referer = Referer;
+            public HttpWebRequest req;
+            public HttpPost_Async_Action httpPost_Async_Action;
+        }
+        public static void HttpPost_Async(string url, string PostData, HttpPost_Async_Action action, string Referer = "http://d1.web2.qq.com/proxy.html?v=20151105001&callback=1&id=2", int timeout = 100000)
+        {
+            HttpWebRequest req = WebRequest.Create(url) as HttpWebRequest;
+            req.CookieContainer = cookies;
+            req.ContentType = "application/x-www-form-urlencoded";
+            req.Method = "POST";
+            req.Referer = Referer;
+            req.UserAgent = "Mozilla/5.0 (Windows NT 10.0;%20WOW64; rv:47.0) Gecko/20100101 Firefox/47.0";
+            req.Proxy = null;
+            req.ProtocolVersion = HttpVersion.Version10;
+            req.ContinueTimeout = timeout;
 
-                req.BeginGetRequestStream(new AsyncCallback(RequestProceed), req);
-            }
-            catch (WebException)
-            {
-                return;
-            }
+            ASCIIEncoding encoding = new ASCIIEncoding();
+            byte[] data = encoding.GetBytes(PostData);
+            Stream stream = req.GetRequestStream();
+            stream.Write(data, 0, data.Length);
+            stream.Close();
+
+            HttpPost_Async_Data dat = new HttpPost_Async_Data();
+            dat.req = req;
+            dat.httpPost_Async_Action = action;
+            req.BeginGetResponse(new AsyncCallback(HttpPost_Async_ResponesProceed), dat);
         }
-        public static void RequestProceed(IAsyncResult asyncResult)
+
+        private static void HttpPost_Async_ResponesProceed(IAsyncResult ar)
         {
-            try
-            {
-                HttpWebRequest request = (HttpWebRequest)asyncResult.AsyncState;
-                StreamWriter postDataWriter = new StreamWriter(request.EndGetRequestStream(asyncResult));
-                postDataWriter.Write(HeartPackdata);
-                postDataWriter.Close();
-                request.BeginGetResponse(new AsyncCallback(ResponesProceed), request);
-            }
-            catch (WebException)
-            {
-                return;
-            }
-        }
-        public static void ResponesProceed(IAsyncResult ar)
-        {
-            try
-            {
-                StreamReader reader = null;
-                HttpWebRequest req = ar.AsyncState as HttpWebRequest;
-                HttpWebResponse res = req.GetResponse() as HttpWebResponse;
-                reader = new StreamReader(res.GetResponseStream());
-                string temp = reader.ReadToEnd();
-                res.Close();
-                req.Abort();
-                Program.formlogin.HeartPackAction(temp);
-            }
-            catch (WebException)
-            {
-                return;
-            }
+            StreamReader reader = null;
+            HttpPost_Async_Data dat = ar.AsyncState as HttpPost_Async_Data;
+            HttpWebRequest req = dat.req;
+            HttpWebResponse res = req.GetResponse() as HttpWebResponse;
+            reader = new StreamReader(res.GetResponseStream());
+            string temp = reader.ReadToEnd();
+            res.Close();
+            req.Abort();
+            dat.httpPost_Async_Action(temp);
         }
     }
 }

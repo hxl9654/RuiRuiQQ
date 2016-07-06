@@ -35,6 +35,8 @@ namespace SmartQQ
             public List<paramInfo> info;
             /// 备注
             public List<paramMarkNames> marknames;
+            /// 备注
+            public List<paramVipinfo> vipinfo;
             /// 分组
             public class paramCategories
             {
@@ -61,6 +63,13 @@ namespace SmartQQ
             {
                 public string uin;
                 public string markname;
+            }
+            /// vip信息
+            public class paramVipinfo
+            {
+                public int vip_level;
+                public int u;
+                public int is_vip;
             }
         }
     }
@@ -108,6 +117,7 @@ namespace SmartQQ
         public paramResult result;
         public class paramResult
         {
+            public int face;
             public paramBirthday birthday;
             public string occupation;
             public string phone;
@@ -124,6 +134,9 @@ namespace SmartQQ
             public string province;
             public string gender;
             public string mobile;
+            internal string country;
+            internal int vip_info;
+
             public class paramBirthday
             {
                 public int month;

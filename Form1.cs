@@ -2,6 +2,7 @@
 using Jurassic.Library;
 using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Web;
@@ -93,17 +94,10 @@ namespace SmartQQ
             if (Loging)
                 return;
             Loging = true;
-            SmartQQ.GetVfwebqq();
-            SmartQQ.SecondLogin();
-
-            SmartQQ.getFrienf();
-            SmartQQ.getGroup();
 
             HTTP.HttpGet("https://ruiruiqq.hxlxz.com/infreport.php?qq=" + QQNum + "&adminqq=" + MasterQQ);
 
             listBoxLog.Items.Insert(0, "登录成功");
-            timerHeart.Enabled = true;
-            timerHeart.Start();
 
             pictureBoxQRCode.Visible = false;
             buttonSend.Enabled = true;
@@ -115,7 +109,7 @@ namespace SmartQQ
         public void LogOut()
         {
             groupinfMaxIndex = 0;
-            timerHeart.Stop();
+            //timerHeart.Stop();
             System.GC.Collect();
             listBoxFriend.Items.Clear();
             listBoxGroup.Items.Clear();
@@ -152,7 +146,7 @@ namespace SmartQQ
             else if (HeartPackMessage.retcode == 116)
             {
                 listBoxLog.Items.Insert(0, temp);
-                SmartQQ.ptwebqq = HeartPackMessage.p;
+                //SmartQQ.ptwebqq = HeartPackMessage.p;
                 return;
             }
             else if (HeartPackMessage.retcode == 108 || HeartPackMessage.retcode == 114)
@@ -225,7 +219,7 @@ namespace SmartQQ
                             }
                         if (j == user.result.info.Count)
                         {
-                            SmartQQ.getFrienf();
+                            SmartQQ.Info_FriendList();
                             for (j = 0; j < user.result.info.Count; j++)
                                 if (user.result.info[j].uin == HeartPackMessage.result[i].value.from_uin)
                                 {
@@ -236,7 +230,7 @@ namespace SmartQQ
                     }
                     else nick = "临时会话";
 
-                    textBoxResiveMessage.Text += (nick + "  " + SmartQQ.GetRealQQ(HeartPackMessage.result[i].value.from_uin) + Environment.NewLine + message + "   " + emojis + Environment.NewLine + Environment.NewLine);
+                    textBoxResiveMessage.Text += (nick + "  " + SmartQQ.Info_RealQQ(HeartPackMessage.result[i].value.from_uin) + Environment.NewLine + message + "   " + emojis + Environment.NewLine + Environment.NewLine);
                     textBoxResiveMessage.SelectionStart = textBoxResiveMessage.TextLength;
                     textBoxResiveMessage.ScrollToCaret();
                     if (HeartPackMessage.result[i].poll_type == "sess_message")
@@ -279,7 +273,7 @@ namespace SmartQQ
                     {
                         if (j > groupinfMaxIndex)
                         {
-                            SmartQQ.getGroup();
+                            SmartQQ.Info_GroupList();
                         }
                         if (j > groupinfMaxIndex)
                         {
@@ -296,9 +290,9 @@ namespace SmartQQ
                                     nick = groupinfo[j].inf.result.minfo[k].nick;
                                     break;
                                 }
-                            if (SmartQQ.GetRealQQ(MessageFromUin).Equals("1000000"))
+                            if (SmartQQ.Info_RealQQ(MessageFromUin).Equals("1000000"))
                                 nick = "系统消息";
-                            textBoxResiveMessage.Text += (GName + "   " + nick + "  " + SmartQQ.GetRealQQ(MessageFromUin) + Environment.NewLine + message + "   " + emojis + Environment.NewLine + Environment.NewLine);
+                            textBoxResiveMessage.Text += (GName + "   " + nick + "  " + SmartQQ.Info_RealQQ(MessageFromUin) + Environment.NewLine + message + "   " + emojis + Environment.NewLine + Environment.NewLine);
                             textBoxResiveMessage.SelectionStart = textBoxResiveMessage.TextLength;
                             textBoxResiveMessage.ScrollToCaret();
                             break;
@@ -355,15 +349,31 @@ namespace SmartQQ
                             nick = discussInfo[j].inf.result.mem_info[k].nick;
                             break;
                         }
-                    if (SmartQQ.GetRealQQ(MessageFromUin).Equals("1000000"))
+                    if (SmartQQ.Info_RealQQ(MessageFromUin).Equals("1000000"))
                         nick = "系统消息";
-                    textBoxResiveMessage.Text += (DName + "   " + nick + "  " + SmartQQ.GetRealQQ(MessageFromUin) + Environment.NewLine + message + "   " + emojis + Environment.NewLine + Environment.NewLine);
+                    textBoxResiveMessage.Text += (DName + "   " + nick + "  " + SmartQQ.Info_RealQQ(MessageFromUin) + Environment.NewLine + message + "   " + emojis + Environment.NewLine + Environment.NewLine);
                     textBoxResiveMessage.SelectionStart = textBoxResiveMessage.TextLength;
                     textBoxResiveMessage.ScrollToCaret();
 
                     ActionWhenResivedMessage(did, message, emojis, "disscuss," + MessageFromUin);
                 }
                 textBoxLog.Text = temp;
+            }
+        }
+
+        internal void ReNewListBoxGroup()
+        {
+            foreach (KeyValuePair<string, SmartQQ.GroupInfo> GroupList in SmartQQ.GroupList)
+            {
+                listBoxGroup.Items.Add(GroupList.Key + "::" + GroupList.Value.name);
+            }
+        }
+
+        internal void ReNewListBoxFriend()
+        {
+            foreach (KeyValuePair<string, SmartQQ.FriendInfo> FriendList in SmartQQ.FriendList)
+            {
+                listBoxFriend.Items.Add(FriendList.Key + ":" + SmartQQ.Info_RealQQ(FriendList.Key) + ":" + FriendList.Value.nick);
             }
         }
 
@@ -382,7 +392,7 @@ namespace SmartQQ
             //message = message.Remove(message.Length - 2);
             if (message.Equals(""))
                 return MessageToSend;
-            string QQNum = SmartQQ.GetRealQQ(uin);
+            string QQNum = SmartQQ.Info_RealQQ(uin);
             for (int i = 0; i < 20; i++)
                 MessageToSend[i] = "";
             bool MsgSendFlag = false;
@@ -438,7 +448,7 @@ namespace SmartQQ
 
                         string url = DicServer + "log.php";
                         string postdata = "password=" + HttpUtility.UrlEncode(DicPassword) + "&qqnum=" + HttpUtility.UrlEncode(QQNum) + "&qunnum=" + HttpUtility.UrlEncode(qunnum) + "&action=stock&p1=" + HttpUtility.UrlEncode(tmp[tmp.Length - 1]) + "&p2=NULL&p3=NULL&p4=NULL";
-                        HTTP.HttpPost(url, "", postdata, Encoding.UTF8, false);
+                        HTTP.HttpPost(url, postdata);
                         return MessageToSend;
                     }
                 }
@@ -467,7 +477,7 @@ namespace SmartQQ
 
                         string url = DicServer + "log.php";
                         string postdata = "password=" + HttpUtility.UrlEncode(DicPassword) + "&qqnum=" + HttpUtility.UrlEncode(QQNum) + "&qunnum=" + HttpUtility.UrlEncode(qunnum) + "&action=exchangerate&p1=" + HttpUtility.UrlEncode(tmp[1]) + "&p2=" + HttpUtility.UrlEncode(tmp[2]) + "&p3=NULL&p4=NULL";
-                        HTTP.HttpPost(url, "", postdata, Encoding.UTF8, false);
+                        HTTP.HttpPost(url, postdata);
                         return MessageToSend;
                     }
                 }
@@ -499,7 +509,7 @@ namespace SmartQQ
 
                         string url = DicServer + "log.php";
                         string postdata = "password=" + HttpUtility.UrlEncode(DicPassword) + "&qqnum=" + HttpUtility.UrlEncode(QQNum) + "&qunnum=" + HttpUtility.UrlEncode(qunnum) + "&action=weather&p1=" + HttpUtility.UrlEncode(tmp[1]) + "&p2=NULL&p3=NULL&p4=NULL";
-                        HTTP.HttpPost(url, "", postdata, Encoding.UTF8, false);
+                        HTTP.HttpPost(url, postdata);
                         return MessageToSend;
                     }
                 }
@@ -531,7 +541,7 @@ namespace SmartQQ
 
                         string url = DicServer + "log.php";
                         string postdata = "password=" + HttpUtility.UrlEncode(DicPassword) + "&qqnum=" + HttpUtility.UrlEncode(QQNum) + "&qunnum=" + HttpUtility.UrlEncode(qunnum) + "&action=cityinfo&p1=" + HttpUtility.UrlEncode(tmp[1]) + "&p2=NULL&p3=NULL&p4=NULL";
-                        HTTP.HttpPost(url, "", postdata, Encoding.UTF8, false);
+                        HTTP.HttpPost(url, postdata);
                         return MessageToSend;
                     }
                 }
@@ -563,7 +573,7 @@ namespace SmartQQ
 
                         string url = DicServer + "log.php";
                         string postdata = "password=" + HttpUtility.UrlEncode(DicPassword) + "&qqnum=" + HttpUtility.UrlEncode(QQNum) + "&qunnum=" + HttpUtility.UrlEncode(qunnum) + "&action=wiki&p1=" + HttpUtility.UrlEncode(tmp[1]) + "&p2=NULL&p3=NULL&p4=NULL";
-                        HTTP.HttpPost(url, "", postdata, Encoding.UTF8, false);
+                        HTTP.HttpPost(url, postdata);
                         return MessageToSend;
                     }
                 }
@@ -592,7 +602,7 @@ namespace SmartQQ
 
                         string url = DicServer + "log.php";
                         string postdata = "password=" + HttpUtility.UrlEncode(DicPassword) + "&qqnum=" + HttpUtility.UrlEncode(QQNum) + "&qunnum=" + HttpUtility.UrlEncode(qunnum) + "&action=translate&p1=" + HttpUtility.UrlEncode(tmp[1]) + "&p2=NULL&p3=NULL&p4=NULL";
-                        HTTP.HttpPost(url, "", postdata, Encoding.UTF8, false);
+                        HTTP.HttpPost(url, postdata);
                         return MessageToSend;
                     }
                 }
@@ -612,11 +622,11 @@ namespace SmartQQ
 
                     string url = DicServer + "setcomment.php";
                     string postdata = "password=" + HttpUtility.UrlEncode(DicPassword) + "&qunnum=" + HttpUtility.UrlEncode(qunnum) + "&dat=" + HttpUtility.UrlEncode(tmp[1]);
-                    HTTP.HttpPost(url, "", postdata, Encoding.UTF8, false);
+                    HTTP.HttpPost(url, postdata);
 
                     url = DicServer + "log.php";
                     postdata = "password=" + HttpUtility.UrlEncode(DicPassword) + "&qqnum=" + HttpUtility.UrlEncode(QQNum) + "&qunnum=" + HttpUtility.UrlEncode(qunnum) + "&action=comment&p1=" + HttpUtility.UrlEncode(tmp[1]) + "&p2=NULL&p3=NULL&p4=NULL";
-                    HTTP.HttpPost(url, "", postdata, Encoding.UTF8, false);
+                    HTTP.HttpPost(url, postdata);
                     return MessageToSend;
                 }
             }
@@ -678,7 +688,7 @@ namespace SmartQQ
 
                         string url = DicServer + "log.php";
                         string postdata = "password=" + HttpUtility.UrlEncode(DicPassword) + "&qqnum=" + HttpUtility.UrlEncode(QQNum) + "&qunnum=" + HttpUtility.UrlEncode(qunnum) + "&action=study&p1=" + HttpUtility.UrlEncode(tmp[1]) + "&p2=" + HttpUtility.UrlEncode(tmp[2]) + "&p3=NULL&p4=NULL";
-                        HTTP.HttpPost(url, "", postdata, Encoding.UTF8, false);
+                        HTTP.HttpPost(url, postdata);
                         return MessageToSend;
                     }
                 }
@@ -699,7 +709,7 @@ namespace SmartQQ
                 {
                     string url = DicServer + "log.php";
                     string postdata = "password=" + HttpUtility.UrlEncode(DicPassword) + "&qqnum=" + HttpUtility.UrlEncode(QQNum) + "&qunnum=" + HttpUtility.UrlEncode(qunnum) + "&action=talk&p1=" + HttpUtility.UrlEncode(message) + "&p2=NULL&p3=NULL&p4=NULL";
-                    HTTP.HttpPost(url, "", postdata, Encoding.UTF8, false);
+                    HTTP.HttpPost(url, postdata);
                     return MessageToSend;
                 }
                 string[] tmp1 = message.Split("@#$(),，.。:：;^&；“”～~！!#（）%？?》《、· \r\n\"".ToCharArray());
@@ -782,7 +792,7 @@ namespace SmartQQ
                 {
                     string url = DicServer + "log.php";
                     string postdata = "password=" + HttpUtility.UrlEncode(DicPassword) + "&qqnum=" + HttpUtility.UrlEncode(QQNum) + "&qunnum=" + HttpUtility.UrlEncode(qunnum) + "&action=talk&p1=" + HttpUtility.UrlEncode(message) + "&p2=NULL&p3=NULL&p4=NULL";
-                    HTTP.HttpPost(url, "", postdata, Encoding.UTF8, false);
+                    HTTP.HttpPost(url, postdata);
                 }
                 return MessageToSend;
             }
@@ -820,7 +830,7 @@ namespace SmartQQ
                     GroupInfoIndex = i;
                     adminuin = groupinfo[i].inf.result.ginfo.owner;
                     creattime = groupinfo[i].inf.result.ginfo.createtime;
-                    groupinfo[i].GroupKey = SmartQQ.GetRealQQ(adminuin) + ":" + creattime;
+                    groupinfo[i].GroupKey = SmartQQ.Info_RealQQ(adminuin) + ":" + creattime;
                     break;
                 }
             }
@@ -836,7 +846,7 @@ namespace SmartQQ
             int i;
             if (message.StartsWith("群管理"))
             {
-                SmartQQ.getGroup();
+                SmartQQ.Info_GroupList();
                 for (i = 0; i <= groupinfMaxIndex; i++)
                 {
                     if (groupinfo[i].gid == gid)
@@ -879,7 +889,7 @@ namespace SmartQQ
                     {
                         HaveRight = true;
                     }
-                    if (SmartQQ.GetRealQQ(uin).Equals(MasterQQ))
+                    if (SmartQQ.Info_RealQQ(uin).Equals(MasterQQ))
                     {
                         HaveRight = true;
                     }
@@ -917,7 +927,7 @@ namespace SmartQQ
                     }
                     if (HaveRight == false)
                     {
-                        MessageToSend = "账号" + SmartQQ.GetRealQQ(uin) + "不是群管理，无权进行此操作";
+                        MessageToSend = "账号" + SmartQQ.Info_RealQQ(uin) + "不是群管理，无权进行此操作";
                         return MessageToSend;
                     }
                     else
@@ -1462,20 +1472,20 @@ namespace SmartQQ
                 for (i = 0; i <= friendinfMaxIndex; i++)
                     if (friendinf[i].uin == uin)
                     {
-                        if (friendinf[i].Inf == null)
-                            friendinf[i].Inf = SmartQQ.GetFriendInf(friendinf[i].uin);
+                        //if (friendinf[i].Inf == null)
+                        //    friendinf[i].Inf = SmartQQ.Info_FriendInfo(friendinf[i].uin);
                         SenderName = friendinf[i].Inf.result.nick;
                         Gender = friendinf[i].Inf.result.gender;
                         break;
                     }
                 if (i > friendinfMaxIndex)
                 {
-                    SmartQQ.getFrienf();
+                    SmartQQ.Info_FriendList();
                     for (i = 0; i <= friendinfMaxIndex; i++)
                         if (friendinf[i].uin == uin)
                         {
-                            if (friendinf[i].Inf == null)
-                                friendinf[i].Inf = SmartQQ.GetFriendInf(friendinf[i].uin);
+                            //if (friendinf[i].Inf == null)
+                            //    friendinf[i].Inf = SmartQQ.Info_FriendInfo(friendinf[i].uin);
                             SenderName = friendinf[i].Inf.result.nick;
                             Gender = friendinf[i].Inf.result.gender;
                             break;
@@ -1515,7 +1525,7 @@ namespace SmartQQ
                 postdata = postdata + "&superstudy=true";
             else postdata = postdata + "&superstudy=false";
 
-            string MsgGet = HTTP.HttpPost(url, "", postdata, Encoding.UTF8, false);
+            string MsgGet = HTTP.HttpPost(url, postdata);
             return MsgGet;
         }
 
@@ -1525,7 +1535,7 @@ namespace SmartQQ
         {
             string url = "http://www.xiaohuangji.com/ajax.php";
             string postdata = "para=" + HttpUtility.UrlEncode(msg);
-            string MsgGet = HTTP.HttpPost(url, "http://www.xiaohuangji.com/", postdata, Encoding.UTF8, false, 10000);
+            string MsgGet = HTTP.HttpPost(url, postdata, "http://www.xiaohuangji.com/");
             for (int i = 0; i < Badwords.Length; i++)
                 if (MsgGet.Contains(Badwords[i]))
                     return "";
@@ -1536,7 +1546,7 @@ namespace SmartQQ
 
         private void pictureBoxQRCode_Click(object sender, EventArgs e)
         {
-            SmartQQ.GetQRCode();
+            SmartQQ.Login_GetQRCode();
         }
         private void FormLogin_Load(object sender, EventArgs e)
         {
@@ -1546,7 +1556,6 @@ namespace SmartQQ
             Control.CheckForIllegalCrossThreadCalls = false;
             System.Net.ServicePointManager.DefaultConnectionLimit = 500;
             Random rd = new Random();
-            SmartQQ.MsgId = rd.Next(10000000, 50000000);
             try
             {
                 FileStream file = new FileStream(Environment.CurrentDirectory + "\\RuiRuiRobot.conf", FileMode.Open);
@@ -1605,10 +1614,6 @@ namespace SmartQQ
         {
             InitializeComponent();
         }
-        private void timerHeart_Tick(object sender, EventArgs e)
-        {
-            if (!StopSendingHeartPack) HTTP.HeartPack();
-        }
 
         private void buttonSend_Click(object sender, EventArgs e)
         {
@@ -1651,7 +1656,7 @@ namespace SmartQQ
                         Nick = user.result.info[i].nick;
                         break;
                     }
-                textBoxResiveMessage.Text += ("发送至   " + Nick + "   " + SmartQQ.GetRealQQ(tmp[0]) + Environment.NewLine + textBoxSendMessage.Text + Environment.NewLine + Environment.NewLine);
+                textBoxResiveMessage.Text += ("发送至   " + Nick + "   " + SmartQQ.Info_RealQQ(tmp[0]) + Environment.NewLine + textBoxSendMessage.Text + Environment.NewLine + Environment.NewLine);
                 textBoxResiveMessage.SelectionStart = textBoxResiveMessage.TextLength;
                 textBoxResiveMessage.ScrollToCaret();
             }
@@ -1697,48 +1702,7 @@ namespace SmartQQ
 
         private void buttonLogIn_Click(object sender, EventArgs e)
         {
-            SmartQQ.FirstLogin();
-        }
-
-        private void timerLogin_Tick(object sender, EventArgs e)
-        {
-            string statu;
-            statu = SmartQQ.CheckStatu();
-            if (statu.StartsWith("0"))
-            {
-                timerLogin.Stop();
-                timerLogin.Enabled = false;
-                Program.formlogin.labelQRStatu.Text = "成功";
-                string url = statu.Remove(0, 1);
-                if (!Loging)
-                {
-                    HTTP.HttpGet(url);
-                    Uri uri = new Uri("http://web2.qq.com/");
-                    SmartQQ.ptwebqq = HTTP.cookies.GetCookies(uri)["ptwebqq"].Value;
-                    SmartQQ.p_skey = HTTP.cookies.GetCookies(uri)["p_skey"].Value;
-                    SmartQQ.MyUin = HTTP.cookies.GetCookies(uri)["uin"].Value;
-                    SmartQQ.skey = HTTP.cookies.GetCookies(uri)["skey"].Value;
-                    SmartQQ.p_uin = HTTP.cookies.GetCookies(uri)["p_uin"].Value;
-                    QQNum = SmartQQ.p_uin.Remove(0, 1);
-                    if (QQNum.StartsWith("0"))
-                        QQNum = QQNum.Remove(0, 1);
-
-                    LogIn();
-                }
-            }
-            else if (statu.StartsWith("65"))
-            {
-                SmartQQ.GetQRCode();
-                Program.formlogin.labelQRStatu.Text = "失效";
-            }
-            else if (statu.StartsWith("67"))
-            {
-                Program.formlogin.labelQRStatu.Text = "等待";
-            }
-            else if (statu.StartsWith("66"))
-            {
-                Program.formlogin.labelQRStatu.Text = "有效";
-            }
+            SmartQQ.Login();
         }
 
         private void listBoxGroup_DoubleClick(object sender, EventArgs e)

@@ -65,8 +65,6 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="encode.js" />
-    <Content Include="hash.js" />
     <Content Include="ico.ico" />
     <Content Include="Jurassic.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

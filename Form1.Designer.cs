@@ -28,11 +28,10 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormLogin));
             this.pictureBoxQRCode = new System.Windows.Forms.PictureBox();
-            this.timerHeart = new System.Windows.Forms.Timer(this.components);
             this.groupbox1 = new System.Windows.Forms.GroupBox();
+            this.labelQQNum = new System.Windows.Forms.Label();
             this.labelQRStatu = new System.Windows.Forms.Label();
             this.buttonLogIn = new System.Windows.Forms.Button();
             this.listBoxLog = new System.Windows.Forms.ListBox();
@@ -46,8 +45,6 @@
             this.buttonSend = new System.Windows.Forms.Button();
             this.textBoxSendMessage = new System.Windows.Forms.TextBox();
             this.textBoxLog = new System.Windows.Forms.TextBox();
-            this.timerLogin = new System.Windows.Forms.Timer(this.components);
-            this.labelQQNum = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxQRCode)).BeginInit();
             this.groupbox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -65,11 +62,6 @@
             this.pictureBoxQRCode.TabStop = false;
             this.pictureBoxQRCode.Click += new System.EventHandler(this.pictureBoxQRCode_Click);
             // 
-            // timerHeart
-            // 
-            this.timerHeart.Interval = 500;
-            this.timerHeart.Tick += new System.EventHandler(this.timerHeart_Tick);
-            // 
             // groupbox1
             // 
             this.groupbox1.Controls.Add(this.labelQQNum);
@@ -82,6 +74,14 @@
             this.groupbox1.TabIndex = 8;
             this.groupbox1.TabStop = false;
             this.groupbox1.Text = "登录";
+            // 
+            // labelQQNum
+            // 
+            this.labelQQNum.AutoSize = true;
+            this.labelQQNum.Location = new System.Drawing.Point(19, 36);
+            this.labelQQNum.Name = "labelQQNum";
+            this.labelQQNum.Size = new System.Drawing.Size(0, 12);
+            this.labelQQNum.TabIndex = 10;
             // 
             // labelQRStatu
             // 
@@ -221,24 +221,11 @@
             this.textBoxLog.Size = new System.Drawing.Size(876, 32);
             this.textBoxLog.TabIndex = 15;
             // 
-            // timerLogin
-            // 
-            this.timerLogin.Interval = 200;
-            this.timerLogin.Tick += new System.EventHandler(this.timerLogin_Tick);
-            // 
-            // labelQQNum
-            // 
-            this.labelQQNum.AutoSize = true;
-            this.labelQQNum.Location = new System.Drawing.Point(19, 36);
-            this.labelQQNum.Name = "labelQQNum";
-            this.labelQQNum.Size = new System.Drawing.Size(0, 12);
-            this.labelQQNum.TabIndex = 10;
-            // 
             // FormLogin
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(900, 502);
+            this.ClientSize = new System.Drawing.Size(900, 501);
             this.Controls.Add(this.textBoxLog);
             this.Controls.Add(this.groupBox5);
             this.Controls.Add(this.groupBox4);
@@ -267,7 +254,6 @@
 
         #endregion
         public System.Windows.Forms.PictureBox pictureBoxQRCode;
-        private System.Windows.Forms.Timer timerHeart;
         private System.Windows.Forms.GroupBox groupbox1;
         public System.Windows.Forms.ListBox listBoxLog;
         private System.Windows.Forms.TextBox textBoxResiveMessage;
@@ -282,7 +268,6 @@
         public System.Windows.Forms.TextBox textBoxLog;
         private System.Windows.Forms.Button buttonLogIn;
         public System.Windows.Forms.Label labelQRStatu;
-        public System.Windows.Forms.Timer timerLogin;
         private System.Windows.Forms.Label labelQQNum;
     }
 }

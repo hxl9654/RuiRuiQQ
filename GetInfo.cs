@@ -40,7 +40,7 @@ namespace SmartQQ
 
             string url = "https://translate.google.com/translate_a/single?client=t&sl=auto&tl=";
             url = url + lang + "&hl=zh-CN&dt=bd&dt=ex&dt=ld&dt=md&dt=qca&dt=rw&dt=rm&dt=ss&dt=t&dt=at&ie=UTF-8&oe=UTF-8&ssel=3&tsel=3&kc=0&tk=346111|219373&q=" + str;
-            string temp = HTTP.HttpGet(url, 2000, Encoding.UTF8, "");
+            string temp = HTTP.HttpGet(url,"", 2000);
             string[] tmp = temp.Split('\"');
             if (tmp.Length != 0 && tmp[1] != null)
                 messagetosend = messagetosend + Environment.NewLine + "谷歌翻译：" + tmp[1];
@@ -305,7 +305,7 @@ namespace SmartQQ
         {
             string url = "https://query.yahooapis.com/v1/public/yql?q=select%20id,Rate%20from%20yahoo.finance.xchange%20where%20pair%20in%20%28%22";
             url += p1 + p2 + "%22%29&env=store://datatables.org/alltableswithkeys&format=json";
-            string temp = HTTP.HttpGet(url, 100000, null, "");
+            string temp = HTTP.HttpGet(url, "", 100000);
             JsonYahooExchangeRateModel ExchangeRateYahoo = (JsonYahooExchangeRateModel)JsonConvert.DeserializeObject(temp, typeof(JsonYahooExchangeRateModel));
             if (!ExchangeRateYahoo.query.results.rate.Rate.Equals("N/A"))
             {
@@ -450,7 +450,7 @@ namespace SmartQQ
                         break;
                     }
             }
-            string dat = HTTP.HttpGet(url, 100000, Encoding.GetEncoding("GB2312"));
+            string dat = HTTP.HttpGet(url,"", 100000, Encoding.GetEncoding("GB2312"));
 
             string[] tmp = dat.Split('\"');
             tmp = tmp[1].Split(',');
