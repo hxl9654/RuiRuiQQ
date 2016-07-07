@@ -39,7 +39,9 @@ namespace SmartQQ
         //private static string p_skey, skey, p_uin, MyUin;
         public static Dictionary<string, FriendInfo> FriendList = new Dictionary<string, FriendInfo>();
         public static Dictionary<string, GroupInfo> GroupList = new Dictionary<string, GroupInfo>();
+        public static Dictionary<string, DiscussInfo> DisscussList = new Dictionary<string, DiscussInfo>();
         public static Dictionary<string, string> RealQQNum = new Dictionary<string, string>();
+        
         public static string[] FriendCategories = new string[100];
         /// <summary>
         /// 开始登录SmartQQ
@@ -60,7 +62,7 @@ namespace SmartQQ
             Login_GetQRStatu();
         }
         /// <summary>
-        /// 获取登陆用二维码
+        /// 登录第一步：获取登陆用二维码
         /// </summary>
         /// <returns>成功：true</returns>
         public static bool Login_GetQRCode()
@@ -71,18 +73,19 @@ namespace SmartQQ
                 req.CookieContainer = HTTP.cookies;
 
                 HttpWebResponse res = (HttpWebResponse)req.GetResponse();
+                Program.formlogin.pictureBoxQRCode.Visible = true;
                 Program.formlogin.pictureBoxQRCode.Image = Image.FromStream(res.GetResponseStream());
             }
             catch (Exception) { return false; }
             return true;
         }
         /// <summary>
-        /// 检查二维码状态
+        /// 登录第二步：检查二维码状态
         /// </summary>
         private static void Login_GetQRStatu()
         {
             string dat;
-            dat = HTTP.HttpGet("https://ssl.ptlogin2.qq.com/ptqrlogin?webqq_type=10&remember_uin=1&login2qq=1&aid=501004106 &u1=http%3A%2F%2Fw.qq.com%2Fproxy.html%3Flogin2qq%3D1%26webqq_type%3D10 &ptredirect=0&ptlang=2052&daid=164&from_ui=1&pttype=1&dumy=&fp=loginerroralert &action=0-0-157510&mibao_css=m_webqq&t=1&g=1&js_type=0&js_ver=10143&login_sig=&pt_randsalt=0", "https://ui.ptlogin2.qq.com/cgi-bin/login?daid=164&target=self&style=16&mibao_css=m_webqq&appid=501004106&enable_qlogin=0&no_verifyimg=1 &s_url=http%3A%2F%2Fw.qq.com%2Fproxy.html&f_url=loginerroralert &strong_login=1&login_state=10&t=20131024001");
+            dat = HTTP.Get("https://ssl.ptlogin2.qq.com/ptqrlogin?webqq_type=10&remember_uin=1&login2qq=1&aid=501004106 &u1=http%3A%2F%2Fw.qq.com%2Fproxy.html%3Flogin2qq%3D1%26webqq_type%3D10 &ptredirect=0&ptlang=2052&daid=164&from_ui=1&pttype=1&dumy=&fp=loginerroralert &action=0-0-157510&mibao_css=m_webqq&t=1&g=1&js_type=0&js_ver=10143&login_sig=&pt_randsalt=0", "https://ui.ptlogin2.qq.com/cgi-bin/login?daid=164&target=self&style=16&mibao_css=m_webqq&appid=501004106&enable_qlogin=0&no_verifyimg=1 &s_url=http%3A%2F%2Fw.qq.com%2Fproxy.html&f_url=loginerroralert &strong_login=1&login_state=10&t=20131024001");
             string[] temp = dat.Split('\'');
             switch (temp[1])
             {
@@ -115,13 +118,20 @@ namespace SmartQQ
             Login_GetPtwebqq(url);
             Login_GetVfwebqq();
             Login_GetPsessionid();
+            Program.formlogin.labelQRStatu.Text = "";
+            Program.formlogin.pictureBoxQRCode.Visible = false;
             Info_FriendList();
             Info_GroupList();
+            Info_DisscussList();
             Message_Request();
         }
+        /// <summary>
+        /// 登录第三步：获取ptwebqq值
+        /// </summary>
+        /// <param name="url">获取ptwebqq的跳转地址</param>
         private static void Login_GetPtwebqq(string url)
         {
-            string dat = HTTP.HttpGet(url, "http://s.web2.qq.com/proxy.html?v=20130916001&callback=1&id=1");
+            string dat = HTTP.Get(url, "http://s.web2.qq.com/proxy.html?v=20130916001&callback=1&id=1");
             Uri uri = new Uri("http://web2.qq.com/");
             ptwebqq = HTTP.cookies.GetCookies(uri)["ptwebqq"].Value;
             //p_skey = HTTP.cookies.GetCookies(uri)["p_skey"].Value;
@@ -130,20 +140,24 @@ namespace SmartQQ
             //p_uin = HTTP.cookies.GetCookies(uri)["p_uin"].Value;
             //QQNum = p_uin.Remove(0, 1).TrimStart('0');
         }
-
+        /// <summary>
+        /// 登录第四步：获取vfwebqq的值
+        /// </summary>
         private static void Login_GetVfwebqq()
         {
             string url = "http://s.web2.qq.com/api/getvfwebqq?ptwebqq=#{ptwebqq}&clientid=53999199&psessionid=&t=0.1".Replace("#{ptwebqq}", ptwebqq);
-            string dat = HTTP.HttpGet(url, "http://s.web2.qq.com/proxy.html?v=20130916001&callback=1&id=1");
+            string dat = HTTP.Get(url, "http://s.web2.qq.com/proxy.html?v=20130916001&callback=1&id=1");
             vfwebqq = dat.Split('\"')[7];
         }
-
+        /// <summary>
+        /// 登录第五步：获取pessionid
+        /// </summary>
         private static void Login_GetPsessionid()
         {
             string url = "http://d1.web2.qq.com/channel/login2";
             string url1 = "{\"ptwebqq\":\"#{ptwebqq}\",\"clientid\":53999199,\"psessionid\":\"\",\"status\":\"online\"}".Replace("#{ptwebqq}", ptwebqq);
             url1 = "r=" + HttpUtility.UrlEncode(url1);
-            string dat = HTTP.HttpPost(url, url1, "http://d1.web2.qq.com/proxy.html?v=20151105001&callback=1&id=2");
+            string dat = HTTP.Post(url, url1, "http://d1.web2.qq.com/proxy.html?v=20151105001&callback=1&id=2");
             psessionid = dat.Replace(":", ",").Replace("{", "").Replace("}", "").Replace("\"", "").Split(',')[10];
             QQNum = uin = dat.Replace(":", ",").Replace("{", "").Replace("}", "").Replace("\"", "").Split(',')[14];
             hash = AID_Hash(QQNum, ptwebqq);
@@ -159,8 +173,8 @@ namespace SmartQQ
                 string HeartPackdata = "{\"ptwebqq\":\"#{ptwebqq}\",\"clientid\":53999199,\"psessionid\":\"#{psessionid}\",\"key\":\"\"}";
                 HeartPackdata = HeartPackdata.Replace("#{ptwebqq}", ptwebqq).Replace("#{psessionid}", psessionid);
                 HeartPackdata = "r=" + HttpUtility.UrlEncode(HeartPackdata);
-                HTTP.HttpPost_Async_Action action = Message_Get;
-                HTTP.HttpPost_Async(url, HeartPackdata, action);
+                HTTP.Post_Async_Action action = Message_Get;
+                HTTP.Post_Async(url, HeartPackdata, action);
             }
             catch (Exception) { Message_Request(); }
         }
@@ -227,7 +241,7 @@ namespace SmartQQ
                 return RealQQNum[uin];
 
             string url = "http://s.web2.qq.com/api/get_friend_uin2?tuin=#{uin}&type=1&vfwebqq=#{vfwebqq}&t=0.1".Replace("#{uin}", uin).Replace("#{vfwebqq}", vfwebqq);
-            string dat = HTTP.HttpGet(url);
+            string dat = HTTP.Get(url);
             string temp = dat.Split('\"')[10].Split(',')[0].Replace(":", "");
             if (temp != "")
             {
@@ -243,7 +257,7 @@ namespace SmartQQ
         {
             string url = "http://s.web2.qq.com/api/get_user_friends2";
             string sendData = string.Format("r={{\"vfwebqq\":\"{0}\",\"hash\":\"{1}\"}}", vfwebqq, hash);
-            string dat = HTTP.HttpPost(url, sendData, "http://s.web2.qq.com/proxy.html?v=20130916001&callback=1&id=1");
+            string dat = HTTP.Post(url, sendData, "http://s.web2.qq.com/proxy.html?v=20130916001&callback=1&id=1");
 
             JsonFriendModel friend = (JsonFriendModel)JsonConvert.DeserializeObject(dat, typeof(JsonFriendModel));
             for (int i = 0; i < friend.result.info.Count; i++)
@@ -252,6 +266,7 @@ namespace SmartQQ
                     FriendList.Add(friend.result.info[i].uin, new FriendInfo());
                 FriendList[friend.result.info[i].uin].face = friend.result.info[i].face;
                 FriendList[friend.result.info[i].uin].nick = friend.result.info[i].nick;
+                Info_FriendInfo(friend.result.info[i].uin);
             }
             for (int i = 0; i < friend.result.friends.Count; i++)
             {
@@ -271,7 +286,7 @@ namespace SmartQQ
         internal static void Info_SelfInfo()
         {
             string url = "http://s.web2.qq.com/api/get_self_info2&t=0.1";
-            string dat = HTTP.HttpGet(url, "http://s.web2.qq.com/proxy.html?v=20130916001&callback=1&id=1");
+            string dat = HTTP.Get(url, "http://s.web2.qq.com/proxy.html?v=20130916001&callback=1&id=1");
             JsonFriendInfModel inf = (JsonFriendInfModel)JsonConvert.DeserializeObject(dat, typeof(JsonFriendInfModel));
 
             SelfInfo.face = inf.result.face;
@@ -298,7 +313,7 @@ namespace SmartQQ
         {
             string url = "http://s.web2.qq.com/api/get_group_name_list_mask2";
             string sendData = string.Format("r={{\"vfwebqq\":\"{0}\",\"hash\":\"{1}\"}}", vfwebqq, hash);
-            string dat = HTTP.HttpPost(url, sendData, "http://d1.web2.qq.com/proxy.html?v=20151105001&callback=1&id=2");
+            string dat = HTTP.Post(url, sendData, "http://d1.web2.qq.com/proxy.html?v=20151105001&callback=1&id=2");
 
             JsonGroupModel group = (JsonGroupModel)JsonConvert.DeserializeObject(dat, typeof(JsonGroupModel));
             for (int i = 0; i < group.result.gnamelist.Count; i++)
@@ -307,18 +322,88 @@ namespace SmartQQ
                     GroupList.Add(group.result.gnamelist[i].gid, new GroupInfo());
                 GroupList[group.result.gnamelist[i].gid].name = group.result.gnamelist[i].name;
                 GroupList[group.result.gnamelist[i].gid].code = group.result.gnamelist[i].code;
+                Info_GroupInfo(group.result.gnamelist[i].gid);
             }
             Program.formlogin.ReNewListBoxGroup();
         }
-
-        internal static void GetDissInfo(string did, int j)
+        /// <summary>
+        /// 获取讨论组列表并保存
+        /// </summary>
+        internal static void Info_DisscussList()
         {
-            throw new NotImplementedException();
+            string url = "http://s.web2.qq.com/api/get_discus_list?clientid=53999199&psessionid=#{psessionid}&vfwebqq=#{vfwebqq}&t=0.1".Replace("#{psessionid}", psessionid).Replace("#{vfwebqq}", vfwebqq);
+            string dat = HTTP.Get(url, "http://d1.web2.qq.com/proxy.html?v=20151105001&callback=1&id=2");
+            JsonDisscussModel disscuss = (JsonDisscussModel)JsonConvert.DeserializeObject(dat, typeof(JsonDisscussModel));
+            for(int i =0;i<disscuss.result.dnamelist.Count;i++)
+            {
+                if (!DisscussList.ContainsKey(disscuss.result.dnamelist[i].did))
+                    DisscussList.Add(disscuss.result.dnamelist[i].did, new DiscussInfo());
+                DisscussList[disscuss.result.dnamelist[i].did].name = disscuss.result.dnamelist[i].name;
+                Info_DisscussInfo(disscuss.result.dnamelist[i].did);
+            }
+        }
+        /// <summary>
+        /// 获取讨论组详细信息
+        /// </summary>
+        /// <param name="did"></param>
+        internal static void Info_DisscussInfo(string did)
+        {
+            string url = "http://d1.web2.qq.com/channel/get_discu_info?did=#{discuss_id}&psessionid=#{psessionid}&vfwebqq=#{vfwebqq}&clientid=53999199&t=0.1";
+            url = url.Replace("#{discuss_id}", did).Replace("#{psessionid}", psessionid).Replace("#{vfwebqq}", vfwebqq);
+            string dat = HTTP.Get(url, "http://d1.web2.qq.com/proxy.html?v=20151105001&callback=1&id=2");
+            JsonDisscussInfoModel inf = (JsonDisscussInfoModel)JsonConvert.DeserializeObject(dat, typeof(JsonDisscussInfoModel));
+
+            for (int i = 0; i < inf.result.mem_info.Count; i++)
+            {
+                if (!DisscussList[did].MemberList.ContainsKey(inf.result.mem_info[i].uin))
+                    DisscussList[did].MemberList.Add(inf.result.mem_info[i].uin, new DiscussInfo.MenberInfo());
+                DisscussList[did].MemberList[inf.result.mem_info[i].uin].nick = inf.result.mem_info[i].nick;
+            }
+            for (int i = 0; i < inf.result.mem_status.Count; i++)
+            {
+                if (!DisscussList[did].MemberList.ContainsKey(inf.result.mem_status[i].uin))
+                    DisscussList[did].MemberList.Add(inf.result.mem_status[i].uin, new DiscussInfo.MenberInfo());
+                DisscussList[did].MemberList[inf.result.mem_status[i].uin].status = inf.result.mem_status[i].status;
+                DisscussList[did].MemberList[inf.result.mem_status[i].uin].client_type = inf.result.mem_status[i].client_type;
+            }
         }
 
-        internal static JsonGroupInfoModel GetGroupInfo(string code)
+        /// <summary>
+        /// 获取群的详细信息
+        /// </summary>
+        /// <param name="gid"></param>
+        internal static void Info_GroupInfo(string gid)
         {
-            throw new NotImplementedException();
+            if (!GroupList.ContainsKey(gid))
+                return;
+            string gcode = GroupList[gid].code;
+            string url = "http://s.web2.qq.com/api/get_group_info_ext2?gcode=#{group_code}&vfwebqq=#{vfwebqq}&t=0.1".Replace("#{group_code}", gcode).Replace("#{vfwebqq}", vfwebqq);
+            string dat = HTTP.Get(url, "http://s.web2.qq.com/proxy.html?v=20130916001&callback=1&id=1");
+            JsonGroupInfoModel groupInfo = (JsonGroupInfoModel)JsonConvert.DeserializeObject(dat, typeof(JsonGroupInfoModel));
+            GroupList[gid].name = groupInfo.result.ginfo.name;
+            GroupList[gid].createtime = groupInfo.result.ginfo.createtime;
+            GroupList[gid].face = groupInfo.result.ginfo.face;
+            GroupList[gid].owner = groupInfo.result.ginfo.owner;
+            GroupList[gid].memo = groupInfo.result.ginfo.memo;
+            GroupList[gid].markname = groupInfo.result.ginfo.markname;
+            GroupList[gid].level = groupInfo.result.ginfo.level;
+            for (int i = 0; i < groupInfo.result.minfo.Count; i++)
+            {
+                if (!GroupList[gid].MemberList.ContainsKey(groupInfo.result.minfo[i].uin))
+                    GroupList[gid].MemberList.Add(groupInfo.result.minfo[i].uin, new GroupInfo.MenberInfo());
+                GroupList[gid].MemberList[groupInfo.result.minfo[i].uin].city = groupInfo.result.minfo[i].city;
+                GroupList[gid].MemberList[groupInfo.result.minfo[i].uin].province = groupInfo.result.minfo[i].province;
+                GroupList[gid].MemberList[groupInfo.result.minfo[i].uin].country = groupInfo.result.minfo[i].country;
+                GroupList[gid].MemberList[groupInfo.result.minfo[i].uin].gender = groupInfo.result.minfo[i].gender;
+                GroupList[gid].MemberList[groupInfo.result.minfo[i].uin].nick = groupInfo.result.minfo[i].nick;
+            }
+            if (groupInfo.result.cards != null)
+                for (int i = 0; i < groupInfo.result.cards.Count; i++)
+                {
+                    if (!GroupList[gid].MemberList.ContainsKey(groupInfo.result.cards[i].muin))
+                        GroupList[gid].MemberList.Add(groupInfo.result.cards[i].muin, new GroupInfo.MenberInfo());
+                    GroupList[gid].MemberList[groupInfo.result.cards[i].muin].card = groupInfo.result.cards[i].card;
+                }
         }
 
         internal static void SendMessageToGroup(string gid, string v)
@@ -333,7 +418,7 @@ namespace SmartQQ
         {
             string url = "http://s.web2.qq.com/api/get_friend_info2?tuin=#{uin}&vfwebqq=#{vfwebqq}&clientid=53999199&psessionid=#{psessionid}&t=0.1";
             url = url.Replace("#{uin}", uin).Replace("#{vfwebqq}", vfwebqq).Replace("#{psessionid}", psessionid);
-            string dat = HTTP.HttpGet(url, "http://s.web2.qq.com/proxy.html?v=20130916001&callback=1&id=1");
+            string dat = HTTP.Get(url, "http://s.web2.qq.com/proxy.html?v=20130916001&callback=1&id=1");
             JsonFriendInfModel inf = (JsonFriendInfModel)JsonConvert.DeserializeObject(dat, typeof(JsonFriendInfModel));
             if (!FriendList.ContainsKey(uin))
                 FriendList.Add(uin, new FriendInfo());
@@ -403,6 +488,35 @@ namespace SmartQQ
             public string name;
             public string code;
             public string markname;
+            public string memo;
+            public int face;
+            public string createtime;
+            public int level;
+            public string owner;
+            public Dictionary<string, MenberInfo> MemberList = new Dictionary<string, MenberInfo>();
+            public class MenberInfo
+            {
+                public string nick;
+                public string country;
+                public string province;
+                public string city;
+                public string gender;
+                public string card;
+            }
+        }
+        /// <summary>
+        /// 讨论组资料类
+        /// </summary>
+        public class DiscussInfo
+        {
+            public string name;
+            public Dictionary<string, MenberInfo> MemberList = new Dictionary<string, MenberInfo>();
+            public class MenberInfo
+            {
+                public string nick;
+                public string status;
+                public int client_type;
+            }
         }
     }
 }

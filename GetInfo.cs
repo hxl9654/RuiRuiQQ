@@ -40,7 +40,7 @@ namespace SmartQQ
 
             string url = "https://translate.google.com/translate_a/single?client=t&sl=auto&tl=";
             url = url + lang + "&hl=zh-CN&dt=bd&dt=ex&dt=ld&dt=md&dt=qca&dt=rw&dt=rm&dt=ss&dt=t&dt=at&ie=UTF-8&oe=UTF-8&ssel=3&tsel=3&kc=0&tk=346111|219373&q=" + str;
-            string temp = HTTP.HttpGet(url,"", 2000);
+            string temp = HTTP.Get(url,"", 2000);
             string[] tmp = temp.Split('\"');
             if (tmp.Length != 0 && tmp[1] != null)
                 messagetosend = messagetosend + Environment.NewLine + "谷歌翻译：" + tmp[1];
@@ -48,7 +48,7 @@ namespace SmartQQ
                 messagetosend = messagetosend + Environment.NewLine + "谷歌翻译：异常";
 
             url = " http://fanyi.youdao.com/openapi.do?keyfrom=" + Program.formlogin.YoudaoKeyform + "&key=" + Program.formlogin.YoudaoKey + "&type=data&doctype=json&version=1.1&q=" + str;
-            temp = HTTP.HttpGet(url);
+            temp = HTTP.Get(url);
             JsonYoudaoTranslateModel dat = (JsonYoudaoTranslateModel)JsonConvert.DeserializeObject(temp, typeof(JsonYoudaoTranslateModel));
             if (dat.errorcode == 0)
             {
@@ -87,7 +87,7 @@ namespace SmartQQ
             if (target.Equals("雅虎"))
             {
                 url = "https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20weather.forecast%20where%20woeid%20in%20%28select%20woeid%20from%20geo.places%281%29%20where%20text=\"" + city + "\") and%20u=%22c%22&format=json";
-                temp = HTTP.HttpGet(url);
+                temp = HTTP.Get(url);
                 JsonYahooWeatherModel weather = (JsonYahooWeatherModel)JsonConvert.DeserializeObject(temp, typeof(JsonYahooWeatherModel));
                 if (weather.query.results == null)
                     return "未查询到指定城市 " + city + " 的天气信息";
@@ -104,7 +104,7 @@ namespace SmartQQ
             else
                 target = "forecast";
             url = "https://ruiruiqq.hxlxz.com/weather.php?city=" + city + "&type=" + target;
-            temp = HTTP.HttpGet(url);
+            temp = HTTP.Get(url);
             if (temp.Equals("NoCity"))
             {
                 return GetWeather(city, "雅虎");
@@ -305,14 +305,14 @@ namespace SmartQQ
         {
             string url = "https://query.yahooapis.com/v1/public/yql?q=select%20id,Rate%20from%20yahoo.finance.xchange%20where%20pair%20in%20%28%22";
             url += p1 + p2 + "%22%29&env=store://datatables.org/alltableswithkeys&format=json";
-            string temp = HTTP.HttpGet(url, "", 100000);
+            string temp = HTTP.Get(url, "", 100000);
             JsonYahooExchangeRateModel ExchangeRateYahoo = (JsonYahooExchangeRateModel)JsonConvert.DeserializeObject(temp, typeof(JsonYahooExchangeRateModel));
             if (!ExchangeRateYahoo.query.results.rate.Rate.Equals("N/A"))
             {
                 return "根据Yahoo!的信息，" + ExchangeRateYahoo.query.results.rate.id + "在UTC" + ExchangeRateYahoo.query.created + "的汇率是：" + ExchangeRateYahoo.query.results.rate.Rate + "。";
             }
             url = "https://www.cryptonator.com/api/ticker/" + p1 + "-" + p2;
-            temp = HTTP.HttpGet(url);
+            temp = HTTP.Get(url);
             JsonExchangeRateModel ExchangeRate = (JsonExchangeRateModel)JsonConvert.DeserializeObject(temp, typeof(JsonExchangeRateModel));
             if (ExchangeRate.success == true)
                 return "根据cryptonator的信息，" + p1 + "-" + p2 + "的汇率：" + ExchangeRate.ticker.price;
@@ -323,7 +323,7 @@ namespace SmartQQ
             if (aim.Equals("互动百科") || aim.Equals("互动"))
             {
                 string url = "http://www.baike.com/wiki/" + keyword;
-                string temp = HTTP.HttpGet(url);
+                string temp = HTTP.Get(url);
                 if (temp.Contains("尚未收录"))
                     return "没有找到这个词条哦～";
                 temp = temp.Replace("<meta content=\"", "&");
@@ -337,7 +337,7 @@ namespace SmartQQ
             else if (aim.Equals("维基百科") || aim.Equals("维基"))
             {
                 string url = "https://zh.wikipedia.org/w/api.php?action=query&prop=extracts&format=json&exsentences=2&exintro=&explaintext=&exsectionformat=plain&exvariant=zh&titles=" + keyword;
-                string temp = HTTP.HttpGet(url);
+                string temp = HTTP.Get(url);
                 for (int i = 0; i < Program.formlogin.Badwords.Length; i++)
                     if (temp.Contains(Program.formlogin.Badwords[i]) || keyword.Contains(Program.formlogin.Badwords[i]))
                     {
@@ -355,7 +355,7 @@ namespace SmartQQ
             else if (aim.Equals("百度百科") || aim.Equals("百度"))
             {
                 string url = "http://wapbaike.baidu.com/item/" + keyword;
-                string temp = HTTP.HttpGet(url);
+                string temp = HTTP.Get(url);
 
                 if (temp.Contains("您所访问的页面不存在"))
                     return "没有找到这个词条哦～";
@@ -450,7 +450,7 @@ namespace SmartQQ
                         break;
                     }
             }
-            string dat = HTTP.HttpGet(url,"", 100000, Encoding.GetEncoding("GB2312"));
+            string dat = HTTP.Get(url,"", 100000, Encoding.GetEncoding("GB2312"));
 
             string[] tmp = dat.Split('\"');
             tmp = tmp[1].Split(',');
@@ -477,7 +477,7 @@ namespace SmartQQ
             string ans = "";
 
             string url = "https://ruiruiqq.hxlxz.com/weather.php?city=" + city + "&type=forecast";
-            string temp = HTTP.HttpGet(url);
+            string temp = HTTP.Get(url);
             if (temp.Equals("NoCity"))
                 return "未查询到指定城市 " + city + " 的信息";
 

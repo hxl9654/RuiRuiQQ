@@ -32,7 +32,7 @@ namespace SmartQQ
         static CookieCollection CookieCollection = new CookieCollection();
         static CookieContainer CookieContainer = new CookieContainer();
 
-        public static string HttpGet(string url, string referer = "http://d1.web2.qq.com/proxy.html?v=20151105001&callback=1&id=2", int timeout = 100000, Encoding encode = null)
+        public static string Get(string url, string referer = "http://d1.web2.qq.com/proxy.html?v=20151105001&callback=1&id=2", int timeout = 100000, Encoding encode = null)
         {
             string dat;
             HttpWebResponse res = null;
@@ -73,7 +73,7 @@ namespace SmartQQ
             return dat;
         }
         //http://www.itokit.com/2012/0721/74607.html
-        public static string HttpPost(string url, string data, string Referer = "http://d1.web2.qq.com/proxy.html?v=20151105001&callback=1&id=2", int timeout = 100000, Encoding encode = null)
+        public static string Post(string url, string data, string Referer = "http://d1.web2.qq.com/proxy.html?v=20151105001&callback=1&id=2", int timeout = 100000, Encoding encode = null)
         {
             string dat = "";
             HttpWebRequest req;
@@ -122,13 +122,13 @@ namespace SmartQQ
             }
             return dat;
         }
-        public delegate void HttpPost_Async_Action(string data);
-        private class HttpPost_Async_Data
+        public delegate void Post_Async_Action(string data);
+        private class Post_Async_Data
         {
             public HttpWebRequest req;
-            public HttpPost_Async_Action httpPost_Async_Action;
+            public Post_Async_Action post_Async_Action;
         }
-        public static void HttpPost_Async(string url, string PostData, HttpPost_Async_Action action, string Referer = "http://d1.web2.qq.com/proxy.html?v=20151105001&callback=1&id=2", int timeout = 100000)
+        public static void Post_Async(string url, string PostData, Post_Async_Action action, string Referer = "http://d1.web2.qq.com/proxy.html?v=20151105001&callback=1&id=2", int timeout = 100000)
         {
             HttpWebRequest req = WebRequest.Create(url) as HttpWebRequest;
             req.CookieContainer = cookies;
@@ -146,23 +146,23 @@ namespace SmartQQ
             stream.Write(data, 0, data.Length);
             stream.Close();
 
-            HttpPost_Async_Data dat = new HttpPost_Async_Data();
+            Post_Async_Data dat = new Post_Async_Data();
             dat.req = req;
-            dat.httpPost_Async_Action = action;
-            req.BeginGetResponse(new AsyncCallback(HttpPost_Async_ResponesProceed), dat);
+            dat.post_Async_Action = action;
+            req.BeginGetResponse(new AsyncCallback(Post_Async_ResponesProceed), dat);
         }
 
-        private static void HttpPost_Async_ResponesProceed(IAsyncResult ar)
+        private static void Post_Async_ResponesProceed(IAsyncResult ar)
         {
             StreamReader reader = null;
-            HttpPost_Async_Data dat = ar.AsyncState as HttpPost_Async_Data;
+            Post_Async_Data dat = ar.AsyncState as Post_Async_Data;
             HttpWebRequest req = dat.req;
             HttpWebResponse res = req.GetResponse() as HttpWebResponse;
             reader = new StreamReader(res.GetResponseStream());
             string temp = reader.ReadToEnd();
             res.Close();
             req.Abort();
-            dat.httpPost_Async_Action(temp);
+            dat.post_Async_Action(temp);
         }
     }
 }

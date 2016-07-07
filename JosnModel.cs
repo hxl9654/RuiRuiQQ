@@ -68,7 +68,7 @@ namespace SmartQQ
             public class paramVipinfo
             {
                 public int vip_level;
-                public int u;
+                public string u;
                 public int is_vip;
             }
         }
@@ -89,7 +89,21 @@ namespace SmartQQ
             }
         }
     }
-    public class JsonDissgussModel
+    public class JsonDisscussModel
+    {
+        public int retcode;
+        public paramResult result;
+        public class paramResult
+        {
+            public List<paramGnamelist> dnamelist;
+            public class paramGnamelist
+            {
+                public string did;
+                public string name;
+            }
+        }
+    }
+    public class JsonDisscussInfoModel
     {
         public int retcode;
         public paramResult result;
@@ -97,6 +111,7 @@ namespace SmartQQ
         {
             public paramInfo info;
             public List<paramMembeiInfo> mem_info;
+            public List<paramMembeiStatus> mem_status;
             public class paramInfo
             {
                 public string discu_owner;
@@ -107,6 +122,12 @@ namespace SmartQQ
             {
                 public string uin;
                 public string nick;
+            }
+            public class paramMembeiStatus
+            {
+                public string uin;
+                public string status;
+                public int client_type;
             }
         }
     }
@@ -134,8 +155,8 @@ namespace SmartQQ
             public string province;
             public string gender;
             public string mobile;
-            internal string country;
-            internal int vip_info;
+            public string country;
+            public int vip_info;
 
             public class paramBirthday
             {
@@ -152,6 +173,7 @@ namespace SmartQQ
         public class paramResult
         {
             public List<paramMinfo> minfo;
+            public List<paramCards> cards;
             public paramGinfo ginfo;
             public class paramMinfo
             {
@@ -162,6 +184,11 @@ namespace SmartQQ
                 public string country;
                 public string city;
             }
+            public class paramCards
+            {
+                public string muin;
+                public string card;
+            }
             public class paramGinfo
             {
                 public string code;
@@ -171,6 +198,11 @@ namespace SmartQQ
                 public string gid;
                 public string owner;
                 public List<paramMembers> members;
+                public int face;
+                public string memo;
+                public string markname;
+                public int level;
+
                 public class paramMembers
                 {
                     public string muin;
