@@ -211,7 +211,7 @@ namespace SmartQQ
             }
         }
     }
-    public class JsonHeartPackMessage
+    public class JsonPollMessage
     {
         public int retcode;     //状态码
         public string errmsg;   //错误信息

@@ -126,7 +126,7 @@ namespace SmartQQ
             string DName = "";
             string MessageFromUin = "";
             textBoxLog.Text = temp;
-            JsonHeartPackMessage HeartPackMessage = (JsonHeartPackMessage)JsonConvert.DeserializeObject(temp, typeof(JsonHeartPackMessage));
+            JsonPollMessage HeartPackMessage = (JsonPollMessage)JsonConvert.DeserializeObject(temp, typeof(JsonPollMessage));
             int TempCount103 = Count103;
             Count103 = 0;
             if (HeartPackMessage.retcode == 102)
@@ -1367,7 +1367,7 @@ namespace SmartQQ
                 groupinfo[GroupInfoIndex].enableCityInfo = "true";
                 groupinfo[GroupInfoIndex].enableWiki = "true";
                 groupinfo[GroupInfoIndex].enableTranslate = "true";
-                SmartQQ.SendMessageToGroup(groupinfo[GroupInfoIndex].gid, "\\\"如果需要使用小睿睿机器人，请群管理发送 群管理&启动机器人\\\"");
+                SmartQQ.Message_Send(1,groupinfo[GroupInfoIndex].gid, "\\\"如果需要使用小睿睿机器人，请群管理发送 群管理&启动机器人\\\"");
             }
 
         }
@@ -1389,7 +1389,7 @@ namespace SmartQQ
             if (!MessageToSend.Equals(""))
             {
                 MessageToSend = "\\\"" + MessageToSend + "\\\"";
-                SmartQQ.SendMessageToGroup(gid, MessageToSend);
+                SmartQQ.Message_Send(1,gid, MessageToSend);
                 return;
             }
             int GroupInfoIndex = -1;
@@ -1435,7 +1435,7 @@ namespace SmartQQ
                     MessageToSend += SloveEmoji(tmp[i]);
                 }
             }
-            SmartQQ.SendMessageToGroup(gid, MessageToSend);
+            SmartQQ.Message_Send(1,gid, MessageToSend);
         }
         private void ActionWhenResivedMessage(string uin, string message, string emojis, string specialMessage = "")
         {
@@ -1497,10 +1497,10 @@ namespace SmartQQ
                     Gender = "哥哥 ";
                 else
                     Gender = " ";
-                SmartQQ.SendMessageToFriend(uin, "\\\"" + SenderName + Gender + "～ 小睿睿听不懂你在说什么呢。。。教教我吧～～" + Environment.NewLine + "格式 学习&主人的话&小睿睿的回复" + "\\\"");
+                SmartQQ.Message_Send(0,uin, "\\\"" + SenderName + Gender + "～ 小睿睿听不懂你在说什么呢。。。教教我吧～～" + Environment.NewLine + "格式 学习&主人的话&小睿睿的回复" + "\\\"");
             }
             else
-                SmartQQ.SendMessageToFriend(uin, MessageToSend, specialMessage);
+                SmartQQ.Message_Send(2,uin, MessageToSend);
 
         }
         private string AIGet(string message, string QQNum, string QunNum = "NULL")
@@ -1629,7 +1629,7 @@ namespace SmartQQ
                 string MessageToSend = textBoxSendMessage.Text;
                 MessageToSend = "\\\"" + MessageToSend + "\\\"";
 
-                SmartQQ.SendMessageToGroup(tmp[0], MessageToSend);
+                SmartQQ.Message_Send(1,tmp[0], MessageToSend);
 
                 for (int i = 0; i < group.result.gnamelist.Count; i++)
                     if (group.result.gnamelist[i].gid == tmp[0])
@@ -1648,7 +1648,7 @@ namespace SmartQQ
                 string MessageToSend = textBoxSendMessage.Text;
                 MessageToSend = "\\\"" + MessageToSend + "\\\"";
 
-                SmartQQ.SendMessageToFriend(tmp[0], MessageToSend);
+                SmartQQ.Message_Send(0,tmp[0], MessageToSend);
 
                 for (int i = 0; i < user.result.info.Count; i++)
                     if (user.result.info[i].uin == tmp[0])

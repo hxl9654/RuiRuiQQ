@@ -41,7 +41,7 @@ namespace SmartQQ
         public static Dictionary<string, GroupInfo> GroupList = new Dictionary<string, GroupInfo>();
         public static Dictionary<string, DiscussInfo> DisscussList = new Dictionary<string, DiscussInfo>();
         public static Dictionary<string, string> RealQQNum = new Dictionary<string, string>();
-        
+
         public static string[] FriendCategories = new string[100];
         /// <summary>
         /// 开始登录SmartQQ
@@ -53,13 +53,6 @@ namespace SmartQQ
             Login_QRStatuTimer.Elapsed += Login_QRStatuTimer_Elapsed;
             Login_QRStatuTimer.Interval = 1000;
             Login_QRStatuTimer.Start();
-        }
-        /// <summary>
-        /// 每秒检查一次二维码状态
-        /// </summary>
-        private static void Login_QRStatuTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
-        {
-            Login_GetQRStatu();
         }
         /// <summary>
         /// 登录第一步：获取登陆用二维码
@@ -78,6 +71,13 @@ namespace SmartQQ
             }
             catch (Exception) { return false; }
             return true;
+        }
+        /// <summary>
+        /// 每秒检查一次二维码状态
+        /// </summary>
+        private static void Login_QRStatuTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        {
+            Login_GetQRStatu();
         }
         /// <summary>
         /// 登录第二步：检查二维码状态
@@ -162,6 +162,7 @@ namespace SmartQQ
             QQNum = uin = dat.Replace(":", ",").Replace("{", "").Replace("}", "").Replace("\"", "").Split(',')[14];
             hash = AID_Hash(QQNum, ptwebqq);
         }
+
         /// <summary>
         /// 发送poll包，请求消息
         /// </summary>
@@ -187,69 +188,59 @@ namespace SmartQQ
             Task.Run(() => Message_Request());
             Task.Run(() => Message_Process(data));
         }
-
+        /// <summary>
+        /// 处理收到的消息
+        /// </summary>
+        /// <param name="data">收到的消息（JSON）</param>
         private static void Message_Process(string data)
         {
             throw new NotImplementedException();
         }
         /// <summary>
-        /// 根据QQ号和ptwebqq值获取hash值，用于获取好友列表和群列表
-        /// </summary>
-        /// <param name="QQNum">QQ号</param>
-        /// <param name="ptwebqq">ptwebqq</param>
-        /// <returns>hash值</returns>
-        private static string AID_Hash(string QQNum, string ptwebqq)
-        {
-            int[] N = new int[4];
-            long QQNum_Long = long.Parse(QQNum);
-            for (int T = 0; T < ptwebqq.Length; T++)
-            {
-                N[T % 4] ^= ptwebqq.ToCharArray()[T];
-            }
-            string[] U = { "EC", "OK" };
-            long[] V = new long[4];
-            V[0] = QQNum_Long >> 24 & 255 ^ U[0].ToCharArray()[0];
-            V[1] = QQNum_Long >> 16 & 255 ^ U[0].ToCharArray()[1];
-            V[2] = QQNum_Long >> 8 & 255 ^ U[1].ToCharArray()[0];
-            V[3] = QQNum_Long & 255 ^ U[1].ToCharArray()[1];
-
-            long[] U1 = new long[8];
-
-            for (int T = 0; T < 8; T++)
-            {
-                U1[T] = T % 2 == 0 ? N[T >> 1] : V[T >> 1];
-            }
-
-            string[] N1 = { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F" };
-            string V1 = "";
-
-            for (int i = 0; i < U1.Length; i++)
-            {
-                V1 += N1[(int)((U1[i] >> 4) & 15)];
-                V1 += N1[(int)(U1[i] & 15)];
-            }
-            return V1;
-        }
-        /// <summary>
-        /// 根据uin获取真实QQ号
+        /// 将消息发送给好友
         /// </summary>
         /// <param name="uin"></param>
-        /// <returns></returns>
-        internal static string Info_RealQQ(string uin)
+        /// <param name="messageToSend"></param>
+        /// <param name="specialMessage"></param>
+        internal static bool Message_Send(int type, string id, string messageToSend)
         {
-            if (RealQQNum.ContainsKey(uin))
-                return RealQQNum[uin];
+            if (messageToSend.Equals("") || id.Equals(""))
+                return false;
 
-            string url = "http://s.web2.qq.com/api/get_friend_uin2?tuin=#{uin}&type=1&vfwebqq=#{vfwebqq}&t=0.1".Replace("#{uin}", uin).Replace("#{vfwebqq}", vfwebqq);
-            string dat = HTTP.Get(url);
-            string temp = dat.Split('\"')[10].Split(',')[0].Replace(":", "");
-            if (temp != "")
+            messageToSend = messageToSend.Replace("\r\n", "\n").Replace("\n\r", "\n").Replace("\r", "\n").Replace("\n", Environment.NewLine);
+            try
             {
-                RealQQNum.Add(uin, temp);
-                return temp;
+                string to_groupuin_did, url;
+                switch (type)
+                {
+                    case 0:
+                        to_groupuin_did = "to";
+                        url = "http://d1.web2.qq.com/channel/send_buddy_msg2";
+                        break;
+                    case 1:
+                        to_groupuin_did = "group_uin";
+                        url = "http://d1.web2.qq.com/channel/send_qun_msg2";
+                        break;
+                    case 2:
+                        to_groupuin_did = "did";
+                        url = "http://d1.web2.qq.com/channel/send_discu_msg2";
+                        break;
+                    default:
+                        return false;
+                }
+                string postData = "{\"#{type}\":#{id},\"content\":\"[#{msg},[\\\"font\\\",{\\\"name\\\":\\\"宋体\\\",\\\"size\\\":10,\\\"style\\\":[0,0,0],\\\"color\\\":\\\"000000\\\"}]]\",\"face\":522,\"clientid\":53999199,\"msg_id\":65890001,\"psessionid\":\"#{psessionid}\"}";
+                postData = "r=" + HttpUtility.UrlEncode(postData.Replace("#{type}", to_groupuin_did).Replace("#{id}", id).Replace("#{msg}", messageToSend).Replace("#{psessionid}", psessionid));
+
+                string dat = HTTP.Post(url, postData, "http://d1.web2.qq.com/proxy.html?v=20151105001&callback=1&id=2");
+
+                return dat.Equals("{\"errCode\":0,\"msg\":\"send ok\"}");
             }
-            else return "";
+            catch(Exception)
+            {
+                return false;
+            }
         }
+
         /// <summary>
         /// 获取好友列表并保存
         /// </summary>
@@ -267,6 +258,7 @@ namespace SmartQQ
                 FriendList[friend.result.info[i].uin].face = friend.result.info[i].face;
                 FriendList[friend.result.info[i].uin].nick = friend.result.info[i].nick;
                 Info_FriendInfo(friend.result.info[i].uin);
+                Message_Send(0, friend.result.info[i].uin, "\\\"test\\\"");
             }
             for (int i = 0; i < friend.result.friends.Count; i++)
             {
@@ -279,6 +271,35 @@ namespace SmartQQ
                 FriendCategories[friend.result.categories[i].index] = friend.result.categories[i].name;
             }
             Program.formlogin.ReNewListBoxFriend();
+        }
+        /// <summary>
+        /// 获取好友的详细信息
+        /// </summary>
+        /// <param name="uin"></param>
+        internal static void Info_FriendInfo(string uin)
+        {
+            string url = "http://s.web2.qq.com/api/get_friend_info2?tuin=#{uin}&vfwebqq=#{vfwebqq}&clientid=53999199&psessionid=#{psessionid}&t=0.1";
+            url = url.Replace("#{uin}", uin).Replace("#{vfwebqq}", vfwebqq).Replace("#{psessionid}", psessionid);
+            string dat = HTTP.Get(url, "http://s.web2.qq.com/proxy.html?v=20130916001&callback=1&id=1");
+            JsonFriendInfModel inf = (JsonFriendInfModel)JsonConvert.DeserializeObject(dat, typeof(JsonFriendInfModel));
+            if (!FriendList.ContainsKey(uin))
+                FriendList.Add(uin, new FriendInfo());
+            FriendList[uin].face = inf.result.face;
+            FriendList[uin].occupation = inf.result.occupation;
+            FriendList[uin].phone = inf.result.phone;
+            FriendList[uin].college = inf.result.college;
+            FriendList[uin].blood = inf.result.blood;
+            FriendList[uin].homepage = inf.result.homepage;
+            FriendList[uin].vip_info = inf.result.vip_info;
+            FriendList[uin].country = inf.result.country;
+            FriendList[uin].city = inf.result.city;
+            FriendList[uin].personal = inf.result.personal;
+            FriendList[uin].nick = inf.result.nick;
+            FriendList[uin].shengxiao = inf.result.shengxiao;
+            FriendList[uin].email = inf.result.email;
+            FriendList[uin].province = inf.result.province;
+            FriendList[uin].gender = inf.result.gender;
+            FriendList[uin].birthday = new DateTime(inf.result.birthday.year, inf.result.birthday.month, inf.result.birthday.day);
         }
         /// <summary>
         /// 获取自己的信息
@@ -323,51 +344,10 @@ namespace SmartQQ
                 GroupList[group.result.gnamelist[i].gid].name = group.result.gnamelist[i].name;
                 GroupList[group.result.gnamelist[i].gid].code = group.result.gnamelist[i].code;
                 Info_GroupInfo(group.result.gnamelist[i].gid);
+                Message_Send(1, group.result.gnamelist[i].gid, "\\\"test\\\"");
             }
             Program.formlogin.ReNewListBoxGroup();
         }
-        /// <summary>
-        /// 获取讨论组列表并保存
-        /// </summary>
-        internal static void Info_DisscussList()
-        {
-            string url = "http://s.web2.qq.com/api/get_discus_list?clientid=53999199&psessionid=#{psessionid}&vfwebqq=#{vfwebqq}&t=0.1".Replace("#{psessionid}", psessionid).Replace("#{vfwebqq}", vfwebqq);
-            string dat = HTTP.Get(url, "http://d1.web2.qq.com/proxy.html?v=20151105001&callback=1&id=2");
-            JsonDisscussModel disscuss = (JsonDisscussModel)JsonConvert.DeserializeObject(dat, typeof(JsonDisscussModel));
-            for(int i =0;i<disscuss.result.dnamelist.Count;i++)
-            {
-                if (!DisscussList.ContainsKey(disscuss.result.dnamelist[i].did))
-                    DisscussList.Add(disscuss.result.dnamelist[i].did, new DiscussInfo());
-                DisscussList[disscuss.result.dnamelist[i].did].name = disscuss.result.dnamelist[i].name;
-                Info_DisscussInfo(disscuss.result.dnamelist[i].did);
-            }
-        }
-        /// <summary>
-        /// 获取讨论组详细信息
-        /// </summary>
-        /// <param name="did"></param>
-        internal static void Info_DisscussInfo(string did)
-        {
-            string url = "http://d1.web2.qq.com/channel/get_discu_info?did=#{discuss_id}&psessionid=#{psessionid}&vfwebqq=#{vfwebqq}&clientid=53999199&t=0.1";
-            url = url.Replace("#{discuss_id}", did).Replace("#{psessionid}", psessionid).Replace("#{vfwebqq}", vfwebqq);
-            string dat = HTTP.Get(url, "http://d1.web2.qq.com/proxy.html?v=20151105001&callback=1&id=2");
-            JsonDisscussInfoModel inf = (JsonDisscussInfoModel)JsonConvert.DeserializeObject(dat, typeof(JsonDisscussInfoModel));
-
-            for (int i = 0; i < inf.result.mem_info.Count; i++)
-            {
-                if (!DisscussList[did].MemberList.ContainsKey(inf.result.mem_info[i].uin))
-                    DisscussList[did].MemberList.Add(inf.result.mem_info[i].uin, new DiscussInfo.MenberInfo());
-                DisscussList[did].MemberList[inf.result.mem_info[i].uin].nick = inf.result.mem_info[i].nick;
-            }
-            for (int i = 0; i < inf.result.mem_status.Count; i++)
-            {
-                if (!DisscussList[did].MemberList.ContainsKey(inf.result.mem_status[i].uin))
-                    DisscussList[did].MemberList.Add(inf.result.mem_status[i].uin, new DiscussInfo.MenberInfo());
-                DisscussList[did].MemberList[inf.result.mem_status[i].uin].status = inf.result.mem_status[i].status;
-                DisscussList[did].MemberList[inf.result.mem_status[i].uin].client_type = inf.result.mem_status[i].client_type;
-            }
-        }
-
         /// <summary>
         /// 获取群的详细信息
         /// </summary>
@@ -405,49 +385,106 @@ namespace SmartQQ
                     GroupList[gid].MemberList[groupInfo.result.cards[i].muin].card = groupInfo.result.cards[i].card;
                 }
         }
-
-        internal static void SendMessageToGroup(string gid, string v)
+        /// <summary>
+        /// 获取讨论组列表并保存
+        /// </summary>
+        internal static void Info_DisscussList()
         {
-            throw new NotImplementedException();
+            string url = "http://s.web2.qq.com/api/get_discus_list?clientid=53999199&psessionid=#{psessionid}&vfwebqq=#{vfwebqq}&t=0.1".Replace("#{psessionid}", psessionid).Replace("#{vfwebqq}", vfwebqq);
+            string dat = HTTP.Get(url, "http://d1.web2.qq.com/proxy.html?v=20151105001&callback=1&id=2");
+            JsonDisscussModel disscuss = (JsonDisscussModel)JsonConvert.DeserializeObject(dat, typeof(JsonDisscussModel));
+            for (int i = 0; i < disscuss.result.dnamelist.Count; i++)
+            {
+                if (!DisscussList.ContainsKey(disscuss.result.dnamelist[i].did))
+                    DisscussList.Add(disscuss.result.dnamelist[i].did, new DiscussInfo());
+                DisscussList[disscuss.result.dnamelist[i].did].name = disscuss.result.dnamelist[i].name;
+                Info_DisscussInfo(disscuss.result.dnamelist[i].did);
+                Message_Send(2, disscuss.result.dnamelist[i].did, "\\\"test\\\"");
+            }
         }
         /// <summary>
-        /// 获取好友的详细信息
+        /// 获取讨论组详细信息
+        /// </summary>
+        /// <param name="did"></param>
+        internal static void Info_DisscussInfo(string did)
+        {
+            string url = "http://d1.web2.qq.com/channel/get_discu_info?did=#{discuss_id}&psessionid=#{psessionid}&vfwebqq=#{vfwebqq}&clientid=53999199&t=0.1";
+            url = url.Replace("#{discuss_id}", did).Replace("#{psessionid}", psessionid).Replace("#{vfwebqq}", vfwebqq);
+            string dat = HTTP.Get(url, "http://d1.web2.qq.com/proxy.html?v=20151105001&callback=1&id=2");
+            JsonDisscussInfoModel inf = (JsonDisscussInfoModel)JsonConvert.DeserializeObject(dat, typeof(JsonDisscussInfoModel));
+
+            for (int i = 0; i < inf.result.mem_info.Count; i++)
+            {
+                if (!DisscussList[did].MemberList.ContainsKey(inf.result.mem_info[i].uin))
+                    DisscussList[did].MemberList.Add(inf.result.mem_info[i].uin, new DiscussInfo.MenberInfo());
+                DisscussList[did].MemberList[inf.result.mem_info[i].uin].nick = inf.result.mem_info[i].nick;
+            }
+            for (int i = 0; i < inf.result.mem_status.Count; i++)
+            {
+                if (!DisscussList[did].MemberList.ContainsKey(inf.result.mem_status[i].uin))
+                    DisscussList[did].MemberList.Add(inf.result.mem_status[i].uin, new DiscussInfo.MenberInfo());
+                DisscussList[did].MemberList[inf.result.mem_status[i].uin].status = inf.result.mem_status[i].status;
+                DisscussList[did].MemberList[inf.result.mem_status[i].uin].client_type = inf.result.mem_status[i].client_type;
+            }
+        }
+
+        /// <summary>
+        /// 根据uin获取真实QQ号
         /// </summary>
         /// <param name="uin"></param>
-        internal static void Info_FriendInfo(string uin)
+        /// <returns></returns>
+        internal static string Info_RealQQ(string uin)
         {
-            string url = "http://s.web2.qq.com/api/get_friend_info2?tuin=#{uin}&vfwebqq=#{vfwebqq}&clientid=53999199&psessionid=#{psessionid}&t=0.1";
-            url = url.Replace("#{uin}", uin).Replace("#{vfwebqq}", vfwebqq).Replace("#{psessionid}", psessionid);
-            string dat = HTTP.Get(url, "http://s.web2.qq.com/proxy.html?v=20130916001&callback=1&id=1");
-            JsonFriendInfModel inf = (JsonFriendInfModel)JsonConvert.DeserializeObject(dat, typeof(JsonFriendInfModel));
-            if (!FriendList.ContainsKey(uin))
-                FriendList.Add(uin, new FriendInfo());
-            FriendList[uin].face = inf.result.face;
-            FriendList[uin].occupation = inf.result.occupation;
-            FriendList[uin].phone = inf.result.phone;
-            FriendList[uin].college = inf.result.college;
-            FriendList[uin].blood = inf.result.blood;
-            FriendList[uin].homepage = inf.result.homepage;
-            FriendList[uin].vip_info = inf.result.vip_info;
-            FriendList[uin].country = inf.result.country;
-            FriendList[uin].city = inf.result.city;
-            FriendList[uin].personal = inf.result.personal;
-            FriendList[uin].nick = inf.result.nick;
-            FriendList[uin].shengxiao = inf.result.shengxiao;
-            FriendList[uin].email = inf.result.email;
-            FriendList[uin].province = inf.result.province;
-            FriendList[uin].gender = inf.result.gender;
-            FriendList[uin].birthday = new DateTime(inf.result.birthday.year, inf.result.birthday.month, inf.result.birthday.day);
-        }
+            if (RealQQNum.ContainsKey(uin))
+                return RealQQNum[uin];
 
-        internal static void SendMessageToFriend(string v, string messageToSend)
-        {
-            throw new NotImplementedException();
+            string url = "http://s.web2.qq.com/api/get_friend_uin2?tuin=#{uin}&type=1&vfwebqq=#{vfwebqq}&t=0.1".Replace("#{uin}", uin).Replace("#{vfwebqq}", vfwebqq);
+            string dat = HTTP.Get(url);
+            string temp = dat.Split('\"')[10].Split(',')[0].Replace(":", "");
+            if (temp != "")
+            {
+                RealQQNum.Add(uin, temp);
+                return temp;
+            }
+            else return "";
         }
-
-        internal static void SendMessageToFriend(string uin, string messageToSend, string specialMessage)
+        /// <summary>
+        /// 根据QQ号和ptwebqq值获取hash值，用于获取好友列表和群列表
+        /// </summary>
+        /// <param name="QQNum">QQ号</param>
+        /// <param name="ptwebqq">ptwebqq</param>
+        /// <returns>hash值</returns>
+        private static string AID_Hash(string QQNum, string ptwebqq)
         {
-            throw new NotImplementedException();
+            int[] N = new int[4];
+            long QQNum_Long = long.Parse(QQNum);
+            for (int T = 0; T < ptwebqq.Length; T++)
+            {
+                N[T % 4] ^= ptwebqq.ToCharArray()[T];
+            }
+            string[] U = { "EC", "OK" };
+            long[] V = new long[4];
+            V[0] = QQNum_Long >> 24 & 255 ^ U[0].ToCharArray()[0];
+            V[1] = QQNum_Long >> 16 & 255 ^ U[0].ToCharArray()[1];
+            V[2] = QQNum_Long >> 8 & 255 ^ U[1].ToCharArray()[0];
+            V[3] = QQNum_Long & 255 ^ U[1].ToCharArray()[1];
+
+            long[] U1 = new long[8];
+
+            for (int T = 0; T < 8; T++)
+            {
+                U1[T] = T % 2 == 0 ? N[T >> 1] : V[T >> 1];
+            }
+
+            string[] N1 = { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F" };
+            string V1 = "";
+
+            for (int i = 0; i < U1.Length; i++)
+            {
+                V1 += N1[(int)((U1[i] >> 4) & 15)];
+                V1 += N1[(int)(U1[i] & 15)];
+            }
+            return V1;
         }
         /// <summary>
         /// 好友资料类
