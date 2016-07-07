@@ -32,11 +32,9 @@ namespace SmartQQ
 {
     public static class SmartQQ
     {
-
         private static System.Timers.Timer Login_QRStatuTimer = new System.Timers.Timer();
         private static string vfwebqq, ptwebqq, psessionid, uin, QQNum, hash;
         public static FriendInfo SelfInfo = new FriendInfo();
-        //private static string p_skey, skey, p_uin, MyUin;
         public static Dictionary<string, FriendInfo> FriendList = new Dictionary<string, FriendInfo>();
         public static Dictionary<string, GroupInfo> GroupList = new Dictionary<string, GroupInfo>();
         public static Dictionary<string, DiscussInfo> DisscussList = new Dictionary<string, DiscussInfo>();
@@ -66,8 +64,8 @@ namespace SmartQQ
                 req.CookieContainer = HTTP.cookies;
 
                 HttpWebResponse res = (HttpWebResponse)req.GetResponse();
-                Program.formlogin.pictureBoxQRCode.Visible = true;
-                Program.formlogin.pictureBoxQRCode.Image = Image.FromStream(res.GetResponseStream());
+                Program.MainForm.pictureBoxQRCode.Visible = true;
+                Program.MainForm.pictureBoxQRCode.Image = Image.FromStream(res.GetResponseStream());
             }
             catch (Exception) { return false; }
             return true;
@@ -90,17 +88,17 @@ namespace SmartQQ
             switch (temp[1])
             {
                 case ("65"):                                            //二维码失效
-                    Program.formlogin.labelQRStatu.Text = "失效";
+                    Program.MainForm.labelQRStatu.Text = "失效";
                     Login_GetQRCode();
                     break;
                 case ("66"):                                            //等待扫描
-                    Program.formlogin.labelQRStatu.Text = "有效";
+                    Program.MainForm.labelQRStatu.Text = "有效";
                     break;
                 case ("67"):                                            //等待确认
-                    Program.formlogin.labelQRStatu.Text = "等待";
+                    Program.MainForm.labelQRStatu.Text = "等待";
                     break;
                 case ("0"):                                             //已经确认
-                    Program.formlogin.labelQRStatu.Text = "成功";
+                    Program.MainForm.labelQRStatu.Text = "成功";
                     Login_Process(temp[5]);
                     break;
 
@@ -118,8 +116,8 @@ namespace SmartQQ
             Login_GetPtwebqq(url);
             Login_GetVfwebqq();
             Login_GetPsessionid();
-            Program.formlogin.labelQRStatu.Text = "";
-            Program.formlogin.pictureBoxQRCode.Visible = false;
+            Program.MainForm.labelQRStatu.Text = "";
+            Program.MainForm.pictureBoxQRCode.Visible = false;
             Info_FriendList();
             Info_GroupList();
             Info_DisscussList();
@@ -197,16 +195,17 @@ namespace SmartQQ
             throw new NotImplementedException();
         }
         /// <summary>
-        /// 将消息发送给好友
+        /// 发送消息
         /// </summary>
-        /// <param name="uin"></param>
-        /// <param name="messageToSend"></param>
-        /// <param name="specialMessage"></param>
+        /// <param name="type">接受者类型：0，用户；1，群；2，讨论组</param>
+        /// <param name="id">用户：uid；群：qid；讨论组：did</param>
+        /// <param name="messageToSend">要发送的消息</param>
+        /// <returns></returns>
         internal static bool Message_Send(int type, string id, string messageToSend)
         {
             if (messageToSend.Equals("") || id.Equals(""))
                 return false;
-
+            messageToSend = "\\\"" + messageToSend + "\\\"";
             messageToSend = messageToSend.Replace("\r\n", "\n").Replace("\n\r", "\n").Replace("\r", "\n").Replace("\n", Environment.NewLine);
             try
             {
@@ -235,7 +234,7 @@ namespace SmartQQ
 
                 return dat.Equals("{\"errCode\":0,\"msg\":\"send ok\"}");
             }
-            catch(Exception)
+            catch (Exception)
             {
                 return false;
             }
@@ -270,7 +269,7 @@ namespace SmartQQ
             {
                 FriendCategories[friend.result.categories[i].index] = friend.result.categories[i].name;
             }
-            Program.formlogin.ReNewListBoxFriend();
+            Program.MainForm.ReNewListBoxFriend();
         }
         /// <summary>
         /// 获取好友的详细信息
@@ -346,7 +345,7 @@ namespace SmartQQ
                 Info_GroupInfo(group.result.gnamelist[i].gid);
                 Message_Send(1, group.result.gnamelist[i].gid, "\\\"test\\\"");
             }
-            Program.formlogin.ReNewListBoxGroup();
+            Program.MainForm.ReNewListBoxGroup();
         }
         /// <summary>
         /// 获取群的详细信息

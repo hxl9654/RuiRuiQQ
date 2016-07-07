@@ -47,7 +47,7 @@ namespace SmartQQ
             else
                 messagetosend = messagetosend + Environment.NewLine + "谷歌翻译：异常";
 
-            url = " http://fanyi.youdao.com/openapi.do?keyfrom=" + Program.formlogin.YoudaoKeyform + "&key=" + Program.formlogin.YoudaoKey + "&type=data&doctype=json&version=1.1&q=" + str;
+            url = " http://fanyi.youdao.com/openapi.do?keyfrom=" + Program.MainForm.YoudaoKeyform + "&key=" + Program.MainForm.YoudaoKey + "&type=data&doctype=json&version=1.1&q=" + str;
             temp = HTTP.Get(url);
             JsonYoudaoTranslateModel dat = (JsonYoudaoTranslateModel)JsonConvert.DeserializeObject(temp, typeof(JsonYoudaoTranslateModel));
             if (dat.errorcode == 0)
@@ -61,10 +61,10 @@ namespace SmartQQ
             else if (dat.errorcode == 50)
                 messagetosend = messagetosend + Environment.NewLine + "有道翻译：有道API密钥错误";
 
-            for (int i = 0; i < Program.formlogin.Badwords.Length; i++)
-                if (messagetosend.Contains(Program.formlogin.Badwords[i]))
+            for (int i = 0; i < Program.MainForm.Badwords.Length; i++)
+                if (messagetosend.Contains(Program.MainForm.Badwords[i]))
                 {
-                    messagetosend = messagetosend.Replace(Program.formlogin.Badwords[i], "***");
+                    messagetosend = messagetosend.Replace(Program.MainForm.Badwords[i], "***");
                 }
             return messagetosend;
         }
@@ -338,8 +338,8 @@ namespace SmartQQ
             {
                 string url = "https://zh.wikipedia.org/w/api.php?action=query&prop=extracts&format=json&exsentences=2&exintro=&explaintext=&exsectionformat=plain&exvariant=zh&titles=" + keyword;
                 string temp = HTTP.Get(url);
-                for (int i = 0; i < Program.formlogin.Badwords.Length; i++)
-                    if (temp.Contains(Program.formlogin.Badwords[i]) || keyword.Contains(Program.formlogin.Badwords[i]))
+                for (int i = 0; i < Program.MainForm.Badwords.Length; i++)
+                    if (temp.Contains(Program.MainForm.Badwords[i]) || keyword.Contains(Program.MainForm.Badwords[i]))
                     {
                         return "这个Wiki被河蟹吃掉了 QAQ";
                     }

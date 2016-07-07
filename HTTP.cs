@@ -64,11 +64,11 @@ namespace SmartQQ
 
             res.Close();
             req.Abort();
-            if (Program.formlogin != null)
+            if (Program.MainForm != null)
             {
-                Program.formlogin.textBoxLog.Text = dat;
+                Program.MainForm.textBoxLog.Text = dat;
                 if (!dat.Equals(""))
-                    Program.formlogin.listBoxLog.Items.Insert(0, dat);
+                    Program.MainForm.listBoxLog.Items.Insert(0, dat);
             }
             return dat;
         }
@@ -114,11 +114,11 @@ namespace SmartQQ
             {
                 return "";
             }
-            if (Program.formlogin != null)
+            if (Program.MainForm != null)
             {
-                Program.formlogin.textBoxLog.Text = dat;
+                Program.MainForm.textBoxLog.Text = dat;
                 if (!dat.Equals(""))
-                    Program.formlogin.listBoxLog.Items.Insert(0, dat);
+                    Program.MainForm.listBoxLog.Items.Insert(0, dat);
             }
             return dat;
         }

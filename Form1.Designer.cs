@@ -1,6 +1,6 @@
 ﻿namespace SmartQQ
 {
-    partial class FormLogin
+    partial class MainForm
     {
         /// <summary>
         /// 必需的设计器变量。
@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormLogin));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.pictureBoxQRCode = new System.Windows.Forms.PictureBox();
             this.groupbox1 = new System.Windows.Forms.GroupBox();
             this.labelQQNum = new System.Windows.Forms.Label();

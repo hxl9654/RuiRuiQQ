@@ -29,7 +29,7 @@ using System.Windows.Forms;
 namespace SmartQQ
 {
 
-    public partial class FormLogin : Form
+    public partial class MainForm : Form
     {
         //系统配置相关
         string MasterQQ = "";
@@ -1610,7 +1610,7 @@ namespace SmartQQ
             else Badwords = new string[0];
             NoFile = false;
         }
-        public FormLogin()
+        public MainForm()
         {
             InitializeComponent();
         }

@@ -11,14 +11,14 @@ namespace SmartQQ
         /// <summary>
         /// 应用程序的主入口点。
         /// </summary>
-        public static FormLogin formlogin;
+        public static MainForm MainForm;
         [STAThread]
         static void Main()
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            formlogin = new FormLogin();
-            Application.Run(formlogin);
+            MainForm = new MainForm();
+            Application.Run(MainForm);
         }
     }
 }
