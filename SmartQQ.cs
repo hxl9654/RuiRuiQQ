@@ -184,7 +184,8 @@ namespace SmartQQ
         private static void Message_Get(string data)
         {
             Task.Run(() => Message_Request());
-            Task.Run(() => Message_Process(data));
+            if (Running)
+                Task.Run(() => Message_Process(data));
         }
         /// <summary>
         /// 处理收到的消息
@@ -192,8 +193,167 @@ namespace SmartQQ
         /// <param name="data">收到的消息（JSON）</param>
         private static void Message_Process(string data)
         {
-            throw new NotImplementedException();
+            Program.MainForm.textBoxLog.Text = data;
+            JsonPollMessage poll = (JsonPollMessage)JsonConvert.DeserializeObject(data, typeof(JsonPollMessage));
+            if (poll.retcode != 0)
+                Message_Process_Error(poll);
+            else if (poll.result != null && poll.result.Count > 0)
+                for (int i = 0; i < poll.result.Count; i++)
+                {
+                    switch (poll.result[i].poll_type)
+                    {
+                        case "kick_message":
+                            Running = false;
+                            MessageBox.Show(poll.result[i].value.reason);
+                            break;
+                        case "message":
+                            Message_Process_Message(poll.result[i].value);
+                            break;
+                        case "group_message":
+                            Message_Process_GroupMessage(poll.result[i].value);
+                            break;
+                        case "discu_message":
+                            Message_Process_DisscussMessage(poll.result[i].value);
+                            break;
+                        default:
+                            Program.MainForm.listBoxLog.Items.Add(poll.result[i].poll_type);
+                            break;
+                    }
+                }
         }
+        private static string Message_Process_GetMessageText(List<object> content)
+        {
+            string message = "";
+            for (int i = 1; i < content.Count; i++)
+            {
+                if (content[i].ToString().Contains("[\"face\","))
+                {
+                    message += " {[face:" + content[i].ToString().Replace("[\"face\",", "").Replace("]", "") + "]} ";
+                }
+                else if (content[i].ToString().Contains("[\"cface\","))
+                    continue;
+                else
+                    message += (content[i].ToString() + " ");
+            }
+            message = message.Replace("\\\\n", Environment.NewLine).Replace("＆", "&");
+            return message;
+        }
+        /// <summary>
+        /// 私聊消息处理
+        /// </summary>
+        /// <param name="value">poll包中的value</param>
+        private static void Message_Process_Message(JsonPollMessage.paramResult.paramValue value)
+        {
+            string message = Message_Process_GetMessageText(value.content);
+            string nick = "未知";
+            if (!FriendList.ContainsKey(value.from_uin))
+                Info_FriendList();
+            if (FriendList.ContainsKey(value.from_uin))
+                nick = FriendList[value.from_uin].nick;
+            Program.MainForm.AddTextToTextBoxResiveMessage(nick + "  " + Info_RealQQ(value.from_uin) + Environment.NewLine + message);
+            ActionWhenResivedMessage(value.from_uin, message);
+        }
+        /// <summary>
+        /// 私聊消息处理
+        /// </summary>
+        /// <param name="value">poll包中的value</param>
+        private static void Message_Process_GroupMessage(JsonPollMessage.paramResult.paramValue value)
+        {
+            string message = Message_Process_GetMessageText(value.content);
+            string gid = value.from_uin;
+            string gno = AID_GroupKey(gid);
+            if (gno.Equals("FAIL"))
+                return;
+            string nick = "未知";
+            if (!GroupList[gid].MemberList.ContainsKey(value.send_uin))
+                nick = GroupList[gid].MemberList[value.send_uin].nick;
+            if(Info_RealQQ(value.send_uin).Equals("1000000"))
+                nick = "系统消息";
+            Program.MainForm.AddTextToTextBoxResiveMessage(GroupList[gid].name + "   " + nick + "  " + Info_RealQQ(value.send_uin) + Environment.NewLine + message);
+
+            ActionWhenResivedGroupMessage(gid, message, value.send_uin, gno);
+        }
+
+        /// <summary>
+        /// 私聊消息处理
+        /// </summary>
+        /// <param name="value">poll包中的value</param>
+        private static void Message_Process_DisscussMessage(JsonPollMessage.paramResult.paramValue value)
+        {
+            string message = Message_Process_GetMessageText(value.content);
+            string DName = "讨论组";
+            string SenderNick = "未知";
+            if (!DisscussList.ContainsKey(value.did))
+                Info_DisscussList();
+            if (DisscussList.ContainsKey(value.did))
+            {
+                DName += DisscussList[value.did].name;
+                if (DisscussList[value.did].MemberList.ContainsKey(value.send_uin))
+                    SenderNick = DisscussList[value.did].MemberList[value.send_uin].nick;
+            }
+            else DName = "未知讨论组";
+            if (Info_RealQQ(value.send_uin).Equals("1000000"))
+                SenderNick = "系统消息";
+            Program.MainForm.AddTextToTextBoxResiveMessage(DName + "   " + SenderNick + "  " + Info_RealQQ(value.send_uin) + Environment.NewLine + message);
+            
+            ActionWhenResivedMessage(did, message, "disscuss," + MessageFromUin);
+        }
+        /// <summary>
+        /// 错误信息处理
+        /// </summary>
+        /// <param name="poll">poll包</param>
+        private static int Count103 = 0;
+        private static bool Running;
+        private static void Message_Process_Error(JsonPollMessage poll)
+        {
+            int TempCount103 = Count103;
+            Count103 = 0;
+            if (poll.retcode == 102)
+            {
+                return;
+            }
+            else if (poll.retcode == 103)
+            {
+                Program.MainForm.listBoxLog.Items.Insert(0, "retcode:103");
+                Count103 = TempCount103 + 1;
+                if (Count103 > 20)
+                {
+                    Running = false;
+                    MessageBox.Show("retcode:" + poll.retcode);
+                }
+                return;
+            }
+            else if (poll.retcode == 116)
+            {
+                Program.MainForm.listBoxLog.Items.Insert(0, "retcode:" + poll.retcode + poll.p);
+                ptwebqq = poll.p;
+                return;
+            }
+            else if (poll.retcode == 108 || poll.retcode == 114)
+            {
+                Program.MainForm.listBoxLog.Items.Insert(0, "retcode:" + poll.retcode);
+                Running = false;
+                MessageBox.Show("retcode:" + poll.retcode);
+                return;
+            }
+            else if (poll.retcode == 120 || poll.retcode == 121)
+            {
+                Program.MainForm.listBoxLog.Items.Insert(0, "retcode:" + poll.retcode);
+                Program.MainForm.listBoxLog.Items.Insert(0, poll.t);
+                Running = false;
+                MessageBox.Show("retcode:" + poll.retcode);
+                return;
+            }
+            else if (poll.retcode == 100006 || poll.retcode == 100003)
+            {
+                Program.MainForm.listBoxLog.Items.Insert(0, "retcode:" + poll.retcode);
+                Running = false;
+                MessageBox.Show("retcode:" + poll.retcode);
+                return;
+            }
+            Program.MainForm.listBoxLog.Items.Insert(0, "retcode:" + poll.retcode);
+        }
+
         /// <summary>
         /// 发送消息
         /// </summary>
@@ -484,6 +644,19 @@ namespace SmartQQ
                 V1 += N1[(int)(U1[i] & 15)];
             }
             return V1;
+        }
+        /// <summary>
+        /// 生成由群主QQ和群创建世界构成的群标识码
+        /// </summary>
+        /// <param name="gid"></param>
+        /// <returns></returns>
+        private static string AID_GroupKey(string gid)
+        {
+            if (!GroupList.ContainsKey(gid))
+                Info_GroupList();
+            if (GroupList.ContainsKey(gid))
+                return Info_RealQQ(GroupList[gid].owner) + ":" + GroupList[gid].createtime;
+            else return "FAIL";
         }
         /// <summary>
         /// 好友资料类
