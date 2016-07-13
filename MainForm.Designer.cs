@@ -1,4 +1,4 @@
-﻿namespace SmartQQ
+﻿namespace RuiRuiQQRobot
 {
     partial class MainForm
     {
@@ -263,12 +263,12 @@
         private System.Windows.Forms.GroupBox groupBox4;
         public System.Windows.Forms.ListBox listBoxGroup;
         private System.Windows.Forms.GroupBox groupBox5;
-        private System.Windows.Forms.Button buttonSend;
+        internal System.Windows.Forms.Button buttonSend;
         private System.Windows.Forms.TextBox textBoxSendMessage;
         public System.Windows.Forms.TextBox textBoxLog;
-        private System.Windows.Forms.Button buttonLogIn;
+        internal System.Windows.Forms.Button buttonLogIn;
         public System.Windows.Forms.Label labelQRStatu;
-        private System.Windows.Forms.Label labelQQNum;
+        internal System.Windows.Forms.Label labelQQNum;
     }
 }
 
