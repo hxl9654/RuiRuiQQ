@@ -22,10 +22,25 @@ using System.Text.RegularExpressions;
 // * @version    1.0
 // * @discribe   RuiRuiQQRobot服务端
 // * 本软件作者是何相龙，使用GPL v3许可证进行授权。
-namespace SmartQQ
+namespace RuiRuiQQRobot
 {
     public static class GetInfo
     {
+        internal static string YoudaoKeyform;
+        internal static string YoudaoKey;
+        public static string GetXiaoHuangJi(string msg)
+        {
+            string url = "http://www.xiaohuangji.com/ajax.php";
+            string postdata = "para=" + HttpUtility.UrlEncode(msg);
+            string MsgGet = HTTP.Post(url, postdata, "http://www.xiaohuangji.com/");
+            if (MsgGet.ToLower().Contains("mysql") || MsgGet.ToUpper().Contains("DOCTYPE"))
+                return "";
+            for (int i = 0; i < RuiRui.Badwords.Length; i++)
+                if (MsgGet.Contains(RuiRui.Badwords[i]))
+                    return "";
+            return MsgGet;
+        }
+
         public static string GetTranslate(string str)
         {
             string lang = "";
@@ -40,14 +55,14 @@ namespace SmartQQ
 
             string url = "https://translate.google.com/translate_a/single?client=t&sl=auto&tl=";
             url = url + lang + "&hl=zh-CN&dt=bd&dt=ex&dt=ld&dt=md&dt=qca&dt=rw&dt=rm&dt=ss&dt=t&dt=at&ie=UTF-8&oe=UTF-8&ssel=3&tsel=3&kc=0&tk=346111|219373&q=" + str;
-            string temp = HTTP.Get(url,"", 2000);
+            string temp = HTTP.Get(url, "", 2000);
             string[] tmp = temp.Split('\"');
             if (tmp.Length != 0 && tmp[1] != null)
                 messagetosend = messagetosend + Environment.NewLine + "谷歌翻译：" + tmp[1];
             else
                 messagetosend = messagetosend + Environment.NewLine + "谷歌翻译：异常";
 
-            url = " http://fanyi.youdao.com/openapi.do?keyfrom=" + Program.MainForm.YoudaoKeyform + "&key=" + Program.MainForm.YoudaoKey + "&type=data&doctype=json&version=1.1&q=" + str;
+            url = " http://fanyi.youdao.com/openapi.do?keyfrom=" + YoudaoKeyform + "&key=" + YoudaoKey + "&type=data&doctype=json&version=1.1&q=" + str;
             temp = HTTP.Get(url);
             JsonYoudaoTranslateModel dat = (JsonYoudaoTranslateModel)JsonConvert.DeserializeObject(temp, typeof(JsonYoudaoTranslateModel));
             if (dat.errorcode == 0)
@@ -61,10 +76,10 @@ namespace SmartQQ
             else if (dat.errorcode == 50)
                 messagetosend = messagetosend + Environment.NewLine + "有道翻译：有道API密钥错误";
 
-            for (int i = 0; i < Program.MainForm.Badwords.Length; i++)
-                if (messagetosend.Contains(Program.MainForm.Badwords[i]))
+            for (int i = 0; i < RuiRui.Badwords.Length; i++)
+                if (messagetosend.Contains(RuiRui.Badwords[i]))
                 {
-                    messagetosend = messagetosend.Replace(Program.MainForm.Badwords[i], "***");
+                    messagetosend = messagetosend.Replace(RuiRui.Badwords[i], "***");
                 }
             return messagetosend;
         }
@@ -283,23 +298,6 @@ namespace SmartQQ
                 default: return "暂时无法获取";
             }
         }
-        public static string GetStudyFlagInfo(string result, string QQNum, string tmp1, string tmp2)
-        {
-            switch (result)
-            {
-                case ("Success"): return "嗯嗯～小睿睿记住了～～" + Environment.NewLine + "主人说 " + tmp1 + " 时，小睿睿应该回答 " + tmp2;
-                case ("Already"): return "小睿睿知道了啦～" + Environment.NewLine + "主人说 " + tmp1 + " 时，小睿睿应该回答 " + tmp2;
-                case ("DisableStudy"): return "当前学习功能未开启";
-                case ("IDDisabled"): return "小睿睿拒绝学习这句话，原因是：" + Environment.NewLine + "妈麻说，" + QQNum + "是坏人，小睿睿不能听他的话，详询管理员。";
-                case ("Waitting"): return "小睿睿记下了" + QQNum + "提交的学习请求，不过小睿睿还得去问问语文老师呢～～主人先等等吧～～";
-                case ("ForbiddenWord"): return "小睿睿拒绝学习这句话，原因是：" + Environment.NewLine + "根据相关法律法规和政策，账号" + QQNum + "提交的学习内容包含敏感词，详询管理员";
-                case ("Forbidden"): return "小睿睿拒绝学习这句话，原因是：" + Environment.NewLine + "账号" + QQNum + "提交的学习内容被屏蔽，详询管理员";
-                case ("NotSuper"): return "小睿睿拒绝学习这句话，原因是：" + Environment.NewLine + "账号" + QQNum + "不是特权用户，不能使用特权学习命令。";
-                case ("pending"): return "小睿睿记录下了账号" + QQNum + "提交的学习请求，请耐心等待审核，欢迎加入小睿睿的小窝，群137777833。";
-                default: return "小睿睿出错了，也许主人卖个萌就好了～～";
-            }
-
-        }
 
         public static string GetExchangeRate(string p1, string p2)
         {
@@ -338,8 +336,8 @@ namespace SmartQQ
             {
                 string url = "https://zh.wikipedia.org/w/api.php?action=query&prop=extracts&format=json&exsentences=2&exintro=&explaintext=&exsectionformat=plain&exvariant=zh&titles=" + keyword;
                 string temp = HTTP.Get(url);
-                for (int i = 0; i < Program.MainForm.Badwords.Length; i++)
-                    if (temp.Contains(Program.MainForm.Badwords[i]) || keyword.Contains(Program.MainForm.Badwords[i]))
+                for (int i = 0; i < RuiRui.Badwords.Length; i++)
+                    if (temp.Contains(RuiRui.Badwords[i]) || keyword.Contains(RuiRui.Badwords[i]))
                     {
                         return "这个Wiki被河蟹吃掉了 QAQ";
                     }
@@ -450,7 +448,7 @@ namespace SmartQQ
                         break;
                     }
             }
-            string dat = HTTP.Get(url,"", 100000, Encoding.GetEncoding("GB2312"));
+            string dat = HTTP.Get(url, "", 100000, Encoding.GetEncoding("GB2312"));
 
             string[] tmp = dat.Split('\"');
             tmp = tmp[1].Split(',');

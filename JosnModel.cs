@@ -19,7 +19,7 @@ using System.Collections.Generic;
 // * @version    1.0
 // * @discribe   RuiRuiQQRobot服务端
 // * 本软件作者是何相龙，使用GPL v3许可证进行授权。
-namespace SmartQQ
+namespace RuiRuiQQRobot
 {
     public class JsonFriendModel
     {
@@ -233,14 +233,14 @@ namespace SmartQQ
                 public string send_uin;
                 //public string info_seq;              
                 //上线提示
-                public string uin;
-                public string status;
+                //public string uin;
+                //public string status;
                 //异地登录
                 public string reason;
                 //临时会话
-                public string id;
-                public string ruin;
-                public string service_type;
+                //public string id;
+                //public string ruin;
+                //public string service_type;
                 //讨论组
                 public string did;
             }

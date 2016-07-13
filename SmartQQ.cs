@@ -28,12 +28,13 @@ using System.Windows.Forms;
 // * @discribe   RuiRuiQQRobot服务端
 // * 本软件作者是何相龙，使用GPL v3许可证进行授权。
 
-namespace SmartQQ
+namespace RuiRuiQQRobot
 {
     public static class SmartQQ
     {
         private static System.Timers.Timer Login_QRStatuTimer = new System.Timers.Timer();
-        private static string vfwebqq, ptwebqq, psessionid, uin, QQNum, hash;
+        private static string vfwebqq, ptwebqq, psessionid, uin, hash;
+        public static string QQNum;
         public static FriendInfo SelfInfo = new FriendInfo();
         public static Dictionary<string, FriendInfo> FriendList = new Dictionary<string, FriendInfo>();
         public static Dictionary<string, GroupInfo> GroupList = new Dictionary<string, GroupInfo>();
@@ -122,6 +123,12 @@ namespace SmartQQ
             Info_GroupList();
             Info_DisscussList();
             Message_Request();
+
+            Program.MainForm.listBoxLog.Items.Insert(0, "登录成功");
+            Program.MainForm.buttonSend.Enabled = true;
+            Program.MainForm.buttonLogIn.Enabled = false;
+            Program.MainForm.AcceptButton = Program.MainForm.buttonSend;
+            Program.MainForm.labelQQNum.Text = SmartQQ.QQNum;
         }
         /// <summary>
         /// 登录第三步：获取ptwebqq值
@@ -181,6 +188,7 @@ namespace SmartQQ
         /// 接收到消息的回调函数
         /// </summary>
         /// <param name="data">接收到的数据（json）</param>
+        private static bool Running = true;
         private static void Message_Get(string data)
         {
             Task.Run(() => Message_Request());
@@ -221,17 +229,20 @@ namespace SmartQQ
                     }
                 }
         }
+        /// <summary>
+        /// 处理poll包中的消息数组
+        /// </summary>
+        /// <param name="content">消息数组</param>
+        /// <returns></returns>
         private static string Message_Process_GetMessageText(List<object> content)
         {
             string message = "";
             for (int i = 1; i < content.Count; i++)
             {
-                if (content[i].ToString().Contains("[\"face\","))
-                {
-                    message += " {[face:" + content[i].ToString().Replace("[\"face\",", "").Replace("]", "") + "]} ";
-                }
-                else if (content[i].ToString().Contains("[\"cface\","))
+                if (content[i].ToString().Contains("[\"cface\","))
                     continue;
+                else if (content[i].ToString().Contains("[\"face\","))
+                    message += (" {&&[face" + content[i].ToString().Replace("[\"face\",", "").Replace("]", "") + " ");
                 else
                     message += (content[i].ToString() + " ");
             }
@@ -251,10 +262,10 @@ namespace SmartQQ
             if (FriendList.ContainsKey(value.from_uin))
                 nick = FriendList[value.from_uin].nick;
             Program.MainForm.AddTextToTextBoxResiveMessage(nick + "  " + Info_RealQQ(value.from_uin) + Environment.NewLine + message);
-            ActionWhenResivedMessage(value.from_uin, message);
+            RuiRui.AnswerMessage(value.from_uin, message, 0);
         }
         /// <summary>
-        /// 私聊消息处理
+        /// 群聊消息处理
         /// </summary>
         /// <param name="value">poll包中的value</param>
         private static void Message_Process_GroupMessage(JsonPollMessage.paramResult.paramValue value)
@@ -265,17 +276,17 @@ namespace SmartQQ
             if (gno.Equals("FAIL"))
                 return;
             string nick = "未知";
-            if (!GroupList[gid].MemberList.ContainsKey(value.send_uin))
+            if (GroupList[gid].MemberList.ContainsKey(value.send_uin))
                 nick = GroupList[gid].MemberList[value.send_uin].nick;
-            if(Info_RealQQ(value.send_uin).Equals("1000000"))
+            if (Info_RealQQ(value.send_uin).Equals("1000000"))
                 nick = "系统消息";
             Program.MainForm.AddTextToTextBoxResiveMessage(GroupList[gid].name + "   " + nick + "  " + Info_RealQQ(value.send_uin) + Environment.NewLine + message);
 
-            ActionWhenResivedGroupMessage(gid, message, value.send_uin, gno);
+            RuiRui.AnswerGroupMessage(gid, message, value.send_uin, gno);
         }
 
         /// <summary>
-        /// 私聊消息处理
+        /// 讨论组消息处理
         /// </summary>
         /// <param name="value">poll包中的value</param>
         private static void Message_Process_DisscussMessage(JsonPollMessage.paramResult.paramValue value)
@@ -295,15 +306,13 @@ namespace SmartQQ
             if (Info_RealQQ(value.send_uin).Equals("1000000"))
                 SenderNick = "系统消息";
             Program.MainForm.AddTextToTextBoxResiveMessage(DName + "   " + SenderNick + "  " + Info_RealQQ(value.send_uin) + Environment.NewLine + message);
-            
-            ActionWhenResivedMessage(did, message, "disscuss," + MessageFromUin);
+            RuiRui.AnswerMessage(value.did, message, 2);
         }
         /// <summary>
         /// 错误信息处理
         /// </summary>
         /// <param name="poll">poll包</param>
         private static int Count103 = 0;
-        private static bool Running;
         private static void Message_Process_Error(JsonPollMessage poll)
         {
             int TempCount103 = Count103;
@@ -365,7 +374,15 @@ namespace SmartQQ
         {
             if (messageToSend.Equals("") || id.Equals(""))
                 return false;
-            messageToSend = "\\\"" + messageToSend + "\\\"";
+
+            string[] tmp = messageToSend.Split(',');
+            messageToSend = "";
+            for (int i = 0; i < tmp.Length; i++)
+                if (!tmp[i].StartsWith(" {&&[face"))
+                    messageToSend += "\\\"" + tmp[i] + "\\\",";
+                else
+                    messageToSend += (tmp[i].Replace(" {&&[face", "[\\\"face\\\",") + "],");
+            messageToSend = messageToSend.Remove(messageToSend.LastIndexOf(','));
             messageToSend = messageToSend.Replace("\r\n", "\n").Replace("\n\r", "\n").Replace("\r", "\n").Replace("\n", Environment.NewLine);
             try
             {
@@ -417,7 +434,6 @@ namespace SmartQQ
                 FriendList[friend.result.info[i].uin].face = friend.result.info[i].face;
                 FriendList[friend.result.info[i].uin].nick = friend.result.info[i].nick;
                 Info_FriendInfo(friend.result.info[i].uin);
-                Message_Send(0, friend.result.info[i].uin, "\\\"test\\\"");
             }
             for (int i = 0; i < friend.result.friends.Count; i++)
             {
@@ -503,7 +519,7 @@ namespace SmartQQ
                 GroupList[group.result.gnamelist[i].gid].name = group.result.gnamelist[i].name;
                 GroupList[group.result.gnamelist[i].gid].code = group.result.gnamelist[i].code;
                 Info_GroupInfo(group.result.gnamelist[i].gid);
-                Message_Send(1, group.result.gnamelist[i].gid, "\\\"test\\\"");
+                RuiRui.GetGroupSetting(group.result.gnamelist[i].gid);
             }
             Program.MainForm.ReNewListBoxGroup();
         }
@@ -543,6 +559,10 @@ namespace SmartQQ
                         GroupList[gid].MemberList.Add(groupInfo.result.cards[i].muin, new GroupInfo.MenberInfo());
                     GroupList[gid].MemberList[groupInfo.result.cards[i].muin].card = groupInfo.result.cards[i].card;
                 }
+            for (int i = 0; i < groupInfo.result.ginfo.members.Count; i++)
+                if (groupInfo.result.ginfo.members[i].mflag % 2 == 1)
+                    GroupList[gid].MemberList[groupInfo.result.ginfo.members[i].muin].isManager = true;
+                else GroupList[gid].MemberList[groupInfo.result.ginfo.members[i].muin].isManager = false;
         }
         /// <summary>
         /// 获取讨论组列表并保存
@@ -558,7 +578,6 @@ namespace SmartQQ
                     DisscussList.Add(disscuss.result.dnamelist[i].did, new DiscussInfo());
                 DisscussList[disscuss.result.dnamelist[i].did].name = disscuss.result.dnamelist[i].name;
                 Info_DisscussInfo(disscuss.result.dnamelist[i].did);
-                Message_Send(2, disscuss.result.dnamelist[i].did, "\\\"test\\\"");
             }
         }
         /// <summary>
@@ -650,7 +669,7 @@ namespace SmartQQ
         /// </summary>
         /// <param name="gid"></param>
         /// <returns></returns>
-        private static string AID_GroupKey(string gid)
+        internal static string AID_GroupKey(string gid)
         {
             if (!GroupList.ContainsKey(gid))
                 Info_GroupList();
@@ -702,6 +721,21 @@ namespace SmartQQ
             public string createtime;
             public int level;
             public string owner;
+            public GroupManageClass GroupManage = new GroupManageClass();
+            public class GroupManageClass
+            {
+                public string enable;
+                public string enableWeather;
+                public string enableExchangeRate;
+                public string enableStock;
+                public string enableStudy;
+                public string enableTalk;
+                public string enableXHJ;
+                public string enableEmoje;
+                public string enableCityInfo;
+                public string enableWiki;
+                public string enableTranslate;
+            }
             public Dictionary<string, MenberInfo> MemberList = new Dictionary<string, MenberInfo>();
             public class MenberInfo
             {
@@ -711,6 +745,7 @@ namespace SmartQQ
                 public string city;
                 public string gender;
                 public string card;
+                public bool isManager;
             }
         }
         /// <summary>
