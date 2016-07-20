@@ -241,10 +241,10 @@ namespace RuiRuiQQRobot
             {
                 if (content[i].ToString().Contains("[\"cface\","))
                     continue;
-                else if (content[i].ToString().Contains("[\"face\","))
-                    message += (" {&&[face" + content[i].ToString().Replace("[\"face\",", "").Replace("]", "") + " ");
+                else if (content[i].ToString().Contains("\"face\","))
+                    message += ("{..[face" + content[i].ToString().Replace("\"face\",", "").Replace("]", "").Replace("[", "").Replace(" ", "").Replace("\r", "").Replace("\n", "") + "]..}");
                 else
-                    message += (content[i].ToString() + " ");
+                    message += content[i].ToString();
             }
             message = message.Replace("\\\\n", Environment.NewLine).Replace("＆", "&");
             return message;
@@ -372,16 +372,17 @@ namespace RuiRuiQQRobot
         /// <returns></returns>
         internal static bool Message_Send(int type, string id, string messageToSend)
         {
+            Program.MainForm.listBoxLog.Items.Add(type + ":" + id + ":" + messageToSend);
             if (messageToSend.Equals("") || id.Equals(""))
                 return false;
 
-            string[] tmp = messageToSend.Split(',');
+            string[] tmp = messageToSend.Split("{}".ToCharArray());
             messageToSend = "";
             for (int i = 0; i < tmp.Length; i++)
-                if (!tmp[i].StartsWith(" {&&[face"))
+                if (!tmp[i].Trim().StartsWith("..[face") || !tmp[i].Trim().EndsWith("].."))
                     messageToSend += "\\\"" + tmp[i] + "\\\",";
                 else
-                    messageToSend += (tmp[i].Replace(" {&&[face", "[\\\"face\\\",") + "],");
+                    messageToSend += tmp[i].Replace("..[face", "[\\\"face\\\",").Replace("]..", "],");
             messageToSend = messageToSend.Remove(messageToSend.LastIndexOf(','));
             messageToSend = messageToSend.Replace("\r\n", "\n").Replace("\n\r", "\n").Replace("\r", "\n").Replace("\n", Environment.NewLine);
             try
@@ -474,7 +475,8 @@ namespace RuiRuiQQRobot
             FriendList[uin].email = inf.result.email;
             FriendList[uin].province = inf.result.province;
             FriendList[uin].gender = inf.result.gender;
-            FriendList[uin].birthday = new DateTime(inf.result.birthday.year, inf.result.birthday.month, inf.result.birthday.day);
+            if (inf.result.birthday.year != 0 && inf.result.birthday.month != 0 && inf.result.birthday.day != 0)
+                FriendList[uin].birthday = new DateTime(inf.result.birthday.year, inf.result.birthday.month, inf.result.birthday.day);
         }
         /// <summary>
         /// 获取自己的信息
@@ -500,7 +502,8 @@ namespace RuiRuiQQRobot
             SelfInfo.email = inf.result.email;
             SelfInfo.province = inf.result.province;
             SelfInfo.gender = inf.result.gender;
-            SelfInfo.birthday = new DateTime(inf.result.birthday.year, inf.result.birthday.month, inf.result.birthday.day);
+            if (inf.result.birthday.year != 0 && inf.result.birthday.month != 0 && inf.result.birthday.day != 0)
+                SelfInfo.birthday = new DateTime(inf.result.birthday.year, inf.result.birthday.month, inf.result.birthday.day);
         }
         /// <summary>
         /// 获取群列表并保存

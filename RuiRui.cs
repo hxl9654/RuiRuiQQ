@@ -444,7 +444,7 @@ namespace RuiRuiQQRobot
                     bool HaveRight = false;
                     if (uin.Equals(adminuin) || SmartQQ.Info_RealQQ(uin).Equals(MasterQQ))
                         HaveRight = true;
-                    else if(SmartQQ.GroupList[gid].MemberList[uin].isManager)
+                    else if (SmartQQ.GroupList[gid].MemberList[uin].isManager)
                         HaveRight = true;
                     else HaveRight = false;
                     if (SmartQQ.GroupList[gid].GroupManage.enable == null)
@@ -898,11 +898,12 @@ namespace RuiRuiQQRobot
             }
             if (SmartQQ.GroupList[gid].GroupManage.enableEmoje.Equals("false"))
             {
-                string[] tmp = MessageToSend.Split(',');
+                string[] tmp = MessageToSend.Split('{');
                 MessageToSend = "";
                 for (int i = 0; i < tmp.Length; i++)
-                    if (!tmp[i].StartsWith("[\"face\","))
-                        MessageToSend += tmp[i];
+                    if (!tmp[i].StartsWith("..[face"))
+                        MessageToSend += ("{" + tmp[i]);
+                    else MessageToSend += tmp[i].Remove(0, 7);
             }
             SmartQQ.Message_Send(1, gid, MessageToSend);
         }
