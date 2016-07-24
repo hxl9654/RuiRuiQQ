@@ -43,26 +43,21 @@ namespace RuiRuiQQRobot
 
         public static string GetTranslate(string str)
         {
-            string lang = "";
+            string messagetosend = "原文：" + str;
             int strLen = str.Length;
             int bytLeng = System.Text.Encoding.UTF8.GetBytes(str).Length;
+            string url;
             if (strLen < bytLeng)
-                lang = "en";
-            if (lang.Equals(""))
-                lang = "zh-CN";
-
-            string messagetosend = "原文：" + str;
-
-            string url = "https://translate.google.com/translate_a/single?client=t&sl=auto&tl=";
-            url = url + lang + "&hl=zh-CN&dt=bd&dt=ex&dt=ld&dt=md&dt=qca&dt=rw&dt=rm&dt=ss&dt=t&dt=at&ie=UTF-8&oe=UTF-8&ssel=3&tsel=3&kc=0&tk=346111|219373&q=" + str;
-            string temp = HTTP.Get(url, "", 2000);
-            string[] tmp = temp.Split('\"');
-            if (tmp.Length != 0 && tmp[1] != null)
-                messagetosend = messagetosend + Environment.NewLine + "谷歌翻译：" + tmp[1];
+                url = "http://translate.google.cn/translate_a/single?client=t&sl=auto&tl=en&hl=zh-CN&dt=at&dt=bd&dt=ex&dt=ld&dt=md&dt=qca&dt=rw&dt=rm&dt=ss&dt=t&ie=UTF-8&oe=UTF-8&source=btn&ssel=3&tsel=5&kc=0&tk=399016.11510&q=" + str;
             else
-                messagetosend = messagetosend + Environment.NewLine + "谷歌翻译：异常";
+                url = "http://translate.google.cn/translate_a/single?client=t&sl=auto&tl=zh-CN&hl=zh-CN&dt=at&dt=bd&dt=ex&dt=ld&dt=md&dt=qca&dt=rw&dt=rm&dt=ss&dt=t&ie=UTF-8&oe=UTF-8&otf=1&srcrom=1&ssel=3&tsel=3&kc=6&tk=987923.600397&q=" + str;
 
-            url = " http://fanyi.youdao.com/openapi.do?keyfrom=" + YoudaoKeyform + "&key=" + YoudaoKey + "&type=data&doctype=json&version=1.1&q=" + str;
+            string temp = HTTP.Get(url, "http://translate.google.cn/?sourceid=cnhp", 5000);
+            string[] tmp = temp.Split('\"');
+            if (tmp != null && tmp.Length > 1 && tmp[1] != null)
+                messagetosend = messagetosend + Environment.NewLine + "谷歌翻译：" + tmp[1];
+
+            url = "http://fanyi.youdao.com/openapi.do?keyfrom=" + YoudaoKeyform + "&key=" + YoudaoKey + "&type=data&doctype=json&version=1.1&q=" + str;
             temp = HTTP.Get(url);
             JsonYoudaoTranslateModel dat = (JsonYoudaoTranslateModel)JsonConvert.DeserializeObject(temp, typeof(JsonYoudaoTranslateModel));
             if (dat.errorcode == 0)

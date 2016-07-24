@@ -1,20 +1,34 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.23107.0
+VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RuiRuiQQRobot", "RuiRuiQQRobot.csproj", "{E8B77CC7-C616-48C3-9BD9-F87E747C279D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RuiRuiQQRobotTests", "..\RuiRuiQQRobotTests\RuiRuiQQRobotTests.csproj", "{6AB91529-2794-4040-995B-EBCE5E831555}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
 		Debug|x86 = Debug|x86
+		Release|Any CPU = Release|Any CPU
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E8B77CC7-C616-48C3-9BD9-F87E747C279D}.Debug|Any CPU.ActiveCfg = Debug|x86
 		{E8B77CC7-C616-48C3-9BD9-F87E747C279D}.Debug|x86.ActiveCfg = Debug|x86
 		{E8B77CC7-C616-48C3-9BD9-F87E747C279D}.Debug|x86.Build.0 = Debug|x86
+		{E8B77CC7-C616-48C3-9BD9-F87E747C279D}.Release|Any CPU.ActiveCfg = Release|x86
 		{E8B77CC7-C616-48C3-9BD9-F87E747C279D}.Release|x86.ActiveCfg = Release|x86
 		{E8B77CC7-C616-48C3-9BD9-F87E747C279D}.Release|x86.Build.0 = Release|x86
+		{6AB91529-2794-4040-995B-EBCE5E831555}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6AB91529-2794-4040-995B-EBCE5E831555}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6AB91529-2794-4040-995B-EBCE5E831555}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{6AB91529-2794-4040-995B-EBCE5E831555}.Debug|x86.Build.0 = Debug|Any CPU
+		{6AB91529-2794-4040-995B-EBCE5E831555}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6AB91529-2794-4040-995B-EBCE5E831555}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6AB91529-2794-4040-995B-EBCE5E831555}.Release|x86.ActiveCfg = Release|Any CPU
+		{6AB91529-2794-4040-995B-EBCE5E831555}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
