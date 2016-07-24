@@ -35,6 +35,7 @@ namespace RuiRuiQQRobot
         private static System.Timers.Timer Login_QRStatuTimer = new System.Timers.Timer();
         private static string vfwebqq, ptwebqq, psessionid, uin, hash;
         public static string QQNum;
+        private static Random rand = new Random();
         public static FriendInfo SelfInfo = new FriendInfo();
         public static Dictionary<string, FriendInfo> FriendList = new Dictionary<string, FriendInfo>();
         public static Dictionary<string, GroupInfo> GroupList = new Dictionary<string, GroupInfo>();
@@ -59,9 +60,10 @@ namespace RuiRuiQQRobot
         /// <returns>成功：true</returns>
         public static bool Login_GetQRCode()
         {
+            Program.MainForm.pictureBoxQRCode.Enabled = true;
             try
             {
-                HttpWebRequest req = (HttpWebRequest)WebRequest.Create("https://ssl.ptlogin2.qq.com/ptqrshow?appid=501004106&e=0&l=M&s=5&d=72&v=4&t=0.1");
+                HttpWebRequest req = (HttpWebRequest)WebRequest.Create("https://ssl.ptlogin2.qq.com/ptqrshow?appid=501004106&e=0&l=M&s=5&d=72&v=4&t=#{t}".Replace("#{t}", rand.NextDouble().ToString()));
                 req.CookieContainer = HTTP.cookies;
 
                 HttpWebResponse res = (HttpWebResponse)req.GetResponse();
@@ -118,11 +120,14 @@ namespace RuiRuiQQRobot
             Login_GetVfwebqq();
             Login_GetPsessionid();
             Program.MainForm.labelQRStatu.Text = "";
+            Program.MainForm.pictureBoxQRCode.Enabled = false;
             Program.MainForm.pictureBoxQRCode.Visible = false;
             Info_FriendList();
             Info_GroupList();
             Info_DisscussList();
-            Message_Request();
+            Info_SelfInfo();
+            Login_GetOnlineAndRecent_FAKE();
+            Task.Run(() => Message_Request());
 
             Program.MainForm.listBoxLog.Items.Insert(0, "登录成功");
             Program.MainForm.buttonSend.Enabled = true;
@@ -150,7 +155,7 @@ namespace RuiRuiQQRobot
         /// </summary>
         private static void Login_GetVfwebqq()
         {
-            string url = "http://s.web2.qq.com/api/getvfwebqq?ptwebqq=#{ptwebqq}&clientid=53999199&psessionid=&t=0.1".Replace("#{ptwebqq}", ptwebqq);
+            string url = "http://s.web2.qq.com/api/getvfwebqq?ptwebqq=#{ptwebqq}&clientid=53999199&psessionid=&t=#{t}".Replace("#{ptwebqq}", ptwebqq).Replace("#{t}", AID_TimeStamp());
             string dat = HTTP.Get(url, "http://s.web2.qq.com/proxy.html?v=20130916001&callback=1&id=1");
             vfwebqq = dat.Split('\"')[7];
         }
@@ -166,6 +171,18 @@ namespace RuiRuiQQRobot
             psessionid = dat.Replace(":", ",").Replace("{", "").Replace("}", "").Replace("\"", "").Split(',')[10];
             QQNum = uin = dat.Replace(":", ",").Replace("{", "").Replace("}", "").Replace("\"", "").Split(',')[14];
             hash = AID_Hash(QQNum, ptwebqq);
+        }
+        /// <summary>
+        /// 登录第六步：获取在线成员、近期联系人（仅提交请求，未处理）
+        /// </summary>
+        private static void Login_GetOnlineAndRecent_FAKE()
+        {
+            string url = "http://d1.web2.qq.com/channel/get_online_buddies2?vfwebqq=#{vfwebqq}&clientid=53999199&psessionid=#{psessionid}&t=#{t}".Replace("#{vfwebqq}", vfwebqq).Replace("#{psessionid}", psessionid).Replace("#{t}", AID_TimeStamp());
+            HTTP.Get(url, "http://d1.web2.qq.com/proxy.html?v=20151105001&callback=1&id=2");
+
+            url = "http://d1.web2.qq.com/channel/get_recent_list2";
+            string url1 = "{\"vfwebqq\":\"#{vfwebqq}\",\"clientid\":53999199,\"psessionid\":\"#{psessionid}\"}".Replace("#{vfwebqq}", vfwebqq).Replace("#{psessionid}", psessionid);
+            string dat = HTTP.Post(url, "r=" + HttpUtility.UrlEncode(url1), "http://d1.web2.qq.com/proxy.html?v=20151105001&callback=1&id=2");
         }
 
         /// <summary>
@@ -405,8 +422,8 @@ namespace RuiRuiQQRobot
                     default:
                         return false;
                 }
-                string postData = "{\"#{type}\":#{id},\"content\":\"[#{msg},[\\\"font\\\",{\\\"name\\\":\\\"宋体\\\",\\\"size\\\":10,\\\"style\\\":[0,0,0],\\\"color\\\":\\\"000000\\\"}]]\",\"face\":522,\"clientid\":53999199,\"msg_id\":65890001,\"psessionid\":\"#{psessionid}\"}";
-                postData = "r=" + HttpUtility.UrlEncode(postData.Replace("#{type}", to_groupuin_did).Replace("#{id}", id).Replace("#{msg}", messageToSend).Replace("#{psessionid}", psessionid));
+                string postData = "{\"#{type}\":#{id},\"content\":\"[#{msg},[\\\"font\\\",{\\\"name\\\":\\\"宋体\\\",\\\"size\\\":10,\\\"style\\\":[0,0,0],\\\"color\\\":\\\"000000\\\"}]]\",\"face\":#{face},\"clientid\":53999199,\"msg_id\":#{msg_id},\"psessionid\":\"#{psessionid}\"}";
+                postData = "r=" + HttpUtility.UrlEncode(postData.Replace("#{type}", to_groupuin_did).Replace("#{id}", id).Replace("#{msg}", messageToSend).Replace("#{face}", SelfInfo.face.ToString()).Replace("#{msg_id}", rand.Next(10000000, 99999999).ToString()).Replace("#{psessionid}", psessionid));
 
                 string dat = HTTP.Post(url, postData, "http://d1.web2.qq.com/proxy.html?v=20151105001&callback=1&id=2");
 
@@ -454,7 +471,7 @@ namespace RuiRuiQQRobot
         /// <param name="uin"></param>
         internal static void Info_FriendInfo(string uin)
         {
-            string url = "http://s.web2.qq.com/api/get_friend_info2?tuin=#{uin}&vfwebqq=#{vfwebqq}&clientid=53999199&psessionid=#{psessionid}&t=0.1";
+            string url = "http://s.web2.qq.com/api/get_friend_info2?tuin=#{uin}&vfwebqq=#{vfwebqq}&clientid=53999199&psessionid=#{psessionid}&t=#{t}".Replace("#{t}", AID_TimeStamp());
             url = url.Replace("#{uin}", uin).Replace("#{vfwebqq}", vfwebqq).Replace("#{psessionid}", psessionid);
             string dat = HTTP.Get(url, "http://s.web2.qq.com/proxy.html?v=20130916001&callback=1&id=1");
             JsonFriendInfModel inf = (JsonFriendInfModel)JsonConvert.DeserializeObject(dat, typeof(JsonFriendInfModel));
@@ -483,7 +500,7 @@ namespace RuiRuiQQRobot
         /// </summary>
         internal static void Info_SelfInfo()
         {
-            string url = "http://s.web2.qq.com/api/get_self_info2&t=0.1";
+            string url = "http://s.web2.qq.com/api/get_self_info2?t=#{t}".Replace("#{t}", AID_TimeStamp());
             string dat = HTTP.Get(url, "http://s.web2.qq.com/proxy.html?v=20130916001&callback=1&id=1");
             JsonFriendInfModel inf = (JsonFriendInfModel)JsonConvert.DeserializeObject(dat, typeof(JsonFriendInfModel));
 
@@ -535,7 +552,7 @@ namespace RuiRuiQQRobot
             if (!GroupList.ContainsKey(gid))
                 return;
             string gcode = GroupList[gid].code;
-            string url = "http://s.web2.qq.com/api/get_group_info_ext2?gcode=#{group_code}&vfwebqq=#{vfwebqq}&t=0.1".Replace("#{group_code}", gcode).Replace("#{vfwebqq}", vfwebqq);
+            string url = "http://s.web2.qq.com/api/get_group_info_ext2?gcode=#{group_code}&vfwebqq=#{vfwebqq}&t=#{t}".Replace("#{group_code}", gcode).Replace("#{vfwebqq}", vfwebqq).Replace("#{t}", AID_TimeStamp());
             string dat = HTTP.Get(url, "http://s.web2.qq.com/proxy.html?v=20130916001&callback=1&id=1");
             JsonGroupInfoModel groupInfo = (JsonGroupInfoModel)JsonConvert.DeserializeObject(dat, typeof(JsonGroupInfoModel));
             GroupList[gid].name = groupInfo.result.ginfo.name;
@@ -572,7 +589,7 @@ namespace RuiRuiQQRobot
         /// </summary>
         internal static void Info_DisscussList()
         {
-            string url = "http://s.web2.qq.com/api/get_discus_list?clientid=53999199&psessionid=#{psessionid}&vfwebqq=#{vfwebqq}&t=0.1".Replace("#{psessionid}", psessionid).Replace("#{vfwebqq}", vfwebqq);
+            string url = "http://s.web2.qq.com/api/get_discus_list?clientid=53999199&psessionid=#{psessionid}&vfwebqq=#{vfwebqq}&t=#{t}".Replace("#{psessionid}", psessionid).Replace("#{vfwebqq}", vfwebqq).Replace("#{t}", AID_TimeStamp());
             string dat = HTTP.Get(url, "http://d1.web2.qq.com/proxy.html?v=20151105001&callback=1&id=2");
             JsonDisscussModel disscuss = (JsonDisscussModel)JsonConvert.DeserializeObject(dat, typeof(JsonDisscussModel));
             for (int i = 0; i < disscuss.result.dnamelist.Count; i++)
@@ -589,7 +606,7 @@ namespace RuiRuiQQRobot
         /// <param name="did"></param>
         internal static void Info_DisscussInfo(string did)
         {
-            string url = "http://d1.web2.qq.com/channel/get_discu_info?did=#{discuss_id}&psessionid=#{psessionid}&vfwebqq=#{vfwebqq}&clientid=53999199&t=0.1";
+            string url = "http://d1.web2.qq.com/channel/get_discu_info?did=#{discuss_id}&psessionid=#{psessionid}&vfwebqq=#{vfwebqq}&clientid=53999199&t=#{t}".Replace("#{t}", AID_TimeStamp());
             url = url.Replace("#{discuss_id}", did).Replace("#{psessionid}", psessionid).Replace("#{vfwebqq}", vfwebqq);
             string dat = HTTP.Get(url, "http://d1.web2.qq.com/proxy.html?v=20151105001&callback=1&id=2");
             JsonDisscussInfoModel inf = (JsonDisscussInfoModel)JsonConvert.DeserializeObject(dat, typeof(JsonDisscussInfoModel));
@@ -619,10 +636,10 @@ namespace RuiRuiQQRobot
             if (RealQQNum.ContainsKey(uin))
                 return RealQQNum[uin];
 
-            string url = "http://s.web2.qq.com/api/get_friend_uin2?tuin=#{uin}&type=1&vfwebqq=#{vfwebqq}&t=0.1".Replace("#{uin}", uin).Replace("#{vfwebqq}", vfwebqq);
+            string url = "http://s.web2.qq.com/api/get_friend_uin2?tuin=#{uin}&type=1&vfwebqq=#{vfwebqq}&t=#{t}".Replace("#{uin}", uin).Replace("#{vfwebqq}", vfwebqq).Replace("#{t}", AID_TimeStamp());
             string dat = HTTP.Get(url);
             string temp = dat.Split('\"')[10].Split(',')[0].Replace(":", "");
-            if (temp != "")
+            if (temp != "" && !RealQQNum.ContainsKey(uin))
             {
                 RealQQNum.Add(uin, temp);
                 return temp;
@@ -668,7 +685,26 @@ namespace RuiRuiQQRobot
             return V1;
         }
         /// <summary>
-        /// 生成由群主QQ和群创建世界构成的群标识码
+        /// 获取时间戳
+        /// </summary>
+        /// <param name="type">1，10位；2，13位。</param>
+        /// <returns></returns>
+        public static string AID_TimeStamp(int type = 1)
+        {
+            if (type == 1)
+            {
+                DateTime dt1970 = new DateTime(1970, 1, 1, 0, 0, 0, 0);
+                return ((DateTime.UtcNow.Ticks - dt1970.Ticks) / 10000).ToString();
+            }
+            else if (type == 2)
+            {
+                TimeSpan ts = DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, 0);
+                return Convert.ToInt64(ts.TotalSeconds).ToString();
+            }
+            else return "ERROR";
+        }
+        /// <summary>
+        /// 生成由群主QQ和群创建时间构成的群标识码
         /// </summary>
         /// <param name="gid"></param>
         /// <returns></returns>

@@ -55,6 +55,7 @@
             // 
             // pictureBoxQRCode
             // 
+            this.pictureBoxQRCode.Enabled = false;
             this.pictureBoxQRCode.Location = new System.Drawing.Point(8, 20);
             this.pictureBoxQRCode.Name = "pictureBoxQRCode";
             this.pictureBoxQRCode.Size = new System.Drawing.Size(165, 165);
@@ -203,7 +204,6 @@
             // 
             this.textBoxSendMessage.AcceptsTab = true;
             this.textBoxSendMessage.BackColor = System.Drawing.SystemColors.Window;
-            this.textBoxSendMessage.ImeMode = System.Windows.Forms.ImeMode.On;
             this.textBoxSendMessage.Location = new System.Drawing.Point(0, 356);
             this.textBoxSendMessage.Multiline = true;
             this.textBoxSendMessage.Name = "textBoxSendMessage";
@@ -221,7 +221,7 @@
             this.textBoxLog.Size = new System.Drawing.Size(876, 32);
             this.textBoxLog.TabIndex = 15;
             // 
-            // FormLogin
+            // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -236,7 +236,7 @@
             this.MaximizeBox = false;
             this.MaximumSize = new System.Drawing.Size(916, 540);
             this.MinimumSize = new System.Drawing.Size(916, 540);
-            this.Name = "FormLogin";
+            this.Name = "MainForm";
             this.Text = "RuiRui QQ Robot";
             this.Load += new System.EventHandler(this.FormLogin_Load);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxQRCode)).EndInit();

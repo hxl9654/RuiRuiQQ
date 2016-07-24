@@ -51,6 +51,7 @@ namespace RuiRuiQQRobot
         /// </summary>
         internal void ReNewListBoxGroup()
         {
+            listBoxGroup.Items.Clear();
             foreach (KeyValuePair<string, SmartQQ.GroupInfo> GroupList in SmartQQ.GroupList)
             {
                 listBoxGroup.Items.Add(GroupList.Key + "::" + GroupList.Value.name);
@@ -61,6 +62,7 @@ namespace RuiRuiQQRobot
         /// </summary>
         internal void ReNewListBoxFriend()
         {
+            listBoxFriend.Items.Clear();
             foreach (KeyValuePair<string, SmartQQ.FriendInfo> FriendList in SmartQQ.FriendList)
             {
                 listBoxFriend.Items.Add(FriendList.Key + ":" + SmartQQ.Info_RealQQ(FriendList.Key) + ":" + FriendList.Value.nick);
@@ -138,7 +140,7 @@ namespace RuiRuiQQRobot
             if ((textBoxSendMessage.Text.Equals("")) || (!(IsFriendSelent || IsGroupSelent)))
                 return;
 
-            if (IsGroupSelent)
+            if (IsGroupSelent && listBoxGroup.SelectedItem != null)
             {
                 string GName = "";
                 string[] tmp = listBoxGroup.SelectedItem.ToString().Split(':');
@@ -150,7 +152,7 @@ namespace RuiRuiQQRobot
                     GName = SmartQQ.GroupList[tmp[0]].name;
                 AddTextToTextBoxResiveMessage("发送至   " + GName + Environment.NewLine + textBoxSendMessage.Text);
             }
-            else if (IsFriendSelent)
+            else if (IsFriendSelent && listBoxFriend.SelectedItem != null)
             {
                 string Nick = "";
                 string[] tmp = listBoxFriend.SelectedItem.ToString().Split(':');
