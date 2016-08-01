@@ -48,9 +48,9 @@ namespace RuiRuiQQRobot
             int bytLeng = System.Text.Encoding.UTF8.GetBytes(str).Length;
             string url;
             if (strLen < bytLeng)
-                url = "http://translate.google.cn/translate_a/single?client=t&sl=auto&tl=en&hl=zh-CN&dt=at&dt=bd&dt=ex&dt=ld&dt=md&dt=qca&dt=rw&dt=rm&dt=ss&dt=t&ie=UTF-8&oe=UTF-8&source=btn&ssel=3&tsel=5&kc=0&tk=399016.11510&q=" + str;
+                url = "http://translate.google.cn/translate_a/single?client=t&sl=auto&tl=en&hl=zh-CN&dt=at&dt=bd&dt=ex&dt=ld&dt=md&dt=qca&dt=rw&dt=rm&dt=ss&dt=t&ie=UTF-8&oe=UTF-8&otf=1&ssel=0&tsel=0&kc=1&tk=#{tk}&q=#{q}".Replace("#{q}", str).Replace("#{tk}", GetTranslate_GoogleTK(str));
             else
-                url = "http://translate.google.cn/translate_a/single?client=t&sl=auto&tl=zh-CN&hl=zh-CN&dt=at&dt=bd&dt=ex&dt=ld&dt=md&dt=qca&dt=rw&dt=rm&dt=ss&dt=t&ie=UTF-8&oe=UTF-8&otf=1&srcrom=1&ssel=3&tsel=3&kc=6&tk=987923.600397&q=" + str;
+                url = "http://translate.google.cn/translate_a/single?client=t&sl=auto&tl=zh-CN&hl=zh-CN&dt=at&dt=bd&dt=ex&dt=ld&dt=md&dt=qca&dt=rw&dt=rm&dt=ss&dt=t&ie=UTF-8&oe=UTF-8&srcrom=1&ssel=0&tsel=3&kc=0&tk=#{tk}&q=#{q}".Replace("#{q}", str).Replace("#{tk}", GetTranslate_GoogleTK(str));
 
             string temp = HTTP.Get(url, "http://translate.google.cn/?sourceid=cnhp", 5000);
             string[] tmp = temp.Split('\"');
@@ -64,7 +64,6 @@ namespace RuiRuiQQRobot
             {
                 if (dat.translation[0] != null)
                     messagetosend = messagetosend + Environment.NewLine + "有道翻译：" + dat.translation[0];
-                else messagetosend = messagetosend + Environment.NewLine + "有道翻译：异常";
             }
             else if (dat.errorcode == 20)
                 messagetosend = messagetosend + Environment.NewLine + "有道翻译：不支持或文本过长";
@@ -78,6 +77,17 @@ namespace RuiRuiQQRobot
                 }
             return messagetosend;
         }
+
+        private static string GetTranslate_GoogleTK(string str)
+        {
+            var scriptEngine = new Jurassic.ScriptEngine();
+            scriptEngine.EnableDebugging = true;
+            scriptEngine.SetGlobalValue("window", new WindowObject(scriptEngine));
+            scriptEngine.ExecuteFile(System.AppDomain.CurrentDomain.BaseDirectory + "GoogleTK.js");
+            var TK = scriptEngine.CallGlobalFunction<string>("VL", str);
+            return TK;
+        }
+
         public static string GetWeather(string city, string target)
         {
             if ((!city.Equals("呼市郊区")) && (!city.Equals("津市")) && (!city.Equals("沙市")))
