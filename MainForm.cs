@@ -102,6 +102,7 @@ namespace RuiRuiQQRobot
                 RuiRui.MasterQQ = dat.AdminQQ;
                 GetInfo.YoudaoKey = dat.YoudaoKey;
                 GetInfo.YoudaoKeyform = dat.YoudaoKeyfrom;
+                GetInfo.TuLinKey = dat.TuLinKey;
             }
             if (RuiRui.DicServer == null || RuiRui.DicServer.Equals(""))
                 RuiRui.DicServer = "https://ruiruiqq.hxlxz.com/";

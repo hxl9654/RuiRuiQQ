@@ -3,6 +3,7 @@ using System;
 using System.Text;
 using System.Web;
 using System.Text.RegularExpressions;
+using Newtonsoft.Json.Linq;
 // *   This program is free software: you can redistribute it and/or modify
 // *   it under the terms of the GNU General Public License as published by
 // *   the Free Software Foundation, either version 3 of the License, or
@@ -28,13 +29,38 @@ namespace RuiRuiQQRobot
     {
         internal static string YoudaoKeyform;
         internal static string YoudaoKey;
-        public static string GetXiaoHuangJi(string msg)
+        internal static string TuLinKey = "4a0ba28717d3467abaa0ad5a43913c43";
+        public static string GetTuLin(string msg, string QQNum = "NULL")
         {
-            string url = "http://www.xiaohuangji.com/ajax.php";
-            string postdata = "para=" + HttpUtility.UrlEncode(msg);
-            string MsgGet = HTTP.Post(url, postdata, "http://www.xiaohuangji.com/");
-            if (MsgGet.ToLower().Contains("mysql") || MsgGet.ToUpper().Contains("DOCTYPE"))
-                return "";
+            //string url = "http://www.tuling123.com/openapi/api";
+            //string msg1 = "";
+            //for (int i = 0; i < msg.Length; i++)
+            //{
+            //    msg1 += "&#x" + ((int)msg[i]).ToString("x").ToUpper() + ";";
+            //}
+            //string postdata = "{\"key\":\"#{key}\",\"info\":\"#{info}\",\"userid\":\"#{userid}\"}".Replace("#{key}", TuLinKey).Replace("#{info}", msg1).Replace("#{userid}", QQNum);
+            //string temp = HTTP.Post(url, postdata);
+            string url = "http://www.tuling123.com/openapi/api?key=#{key}&info=#{info}&userid=#{userid}".Replace("#{key}", TuLinKey).Replace("#{info}", msg).Replace("#{userid}", QQNum);
+            string temp = HTTP.Get(url);
+            JsonTuLinModel dat = (JsonTuLinModel)JsonConvert.DeserializeObject(temp, typeof(JsonTuLinModel));
+            string MsgGet = "";
+            if (dat.code == 100000)
+            {
+                if (dat.text.Equals(msg) || dat.text.Contains("听不懂"))
+                    return "";
+                MsgGet = dat.text;
+                RuiRui.AIStudy(msg, MsgGet, "TuLin");
+            }
+            else if (dat.code == 302000)
+            {
+                for (int i = 0; i < dat.list.Count; i++)
+                    MsgGet += dat.list[i].source + "：" + dat.list[i].article + Environment.NewLine;
+            }
+            else if (dat.code == 308000)
+            {
+                MsgGet = dat.list[0].name + "：" + dat.list[0].info;
+            }
+            else return "";
             for (int i = 0; i < RuiRui.Badwords.Length; i++)
                 if (MsgGet.Contains(RuiRui.Badwords[i]))
                     return "";

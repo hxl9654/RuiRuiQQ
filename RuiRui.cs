@@ -394,13 +394,13 @@ namespace RuiRuiQQRobot
                     }
                     if (!DisableFlag)
                     {
-                        string XiaoHuangJiMsg = GetInfo.GetXiaoHuangJi(message);
+                        string XiaoHuangJiMsg = GetInfo.GetTuLin(message, QQNum);
                         if (XiaoHuangJiMsg.Length > 1)
                         {
                             for (int i = 0; i < Badwords.Length; i++)
                                 if (XiaoHuangJiMsg.Contains(Badwords[i]))
                                     return null;
-                            MessageToSend[0] = "隔壁小黄鸡说：" + XiaoHuangJiMsg;
+                            MessageToSend[0] = "隔壁图灵机器人说：" + XiaoHuangJiMsg;
 
                         }
                         return MessageToSend;
@@ -953,7 +953,7 @@ namespace RuiRuiQQRobot
                 if (SmartQQ.GroupList[gid].GroupManage.enableTranslate.Equals(""))
                     SmartQQ.GroupList[gid].GroupManage.enableTranslate = "true";
             }
-            else
+            else if (Program.MainForm.buttonSend.Enabled)
             {
                 if (!NoDicPassword)
                     SmartQQ.GroupList[gid].GroupManage.enable = "false";
@@ -969,6 +969,7 @@ namespace RuiRuiQQRobot
                 SmartQQ.GroupList[gid].GroupManage.enableCityInfo = "true";
                 SmartQQ.GroupList[gid].GroupManage.enableWiki = "true";
                 SmartQQ.GroupList[gid].GroupManage.enableTranslate = "true";
+
                 SmartQQ.Message_Send(1, gid, "如果需要使用小睿睿机器人，请群管理发送 群管理&启动机器人");
             }
         }
@@ -1035,7 +1036,7 @@ namespace RuiRuiQQRobot
         /// <param name="QunNum">发起学习的群</param>
         /// <param name="superstudy">是否为特权学习</param>
         /// <returns>用户友好的提示语</returns>
-        private static string AIStudy(string source, string aim, string QQNum, string QunNum = "", bool superstudy = false)
+        public static string AIStudy(string source, string aim, string QQNum, string QunNum = "", bool superstudy = false)
         {
             Program.MainForm.listBoxLog.Items.Insert(0, "学习 " + source + " " + aim);
             string url;

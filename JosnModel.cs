@@ -255,6 +255,7 @@ namespace RuiRuiQQRobot
         public string QQPassword;
         public string YoudaoKeyfrom;
         public string YoudaoKey;
+        public string TuLinKey;
     }
     public class JsonExchangeRateModel
     {
@@ -406,6 +407,22 @@ namespace RuiRuiQQRobot
                     }
                 }
             }
+        }
+    }
+    public class JsonTuLinModel
+    {
+        public int code;
+        public string text;
+        public string url;
+        public List<paramList> list;
+        public class paramList
+        {
+            public string article;
+            public string source;
+            public string icon;
+            public string detailurl;
+            public string info;
+            public string name;
         }
     }
 }
