@@ -39,7 +39,7 @@ namespace RuiRuiQQRobot
         public static FriendInfo SelfInfo = new FriendInfo();
         public static Dictionary<string, FriendInfo> FriendList = new Dictionary<string, FriendInfo>();
         public static Dictionary<string, GroupInfo> GroupList = new Dictionary<string, GroupInfo>();
-        public static Dictionary<string, DiscussInfo> DisscussList = new Dictionary<string, DiscussInfo>();
+        public static Dictionary<string, DiscussInfo> DiscussList = new Dictionary<string, DiscussInfo>();
         public static Dictionary<string, string> RealQQNum = new Dictionary<string, string>();
 
         public static string[] FriendCategories = new string[100];
@@ -49,6 +49,7 @@ namespace RuiRuiQQRobot
         public static void Login()
         {
             Login_GetQRCode();
+            Program.MainForm.buttonLogIn.Enabled = false;
             Login_QRStatuTimer.AutoReset = true;
             Login_QRStatuTimer.Elapsed += Login_QRStatuTimer_Elapsed;
             Login_QRStatuTimer.Interval = 1000;
@@ -91,17 +92,17 @@ namespace RuiRuiQQRobot
             switch (temp[1])
             {
                 case ("65"):                                            //二维码失效
-                    Program.MainForm.labelQRStatu.Text = "失效";
+                    Program.MainForm.labelQRStatu.Text = "当前登录状态：二维码失效，请稍后";
                     Login_GetQRCode();
                     break;
                 case ("66"):                                            //等待扫描
-                    Program.MainForm.labelQRStatu.Text = "有效";
+                    Program.MainForm.labelQRStatu.Text = "当前登录状态：二维码有效，请扫描";
                     break;
                 case ("67"):                                            //等待确认
-                    Program.MainForm.labelQRStatu.Text = "等待";
+                    Program.MainForm.labelQRStatu.Text = "当前登录状态：二维码已扫描，请确认";
                     break;
                 case ("0"):                                             //已经确认
-                    Program.MainForm.labelQRStatu.Text = "成功";
+                    Program.MainForm.labelQRStatu.Text = "当前登录状态：确认成功，请稍候";
                     Login_Process(temp[5]);
                     break;
 
@@ -130,10 +131,11 @@ namespace RuiRuiQQRobot
             Task.Run(() => Message_Request());
 
             Program.MainForm.listBoxLog.Items.Insert(0, "登录成功");
-            Program.MainForm.buttonSend.Enabled = true;
             Program.MainForm.buttonLogIn.Enabled = false;
-            Program.MainForm.AcceptButton = Program.MainForm.buttonSend;
             Program.MainForm.labelQQNum.Text = SmartQQ.QQNum;
+            Program.MainForm.buttonFriendSend.Enabled = true;
+            Program.MainForm.buttonGroupSend.Enabled = true;
+            Program.MainForm.buttonDiscussSend.Enabled = true;
         }
         /// <summary>
         /// 登录第三步：获取ptwebqq值
@@ -278,7 +280,7 @@ namespace RuiRuiQQRobot
                 Info_FriendList();
             if (FriendList.ContainsKey(value.from_uin))
                 nick = FriendList[value.from_uin].nick;
-            Program.MainForm.AddTextToTextBoxResiveMessage(nick + "  " + Info_RealQQ(value.from_uin) + Environment.NewLine + message);
+            Program.MainForm.AddAndReNewTextBoxFriendChat(value.from_uin, (nick + "  " + Info_RealQQ(value.from_uin) + Environment.NewLine + message), false);
             RuiRui.AnswerMessage(value.from_uin, message, 0);
         }
         /// <summary>
@@ -297,8 +299,7 @@ namespace RuiRuiQQRobot
                 nick = GroupList[gid].MemberList[value.send_uin].nick;
             if (Info_RealQQ(value.send_uin).Equals("1000000"))
                 nick = "系统消息";
-            Program.MainForm.AddTextToTextBoxResiveMessage(GroupList[gid].name + "   " + nick + "  " + Info_RealQQ(value.send_uin) + Environment.NewLine + message);
-
+            Program.MainForm.AddAndReNewTextBoxGroupChat(value.from_uin, (GroupList[gid].name + "   " + nick + "  " + Info_RealQQ(value.send_uin) + Environment.NewLine + message), false);
             RuiRui.AnswerGroupMessage(gid, message, value.send_uin, gno);
         }
 
@@ -311,18 +312,18 @@ namespace RuiRuiQQRobot
             string message = Message_Process_GetMessageText(value.content);
             string DName = "讨论组";
             string SenderNick = "未知";
-            if (!DisscussList.ContainsKey(value.did))
+            if (!DiscussList.ContainsKey(value.did))
                 Info_DisscussList();
-            if (DisscussList.ContainsKey(value.did))
+            if (DiscussList.ContainsKey(value.did))
             {
-                DName += DisscussList[value.did].name;
-                if (DisscussList[value.did].MemberList.ContainsKey(value.send_uin))
-                    SenderNick = DisscussList[value.did].MemberList[value.send_uin].nick;
+                DName += DiscussList[value.did].name;
+                if (DiscussList[value.did].MemberList.ContainsKey(value.send_uin))
+                    SenderNick = DiscussList[value.did].MemberList[value.send_uin].nick;
             }
             else DName = "未知讨论组";
             if (Info_RealQQ(value.send_uin).Equals("1000000"))
                 SenderNick = "系统消息";
-            Program.MainForm.AddTextToTextBoxResiveMessage(DName + "   " + SenderNick + "  " + Info_RealQQ(value.send_uin) + Environment.NewLine + message);
+            Program.MainForm.AddAndReNewTextBoxDiscussChat(value.from_uin, (DName + "   " + SenderNick + "  " + Info_RealQQ(value.send_uin) + Environment.NewLine + message), false);
             RuiRui.AnswerMessage(value.did, message, 2);
         }
         /// <summary>
@@ -387,8 +388,17 @@ namespace RuiRuiQQRobot
         /// <param name="id">用户：uid；群：qid；讨论组：did</param>
         /// <param name="messageToSend">要发送的消息</param>
         /// <returns></returns>
-        internal static bool Message_Send(int type, string id, string messageToSend)
+        internal static bool Message_Send(int type, string id, string messageToSend, bool auto = true)
         {
+            if (auto)
+            {
+                if (type == 0)
+                    Program.MainForm.AddAndReNewTextBoxFriendChat(id, ("自动回复：" + Environment.NewLine + messageToSend));
+                else if (type == 1)
+                    Program.MainForm.AddAndReNewTextBoxGroupChat(id, ("自动回复：" + Environment.NewLine + messageToSend));
+                else if (type == 2)
+                    Program.MainForm.AddAndReNewTextBoxDiscussChat(id, ("自动回复：" + Environment.NewLine + messageToSend));
+            }
             Program.MainForm.listBoxLog.Items.Add(type + ":" + id + ":" + messageToSend);
             if (messageToSend.Equals("") || id.Equals(""))
                 return false;
@@ -594,11 +604,12 @@ namespace RuiRuiQQRobot
             JsonDisscussModel disscuss = (JsonDisscussModel)JsonConvert.DeserializeObject(dat, typeof(JsonDisscussModel));
             for (int i = 0; i < disscuss.result.dnamelist.Count; i++)
             {
-                if (!DisscussList.ContainsKey(disscuss.result.dnamelist[i].did))
-                    DisscussList.Add(disscuss.result.dnamelist[i].did, new DiscussInfo());
-                DisscussList[disscuss.result.dnamelist[i].did].name = disscuss.result.dnamelist[i].name;
+                if (!DiscussList.ContainsKey(disscuss.result.dnamelist[i].did))
+                    DiscussList.Add(disscuss.result.dnamelist[i].did, new DiscussInfo());
+                DiscussList[disscuss.result.dnamelist[i].did].name = disscuss.result.dnamelist[i].name;
                 Info_DisscussInfo(disscuss.result.dnamelist[i].did);
             }
+            Program.MainForm.ReNewListBoxDiscuss();
         }
         /// <summary>
         /// 获取讨论组详细信息
@@ -613,16 +624,16 @@ namespace RuiRuiQQRobot
 
             for (int i = 0; i < inf.result.mem_info.Count; i++)
             {
-                if (!DisscussList[did].MemberList.ContainsKey(inf.result.mem_info[i].uin))
-                    DisscussList[did].MemberList.Add(inf.result.mem_info[i].uin, new DiscussInfo.MenberInfo());
-                DisscussList[did].MemberList[inf.result.mem_info[i].uin].nick = inf.result.mem_info[i].nick;
+                if (!DiscussList[did].MemberList.ContainsKey(inf.result.mem_info[i].uin))
+                    DiscussList[did].MemberList.Add(inf.result.mem_info[i].uin, new DiscussInfo.MenberInfo());
+                DiscussList[did].MemberList[inf.result.mem_info[i].uin].nick = inf.result.mem_info[i].nick;
             }
             for (int i = 0; i < inf.result.mem_status.Count; i++)
             {
-                if (!DisscussList[did].MemberList.ContainsKey(inf.result.mem_status[i].uin))
-                    DisscussList[did].MemberList.Add(inf.result.mem_status[i].uin, new DiscussInfo.MenberInfo());
-                DisscussList[did].MemberList[inf.result.mem_status[i].uin].status = inf.result.mem_status[i].status;
-                DisscussList[did].MemberList[inf.result.mem_status[i].uin].client_type = inf.result.mem_status[i].client_type;
+                if (!DiscussList[did].MemberList.ContainsKey(inf.result.mem_status[i].uin))
+                    DiscussList[did].MemberList.Add(inf.result.mem_status[i].uin, new DiscussInfo.MenberInfo());
+                DiscussList[did].MemberList[inf.result.mem_status[i].uin].status = inf.result.mem_status[i].status;
+                DiscussList[did].MemberList[inf.result.mem_status[i].uin].client_type = inf.result.mem_status[i].client_type;
             }
         }
 
@@ -746,6 +757,8 @@ namespace RuiRuiQQRobot
             public int blood;
             public int shengxiao;
             public int vip_info;
+
+            public string Messages = "";
         }
         /// <summary>
         /// 群资料类
@@ -786,6 +799,7 @@ namespace RuiRuiQQRobot
                 public string card;
                 public bool isManager;
             }
+            public string Messages = "";
         }
         /// <summary>
         /// 讨论组资料类
@@ -800,6 +814,7 @@ namespace RuiRuiQQRobot
                 public string status;
                 public int client_type;
             }
+            public string Messages = "";
         }
     }
 }

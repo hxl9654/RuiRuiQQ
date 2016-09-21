@@ -881,7 +881,7 @@ namespace RuiRuiQQRobot
             {
                 if (SmartQQ.GroupList[gid].GroupManage == null)
                     GetGroupSetting(gid);
-                if (SmartQQ.GroupList[gid].GroupManage.enable.Equals("false"))
+                if (SmartQQ.GroupList[gid].GroupManage.enable == null || SmartQQ.GroupList[gid].GroupManage.enable.Equals("false"))
                     return;
             }
 
@@ -953,7 +953,7 @@ namespace RuiRuiQQRobot
                 if (SmartQQ.GroupList[gid].GroupManage.enableTranslate.Equals(""))
                     SmartQQ.GroupList[gid].GroupManage.enableTranslate = "true";
             }
-            else if (Program.MainForm.buttonSend.Enabled)
+            else if (Program.MainForm.buttonFriendSend != null && Program.MainForm.buttonFriendSend.Enabled != false)
             {
                 if (!NoDicPassword)
                     SmartQQ.GroupList[gid].GroupManage.enable = "false";

@@ -33,19 +33,7 @@ namespace RuiRuiQQRobot
     {
         //多个函数要用到的变量
         string pin = string.Empty;
-        bool IsGroupSelent = false, IsFriendSelent = false;
-        bool DoNotChangeSelentGroupOrPeople = false;
 
-        /// <summary>
-        /// 向主界面右侧的消息框末尾添加文字
-        /// </summary>
-        /// <param name="text">要添加文字</param>
-        internal void AddTextToTextBoxResiveMessage(string text)
-        {
-            textBoxResiveMessage.Text += (text + Environment.NewLine + Environment.NewLine);
-            textBoxResiveMessage.SelectionStart = textBoxResiveMessage.TextLength;
-            textBoxResiveMessage.ScrollToCaret();
-        }
         /// <summary>
         /// 更新主界面的QQ群列表
         /// </summary>
@@ -68,7 +56,17 @@ namespace RuiRuiQQRobot
                 listBoxFriend.Items.Add(FriendList.Key + ":" + SmartQQ.Info_RealQQ(FriendList.Key) + ":" + FriendList.Value.nick);
             }
         }
-
+        /// <summary>
+        /// 更新主界面的讨论组列表
+        /// </summary>
+        internal void ReNewListBoxDiscuss()
+        {
+            listBoxDiscuss.Items.Clear();
+            foreach (KeyValuePair<string, SmartQQ.DiscussInfo> DiscussList in SmartQQ.DiscussList)
+            {
+                listBoxDiscuss.Items.Add(DiscussList.Key + ":" + DiscussList.Value.name);
+            }
+        }
         private void FormLogin_Load(object sender, EventArgs e)
         {
             bool NoFile = false;
@@ -136,60 +134,73 @@ namespace RuiRuiQQRobot
         {
             SmartQQ.Login_GetQRCode();
         }
-        private void buttonSend_Click(object sender, EventArgs e)
+        private void buttonFriendSend_Click(object sender, EventArgs e)
         {
-            if ((textBoxSendMessage.Text.Equals("")) || (!(IsFriendSelent || IsGroupSelent)))
-                return;
-
-            if (IsGroupSelent && listBoxGroup.SelectedItem != null)
+            if (listBoxFriend.SelectedItem != null)
             {
-                string GName = "";
-                string[] tmp = listBoxGroup.SelectedItem.ToString().Split(':');
-                string MessageToSend = textBoxSendMessage.Text;
-
-                SmartQQ.Message_Send(1, tmp[0], MessageToSend);
-
-                if (SmartQQ.GroupList.ContainsKey(tmp[0]))
-                    GName = SmartQQ.GroupList[tmp[0]].name;
-                AddTextToTextBoxResiveMessage("发送至   " + GName + Environment.NewLine + textBoxSendMessage.Text);
-            }
-            else if (IsFriendSelent && listBoxFriend.SelectedItem != null)
-            {
-                string Nick = "";
                 string[] tmp = listBoxFriend.SelectedItem.ToString().Split(':');
-                string MessageToSend = textBoxSendMessage.Text;
+                string MessageToSend = textBoxFriendSend.Text;
+                textBoxFriendSend.Clear();
 
-                SmartQQ.Message_Send(0, tmp[0], MessageToSend);
+                SmartQQ.Message_Send(0, tmp[0], MessageToSend, false);
 
-                if (SmartQQ.FriendList.ContainsKey(tmp[0]))
-                    Nick = SmartQQ.FriendList[tmp[0]].nick;
-                AddTextToTextBoxResiveMessage("发送至   " + Nick + "   " + SmartQQ.Info_RealQQ(tmp[0]) + Environment.NewLine + textBoxSendMessage.Text);
+                AddAndReNewTextBoxFriendChat(tmp[0], ("手动发送：" + Environment.NewLine + MessageToSend));
             }
-            textBoxSendMessage.Clear();
         }
+
+        private void buttonGroupSend_Click(object sender, EventArgs e)
+        {
+            if (listBoxGroup.SelectedItem != null)
+            {
+                string[] tmp = listBoxGroup.SelectedItem.ToString().Split(':');
+                string MessageToSend = textBoxGroupSend.Text;
+                textBoxGroupSend.Clear();
+
+                SmartQQ.Message_Send(1, tmp[0], MessageToSend, false);
+
+                AddAndReNewTextBoxGroupChat(tmp[0], ("手动发送：" + Environment.NewLine + MessageToSend));
+            }
+        }
+
+        private void buttonDiscussSend_Click(object sender, EventArgs e)
+        {
+            if (listBoxDiscuss.SelectedItem != null)
+            {
+                string[] tmp = listBoxDiscuss.SelectedItem.ToString().Split(':');
+                string MessageToSend = textBoxDiscussSend.Text;
+                textBoxDiscussSend.Clear();
+
+                SmartQQ.Message_Send(2, tmp[0], MessageToSend, false);
+
+                AddAndReNewTextBoxDiscussChat(tmp[0], ("手动发送：" + Environment.NewLine + MessageToSend));
+            }
+        }
+
+        internal void AddAndReNewTextBoxFriendChat(string uin, string str = "", bool ChangeCurrentUin = false)
+        {
+            SmartQQ.FriendList[uin].Messages += str + Environment.NewLine;
+            if (ChangeCurrentUin || (listBoxFriend.SelectedItem != null && uin.Equals(listBoxFriend.SelectedItem.ToString().Split(':')[0])))
+                textBoxFriendChat.Text = SmartQQ.FriendList[uin].Messages;
+        }
+
+        internal void AddAndReNewTextBoxGroupChat(string gid, string str = "", bool ChangeCurrentGid = false)
+        {
+            SmartQQ.GroupList[gid].Messages += str + Environment.NewLine;
+            if (ChangeCurrentGid || (listBoxGroup.SelectedItem != null && gid.Equals(listBoxGroup.SelectedItem.ToString().Split(':')[0])))
+                textBoxGroupChat.Text = SmartQQ.GroupList[gid].Messages;
+        }
+
+        internal void AddAndReNewTextBoxDiscussChat(string did, string str = "", bool ChangeCurrentDid = false)
+        {
+            SmartQQ.DiscussList[did].Messages += str + Environment.NewLine;
+            if (ChangeCurrentDid || (listBoxDiscuss.SelectedItem != null && did.Equals(listBoxDiscuss.SelectedItem.ToString().Split(':')[0])))
+                textBoxDiscussChat.Text = SmartQQ.DiscussList[did].Messages;
+        }
+
         private void buttonLogIn_Click(object sender, EventArgs e)
         {
             SmartQQ.Login();
             HTTP.Get("https://ruiruiqq.hxlxz.com/infreport.php?qq=" + SmartQQ.QQNum + "&adminqq=" + RuiRui.MasterQQ);
-        }
-        private void listBoxFriend_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (DoNotChangeSelentGroupOrPeople) return;
-            IsGroupSelent = false;
-            IsFriendSelent = true;
-            DoNotChangeSelentGroupOrPeople = true;
-            listBoxGroup.SelectedItem = (ListBox.SelectedObjectCollection)null;
-            DoNotChangeSelentGroupOrPeople = false;
-        }
-
-        private void listBoxGroup_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (DoNotChangeSelentGroupOrPeople) return;
-            IsGroupSelent = true;
-            IsFriendSelent = false;
-            DoNotChangeSelentGroupOrPeople = true;
-            listBoxFriend.SelectedItem = (ListBox.SelectedObjectCollection)null;
-            DoNotChangeSelentGroupOrPeople = false;
         }
 
         private void listBoxLog_SelectedIndexChanged(object sender, EventArgs e)
@@ -215,6 +226,24 @@ namespace RuiRuiQQRobot
         public MainForm()
         {
             InitializeComponent();
+        }
+
+        private void listBoxFriend_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            string[] tmp = listBoxFriend.SelectedItem.ToString().Split(':');
+            AddAndReNewTextBoxFriendChat(tmp[0], "", true);
+        }
+
+        private void listBoxGroup_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            string[] tmp = listBoxGroup.SelectedItem.ToString().Split(':');
+            AddAndReNewTextBoxGroupChat(tmp[0], "", true);
+        }
+
+        private void listBoxDiscuss_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            string[] tmp = listBoxDiscuss.SelectedItem.ToString().Split(':');
+            AddAndReNewTextBoxDiscussChat(tmp[0], "", true);
         }
     }
     public class WindowObject : ObjectInstance
