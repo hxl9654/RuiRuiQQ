@@ -98,6 +98,7 @@
     <Content Include="Newtonsoft.Json.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <None Include="Resources\Icon1.ico" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MainForm.cs">

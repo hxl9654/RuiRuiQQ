@@ -120,9 +120,7 @@ namespace RuiRuiQQRobot
             Login_GetPtwebqq(url);
             Login_GetVfwebqq();
             Login_GetPsessionid();
-            Program.MainForm.labelQRStatu.Text = "";
-            Program.MainForm.pictureBoxQRCode.Enabled = false;
-            Program.MainForm.pictureBoxQRCode.Visible = false;
+            Program.MainForm.pictureBoxQRCode.Image = ((Image)((new System.ComponentModel.ComponentResourceManager(typeof(MainForm))).GetObject("pictureBoxQRCode.Image")));
             Info_FriendList();
             Info_GroupList();
             Info_DisscussList();
@@ -132,7 +130,7 @@ namespace RuiRuiQQRobot
 
             Program.MainForm.listBoxLog.Items.Insert(0, "登录成功");
             Program.MainForm.buttonLogIn.Enabled = false;
-            Program.MainForm.labelQQNum.Text = SmartQQ.QQNum;
+            Program.MainForm.labelQRStatu.Text = "当前登录状态：QQ " + QQNum + "已登录";
             Program.MainForm.buttonFriendSend.Enabled = true;
             Program.MainForm.buttonGroupSend.Enabled = true;
             Program.MainForm.buttonDiscussSend.Enabled = true;
@@ -146,11 +144,6 @@ namespace RuiRuiQQRobot
             string dat = HTTP.Get(url, "http://s.web2.qq.com/proxy.html?v=20130916001&callback=1&id=1");
             Uri uri = new Uri("http://web2.qq.com/");
             ptwebqq = HTTP.cookies.GetCookies(uri)["ptwebqq"].Value;
-            //p_skey = HTTP.cookies.GetCookies(uri)["p_skey"].Value;
-            //MyUin = HTTP.cookies.GetCookies(uri)["uin"].Value;
-            //skey = HTTP.cookies.GetCookies(uri)["skey"].Value;
-            //p_uin = HTTP.cookies.GetCookies(uri)["p_uin"].Value;
-            //QQNum = p_uin.Remove(0, 1).TrimStart('0');
         }
         /// <summary>
         /// 登录第四步：获取vfwebqq的值

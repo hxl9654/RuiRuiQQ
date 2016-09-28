@@ -29,17 +29,9 @@ namespace RuiRuiQQRobot
     {
         internal static string YoudaoKeyform;
         internal static string YoudaoKey;
-        internal static string TuLinKey = "4a0ba28717d3467abaa0ad5a43913c43";
+        internal static string TuLinKey;
         public static string GetTuLin(string msg, string QQNum = "NULL")
         {
-            //string url = "http://www.tuling123.com/openapi/api";
-            //string msg1 = "";
-            //for (int i = 0; i < msg.Length; i++)
-            //{
-            //    msg1 += "&#x" + ((int)msg[i]).ToString("x").ToUpper() + ";";
-            //}
-            //string postdata = "{\"key\":\"#{key}\",\"info\":\"#{info}\",\"userid\":\"#{userid}\"}".Replace("#{key}", TuLinKey).Replace("#{info}", msg1).Replace("#{userid}", QQNum);
-            //string temp = HTTP.Post(url, postdata);
             string url = "http://www.tuling123.com/openapi/api?key=#{key}&info=#{info}&userid=#{userid}".Replace("#{key}", TuLinKey).Replace("#{info}", msg).Replace("#{userid}", QQNum);
             string temp = HTTP.Get(url);
             JsonTuLinModel dat = (JsonTuLinModel)JsonConvert.DeserializeObject(temp, typeof(JsonTuLinModel));

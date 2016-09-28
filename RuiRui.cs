@@ -234,12 +234,12 @@ namespace RuiRuiQQRobot
                     for (int i = 0; i < Badwords.Length; i++)
                         if (tmp[1].Contains(Badwords[i]))
                         {
-                            MessageToSend[0] = "保护敏感瓷，发送失败";
+                            MessageToSend[0] = QQNum + "发送的文字包含敏感瓷，小睿睿不喜欢敏感词哦~";
                             return MessageToSend;
                         }
-
+                    string gname = SmartQQ.Info_RealQQ(SmartQQ.GroupList[gid].owner) + SmartQQ.GroupList[gid].name;
                     string url = DicServer + "setcomment.php";
-                    string postdata = "password=" + HttpUtility.UrlEncode(DicPassword) + "&qunnum=" + HttpUtility.UrlEncode(qunnum) + "&dat=" + HttpUtility.UrlEncode(tmp[1]);
+                    string postdata = "password=" + HttpUtility.UrlEncode(DicPassword) + "&qunnum=" + HttpUtility.UrlEncode(gname) + "&dat=" + HttpUtility.UrlEncode(tmp[1]);
                     HTTP.Post(url, postdata);
 
                     url = DicServer + "log.php";

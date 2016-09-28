@@ -35,7 +35,6 @@
             this.label1 = new System.Windows.Forms.Label();
             this.labelQRStatu = new System.Windows.Forms.Label();
             this.buttonLogIn = new System.Windows.Forms.Button();
-            this.labelQQNum = new System.Windows.Forms.Label();
             this.listBoxLog = new System.Windows.Forms.ListBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.textBoxLog = new System.Windows.Forms.TextBox();
@@ -66,6 +65,7 @@
             this.tabPage5 = new System.Windows.Forms.TabPage();
             this.tabPage6 = new System.Windows.Forms.TabPage();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
+            this.groupBox8 = new System.Windows.Forms.GroupBox();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxQRCode)).BeginInit();
             this.groupbox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -136,15 +136,6 @@
             this.buttonLogIn.Text = "登　录";
             this.buttonLogIn.UseVisualStyleBackColor = true;
             this.buttonLogIn.Click += new System.EventHandler(this.buttonLogIn_Click);
-            // 
-            // labelQQNum
-            // 
-            this.labelQQNum.AutoSize = true;
-            this.labelQQNum.Location = new System.Drawing.Point(269, 134);
-            this.labelQQNum.Name = "labelQQNum";
-            this.labelQQNum.Size = new System.Drawing.Size(35, 12);
-            this.labelQQNum.TabIndex = 10;
-            this.labelQQNum.Text = "QQNUM";
             // 
             // listBoxLog
             // 
@@ -242,8 +233,8 @@
             // tabPage1
             // 
             this.tabPage1.BackColor = System.Drawing.SystemColors.Control;
+            this.tabPage1.Controls.Add(this.groupBox8);
             this.tabPage1.Controls.Add(this.groupbox1);
-            this.tabPage1.Controls.Add(this.labelQQNum);
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
@@ -477,6 +468,15 @@
             this.statusStrip1.TabIndex = 17;
             this.statusStrip1.Text = "statusStrip1";
             // 
+            // groupBox8
+            // 
+            this.groupBox8.Location = new System.Drawing.Point(231, 6);
+            this.groupBox8.Name = "groupBox8";
+            this.groupBox8.Size = new System.Drawing.Size(311, 371);
+            this.groupBox8.TabIndex = 12;
+            this.groupBox8.TabStop = false;
+            this.groupBox8.Text = "RuiRui QQ需要您的资助";
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -500,7 +500,6 @@
             this.groupBox4.ResumeLayout(false);
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
-            this.tabPage1.PerformLayout();
             this.tabPage2.ResumeLayout(false);
             this.groupBox7.ResumeLayout(false);
             this.groupBox7.PerformLayout();
@@ -529,7 +528,6 @@
         public System.Windows.Forms.TextBox textBoxLog;
         internal System.Windows.Forms.Button buttonLogIn;
         public System.Windows.Forms.Label labelQRStatu;
-        internal System.Windows.Forms.Label labelQQNum;
         private System.Windows.Forms.NotifyIcon notifyIcon1;
         private System.Windows.Forms.TabControl tabControl1;
         private System.Windows.Forms.TabPage tabPage1;
@@ -554,6 +552,7 @@
         private System.Windows.Forms.TextBox textBoxDiscussSend;
         private System.Windows.Forms.TextBox textBoxDiscussChat;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.GroupBox groupBox8;
     }
 }
 
