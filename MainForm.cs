@@ -245,6 +245,143 @@ namespace RuiRuiQQRobot
             string[] tmp = listBoxDiscuss.SelectedItem.ToString().Split(':');
             AddAndReNewTextBoxDiscussChat(tmp[0], "", true);
         }
+
+        private void radioButtonDonate_AliPay1_CheckedChanged(object sender, EventArgs e)
+        {
+            if (radioButtonDonate_AliPay1.Checked)
+                pictureBoxDonate.Image = RuiRuiQQRobot.Properties.Resources.Donate_ZFB1;
+        }
+
+        private void radioButtonDonate_AliPay5_CheckedChanged(object sender, EventArgs e)
+        {
+            if (radioButtonDonate_AliPay5.Checked)
+                pictureBoxDonate.Image = RuiRuiQQRobot.Properties.Resources.Donate_ZFB5;
+        }
+
+        private void radioButtonDonate_AliPay10_CheckedChanged(object sender, EventArgs e)
+        {
+            if (radioButtonDonate_AliPay10.Checked)
+                pictureBoxDonate.Image = RuiRuiQQRobot.Properties.Resources.Donate_ZFB10;
+        }
+
+        private void radioButtonDonate_AliPay20_CheckedChanged(object sender, EventArgs e)
+        {
+            if (radioButtonDonate_AliPay20.Checked)
+                pictureBoxDonate.Image = RuiRuiQQRobot.Properties.Resources.Donate_ZFB20;
+        }
+
+        private void radioButtonDonate_AliPay50_CheckedChanged(object sender, EventArgs e)
+        {
+            if (radioButtonDonate_AliPay50.Checked)
+                pictureBoxDonate.Image = RuiRuiQQRobot.Properties.Resources.Donate_ZFB50;
+        }
+
+        private void radioButtonDonate_AliPay100_CheckedChanged(object sender, EventArgs e)
+        {
+            if (radioButtonDonate_AliPay100.Checked)
+                pictureBoxDonate.Image = RuiRuiQQRobot.Properties.Resources.Donate_ZFB100;
+        }
+
+        private void radioButtonDonate_WeChat1_CheckedChanged(object sender, EventArgs e)
+        {
+            if (radioButtonDonate_WeChat1.Checked)
+                pictureBoxDonate.Image = RuiRuiQQRobot.Properties.Resources.Donate_WX1;
+        }
+
+        private void radioButtonDonate_WeChat5_CheckedChanged(object sender, EventArgs e)
+        {
+            if (radioButtonDonate_WeChat5.Checked)
+                pictureBoxDonate.Image = RuiRuiQQRobot.Properties.Resources.Donate_WX5;
+        }
+
+        private void radioButtonDonate_WeChat10_CheckedChanged(object sender, EventArgs e)
+        {
+            if (radioButtonDonate_WeChat10.Checked)
+                pictureBoxDonate.Image = RuiRuiQQRobot.Properties.Resources.Donate_WX10;
+        }
+
+        private void radioButtonDonate_WeChat20_CheckedChanged(object sender, EventArgs e)
+        {
+            if (radioButtonDonate_WeChat20.Checked)
+                pictureBoxDonate.Image = RuiRuiQQRobot.Properties.Resources.Donate_WX20;
+        }
+
+        private void radioButtonDonate_WeChat50_CheckedChanged(object sender, EventArgs e)
+        {
+            if (radioButtonDonate_WeChat50.Checked)
+                pictureBoxDonate.Image = RuiRuiQQRobot.Properties.Resources.Donate_WX50;
+        }
+
+        private void radioButtonDonate_WeChat100_CheckedChanged(object sender, EventArgs e)
+        {
+            if (radioButtonDonate_WeChat100.Checked)
+                pictureBoxDonate.Image = RuiRuiQQRobot.Properties.Resources.Donate_WX100;
+        }
+
+        private void radioButtonDonate_QQ1_CheckedChanged(object sender, EventArgs e)
+        {
+            if (radioButtonDonate_QQ1.Checked)
+                pictureBoxDonate.Image = RuiRuiQQRobot.Properties.Resources.Donate_QQ1;
+        }
+
+        private void radioButtonDonate_QQ5_CheckedChanged(object sender, EventArgs e)
+        {
+            if (radioButtonDonate_QQ5.Checked)
+                pictureBoxDonate.Image = RuiRuiQQRobot.Properties.Resources.Donate_QQ5;
+        }
+
+        private void radioButtonDonate_QQ10_CheckedChanged(object sender, EventArgs e)
+        {
+            if (radioButtonDonate_QQ10.Checked)
+                pictureBoxDonate.Image = RuiRuiQQRobot.Properties.Resources.Donate_QQ10;
+        }
+
+        private void radioButtonDonate_QQ20_CheckedChanged(object sender, EventArgs e)
+        {
+            if (radioButtonDonate_QQ20.Checked)
+                pictureBoxDonate.Image = RuiRuiQQRobot.Properties.Resources.Donate_QQ20;
+        }
+
+        private void radioButtonDonate_QQ50_CheckedChanged(object sender, EventArgs e)
+        {
+            if (radioButtonDonate_QQ50.Checked)
+                pictureBoxDonate.Image = RuiRuiQQRobot.Properties.Resources.Donate_QQ50;
+        }
+
+        private void radioButtonDonate_QQ100_CheckedChanged(object sender, EventArgs e)
+        {
+            if (radioButtonDonate_QQ100.Checked)
+                pictureBoxDonate.Image = RuiRuiQQRobot.Properties.Resources.Donate_QQ100;
+        }
+
+        private void tabControlDonate_Selecting(object sender, TabControlCancelEventArgs e)
+        {
+            if(e.TabPage.Name== "tabPageDonate_QQ")
+            {
+                radioButtonDonate_QQ5.Checked = true;
+                pictureBoxDonate.Image = RuiRuiQQRobot.Properties.Resources.Donate_QQ5;
+            }
+            else if (e.TabPage.Name == "tabPageDonate_AliPay")
+            {
+                radioButtonDonate_AliPay5.Checked = true;
+                pictureBoxDonate.Image = RuiRuiQQRobot.Properties.Resources.Donate_ZFB5;
+            }
+            else if (e.TabPage.Name == "tabPageDonate_WeChat")
+            {
+                radioButtonDonate_WeChat5.Checked = true;
+                pictureBoxDonate.Image = RuiRuiQQRobot.Properties.Resources.Donate_WX5;
+            }
+        }
+
+        private void buttonCoWorker_Click(object sender, EventArgs e)
+        {
+            System.Diagnostics.Process.Start("https://github.com/hxl9654/RuiRuiQQ/wiki/RuiRui%E7%B3%BB%E5%88%97%E8%81%8A%E5%A4%A9%E6%9C%BA%E5%99%A8%E4%BA%BA%E5%BC%80%E5%8F%91%E8%80%85%E6%8B%9B%E5%8B%9F");
+        }
+
+        private void 关于ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            
+        }
     }
     public class WindowObject : ObjectInstance
     {
