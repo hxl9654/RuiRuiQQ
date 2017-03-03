@@ -8,25 +8,28 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 using System.Windows.Forms;
-// *   This program is free software: you can redistribute it and/or modify
-// *   it under the terms of the GNU General Public License as published by
-// *   the Free Software Foundation, either version 3 of the License, or
-// *   (at your option) any later version.
-// *
-// *   This program is distributed in the hope that it will be useful,
-// *   but WITHOUT ANY WARRANTY; without even the implied warranty of
-// *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// *   GNU General Public License for more details.
-// *
-// *   You should have received a copy of the GNU General Public License
-// *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//  <RuiRuiQQRobot: A QQ chat robot.>
+//  Copyright(C) <2015-2017>  <Xianglong He>
+
+//  This program is free software: you can redistribute it and/or modify
+//  it under the terms of the GNU Affero General Public License as
+//  published by the Free Software Foundation, either version 3 of the
+//  License, or(at your option) any later version.
+
+//  This program is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+//  GNU Affero General Public License for more details.
+
+//  You should have received a copy of the GNU Affero General Public License
+//  along with this program.If not, see<http://www.gnu.org/licenses/>.
 // *
 // * @author     Xianglong He
-// * @copyright  Copyright (c) 2015 Xianglong He. (http://tec.hxlxz.com)
-// * @license    http://www.gnu.org/licenses/     GPL v3
-// * @version    2.0
+// * @copyright  Copyright (c) 2015-2017 Xianglong He. (http://tec.hxlxz.com)
+// * @license    http://www.gnu.org/licenses/     AGPL v3
+// * @version    0.1
 // * @discribe   RuiRuiQQRobot服务端
-// * 本软件作者是何相龙，使用GPL v3许可证进行授权。
+// * 本软件作者是何相龙，使用AGPL v3许可证进行授权。
 
 namespace RuiRuiQQRobot
 {
@@ -68,6 +71,7 @@ namespace RuiRuiQQRobot
                 req.CookieContainer = HTTP.cookies;
 
                 HttpWebResponse res = (HttpWebResponse)req.GetResponse();
+                HTTP.cookies.Add(res.Cookies);
                 Program.MainForm.pictureBoxQRCode.Visible = true;
                 Program.MainForm.pictureBoxQRCode.Image = Image.FromStream(res.GetResponseStream());
             }
@@ -86,8 +90,10 @@ namespace RuiRuiQQRobot
         /// </summary>
         private static void Login_GetQRStatu()
         {
-            string dat;
-            dat = HTTP.Get("https://ssl.ptlogin2.qq.com/ptqrlogin?webqq_type=10&remember_uin=1&login2qq=1&aid=501004106 &u1=http%3A%2F%2Fw.qq.com%2Fproxy.html%3Flogin2qq%3D1%26webqq_type%3D10 &ptredirect=0&ptlang=2052&daid=164&from_ui=1&pttype=1&dumy=&fp=loginerroralert &action=0-0-157510&mibao_css=m_webqq&t=1&g=1&js_type=0&js_ver=10143&login_sig=&pt_randsalt=0", "https://ui.ptlogin2.qq.com/cgi-bin/login?daid=164&target=self&style=16&mibao_css=m_webqq&appid=501004106&enable_qlogin=0&no_verifyimg=1 &s_url=http%3A%2F%2Fw.qq.com%2Fproxy.html&f_url=loginerroralert &strong_login=1&login_state=10&t=20131024001");
+            string dat, ptqrtoken, qrsig;
+            qrsig = HTTP.cookies.GetCookies(new Uri("http://ptlogin2.qq.com"))["qrsig"].Value;
+            ptqrtoken = AID_Hash33(qrsig).ToString();
+            dat = HTTP.Get("https://ssl.ptlogin2.qq.com/ptqrlogin?ptqrtoken=#{ptqrtoken}&webqq_type=10&remember_uin=1&login2qq=1&aid=501004106&u1=http%3A%2F%2Fw.qq.com%2Fproxy.html%3Flogin2qq%3D1%26webqq_type%3D10&ptredirect=0&ptlang=2052&daid=164&from_ui=1&pttype=1&dumy=&fp=loginerroralert&0-0-157510&mibao_css=m_webqq&t=undefined&g=1&js_type=0&js_ver=10184&login_sig=&pt_randsalt=3".Replace("#{ptqrtoken}", ptqrtoken), "https://ui.ptlogin2.qq.com/cgi-bin/login?daid=164&target=self&style=16&mibao_css=m_webqq&appid=501004106&enable_qlogin=0&no_verifyimg=1&s_url=http%3A%2F%2Fw.qq.com%2Fproxy.html&f_url=loginerroralert&strong_login=1&login_state=10&t=20131024001");
             string[] temp = dat.Split('\'');
             switch (temp[1])
             {
@@ -706,6 +712,17 @@ namespace RuiRuiQQRobot
                 return Convert.ToInt64(ts.TotalSeconds).ToString();
             }
             else return "ERROR";
+        }
+        /// <summary>
+        /// 获取Hash33,用于计算ptqrtoken 
+        /// </summary>
+        /// <returns>ptqrtoken</returns>
+        private static int AID_Hash33(string s)
+        {
+            int e = 0, i = 0, n = s.Length;
+            for (; n > i; ++i)
+                e += (e << 5) + s[i];
+            return 2147483647 & e;
         }
         /// <summary>
         /// 生成由群主QQ和群创建时间构成的群标识码

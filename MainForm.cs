@@ -7,25 +7,28 @@ using System.IO;
 using System.Text;
 using System.Web;
 using System.Windows.Forms;
-// *   This program is free software: you can redistribute it and/or modify
-// *   it under the terms of the GNU General Public License as published by
-// *   the Free Software Foundation, either version 3 of the License, or
-// *   (at your option) any later version.
-// *
-// *   This program is distributed in the hope that it will be useful,
-// *   but WITHOUT ANY WARRANTY; without even the implied warranty of
-// *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// *   GNU General Public License for more details.
-// *
-// *   You should have received a copy of the GNU General Public License
-// *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//  <RuiRuiQQRobot: A QQ chat robot.>
+//  Copyright(C) <2015-2017>  <Xianglong He>
+
+//  This program is free software: you can redistribute it and/or modify
+//  it under the terms of the GNU Affero General Public License as
+//  published by the Free Software Foundation, either version 3 of the
+//  License, or(at your option) any later version.
+
+//  This program is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+//  GNU Affero General Public License for more details.
+
+//  You should have received a copy of the GNU Affero General Public License
+//  along with this program.If not, see<http://www.gnu.org/licenses/>.
 // *
 // * @author     Xianglong He
-// * @copyright  Copyright (c) 2015 Xianglong He. (http://tec.hxlxz.com)
-// * @license    http://www.gnu.org/licenses/     GPL v3
-// * @version    1.0
+// * @copyright  Copyright (c) 2015-2017 Xianglong He. (http://tec.hxlxz.com)
+// * @license    http://www.gnu.org/licenses/     AGPL v3
+// * @version    0.1
 // * @discribe   RuiRuiQQRobot服务端
-// * 本软件作者是何相龙，使用GPL v3许可证进行授权。
+// * 本软件作者是何相龙，使用AGPL v3许可证进行授权。
 namespace RuiRuiQQRobot
 {
 
@@ -230,20 +233,166 @@ namespace RuiRuiQQRobot
 
         private void listBoxFriend_SelectedIndexChanged(object sender, EventArgs e)
         {
-            string[] tmp = listBoxFriend.SelectedItem.ToString().Split(':');
-            AddAndReNewTextBoxFriendChat(tmp[0], "", true);
+            if (listBoxFriend.SelectedIndex != -1)
+            {
+                string[] tmp = listBoxFriend.SelectedItem.ToString().Split(':');
+                AddAndReNewTextBoxFriendChat(tmp[0], "", true);
+            }
         }
 
         private void listBoxGroup_SelectedIndexChanged(object sender, EventArgs e)
         {
-            string[] tmp = listBoxGroup.SelectedItem.ToString().Split(':');
-            AddAndReNewTextBoxGroupChat(tmp[0], "", true);
+            if (listBoxGroup.SelectedIndex != -1)
+            {
+                string[] tmp = listBoxGroup.SelectedItem.ToString().Split(':');
+                AddAndReNewTextBoxGroupChat(tmp[0], "", true);
+            }
         }
 
         private void listBoxDiscuss_SelectedIndexChanged(object sender, EventArgs e)
         {
-            string[] tmp = listBoxDiscuss.SelectedItem.ToString().Split(':');
-            AddAndReNewTextBoxDiscussChat(tmp[0], "", true);
+            if (listBoxDiscuss.SelectedIndex != -1)
+            {
+                string[] tmp = listBoxDiscuss.SelectedItem.ToString().Split(':');
+                AddAndReNewTextBoxDiscussChat(tmp[0], "", true);
+            }
+        }
+
+        private void radioButtonDonate_AliPay1_CheckedChanged(object sender, EventArgs e)
+        {
+            if (radioButtonDonate_AliPay1.Checked)
+                pictureBoxDonate.Image = RuiRuiQQRobot.Properties.Resources.Donate_ZFB1;
+        }
+
+        private void radioButtonDonate_AliPay5_CheckedChanged(object sender, EventArgs e)
+        {
+            if (radioButtonDonate_AliPay5.Checked)
+                pictureBoxDonate.Image = RuiRuiQQRobot.Properties.Resources.Donate_ZFB5;
+        }
+
+        private void radioButtonDonate_AliPay10_CheckedChanged(object sender, EventArgs e)
+        {
+            if (radioButtonDonate_AliPay10.Checked)
+                pictureBoxDonate.Image = RuiRuiQQRobot.Properties.Resources.Donate_ZFB10;
+        }
+
+        private void radioButtonDonate_AliPay20_CheckedChanged(object sender, EventArgs e)
+        {
+            if (radioButtonDonate_AliPay20.Checked)
+                pictureBoxDonate.Image = RuiRuiQQRobot.Properties.Resources.Donate_ZFB20;
+        }
+
+        private void radioButtonDonate_AliPay50_CheckedChanged(object sender, EventArgs e)
+        {
+            if (radioButtonDonate_AliPay50.Checked)
+                pictureBoxDonate.Image = RuiRuiQQRobot.Properties.Resources.Donate_ZFB50;
+        }
+
+        private void radioButtonDonate_AliPay100_CheckedChanged(object sender, EventArgs e)
+        {
+            if (radioButtonDonate_AliPay100.Checked)
+                pictureBoxDonate.Image = RuiRuiQQRobot.Properties.Resources.Donate_ZFB100;
+        }
+
+        private void radioButtonDonate_WeChat1_CheckedChanged(object sender, EventArgs e)
+        {
+            if (radioButtonDonate_WeChat1.Checked)
+                pictureBoxDonate.Image = RuiRuiQQRobot.Properties.Resources.Donate_WX1;
+        }
+
+        private void radioButtonDonate_WeChat5_CheckedChanged(object sender, EventArgs e)
+        {
+            if (radioButtonDonate_WeChat5.Checked)
+                pictureBoxDonate.Image = RuiRuiQQRobot.Properties.Resources.Donate_WX5;
+        }
+
+        private void radioButtonDonate_WeChat10_CheckedChanged(object sender, EventArgs e)
+        {
+            if (radioButtonDonate_WeChat10.Checked)
+                pictureBoxDonate.Image = RuiRuiQQRobot.Properties.Resources.Donate_WX10;
+        }
+
+        private void radioButtonDonate_WeChat20_CheckedChanged(object sender, EventArgs e)
+        {
+            if (radioButtonDonate_WeChat20.Checked)
+                pictureBoxDonate.Image = RuiRuiQQRobot.Properties.Resources.Donate_WX20;
+        }
+
+        private void radioButtonDonate_WeChat50_CheckedChanged(object sender, EventArgs e)
+        {
+            if (radioButtonDonate_WeChat50.Checked)
+                pictureBoxDonate.Image = RuiRuiQQRobot.Properties.Resources.Donate_WX50;
+        }
+
+        private void radioButtonDonate_WeChat100_CheckedChanged(object sender, EventArgs e)
+        {
+            if (radioButtonDonate_WeChat100.Checked)
+                pictureBoxDonate.Image = RuiRuiQQRobot.Properties.Resources.Donate_WX100;
+        }
+
+        private void radioButtonDonate_QQ1_CheckedChanged(object sender, EventArgs e)
+        {
+            if (radioButtonDonate_QQ1.Checked)
+                pictureBoxDonate.Image = RuiRuiQQRobot.Properties.Resources.Donate_QQ1;
+        }
+
+        private void radioButtonDonate_QQ5_CheckedChanged(object sender, EventArgs e)
+        {
+            if (radioButtonDonate_QQ5.Checked)
+                pictureBoxDonate.Image = RuiRuiQQRobot.Properties.Resources.Donate_QQ5;
+        }
+
+        private void radioButtonDonate_QQ10_CheckedChanged(object sender, EventArgs e)
+        {
+            if (radioButtonDonate_QQ10.Checked)
+                pictureBoxDonate.Image = RuiRuiQQRobot.Properties.Resources.Donate_QQ10;
+        }
+
+        private void radioButtonDonate_QQ20_CheckedChanged(object sender, EventArgs e)
+        {
+            if (radioButtonDonate_QQ20.Checked)
+                pictureBoxDonate.Image = RuiRuiQQRobot.Properties.Resources.Donate_QQ20;
+        }
+
+        private void radioButtonDonate_QQ50_CheckedChanged(object sender, EventArgs e)
+        {
+            if (radioButtonDonate_QQ50.Checked)
+                pictureBoxDonate.Image = RuiRuiQQRobot.Properties.Resources.Donate_QQ50;
+        }
+
+        private void radioButtonDonate_QQ100_CheckedChanged(object sender, EventArgs e)
+        {
+            if (radioButtonDonate_QQ100.Checked)
+                pictureBoxDonate.Image = RuiRuiQQRobot.Properties.Resources.Donate_QQ100;
+        }
+
+        private void tabControlDonate_Selecting(object sender, TabControlCancelEventArgs e)
+        {
+            if (e.TabPage.Name == "tabPageDonate_QQ")
+            {
+                radioButtonDonate_QQ5.Checked = true;
+                pictureBoxDonate.Image = RuiRuiQQRobot.Properties.Resources.Donate_QQ5;
+            }
+            else if (e.TabPage.Name == "tabPageDonate_AliPay")
+            {
+                radioButtonDonate_AliPay5.Checked = true;
+                pictureBoxDonate.Image = RuiRuiQQRobot.Properties.Resources.Donate_ZFB5;
+            }
+            else if (e.TabPage.Name == "tabPageDonate_WeChat")
+            {
+                radioButtonDonate_WeChat5.Checked = true;
+                pictureBoxDonate.Image = RuiRuiQQRobot.Properties.Resources.Donate_WX5;
+            }
+        }
+
+        private void buttonCoWorker_Click(object sender, EventArgs e)
+        {
+            System.Diagnostics.Process.Start("https://github.com/hxl9654/RuiRuiQQ/wiki/RuiRui%E7%B3%BB%E5%88%97%E8%81%8A%E5%A4%A9%E6%9C%BA%E5%99%A8%E4%BA%BA%E5%BC%80%E5%8F%91%E8%80%85%E6%8B%9B%E5%8B%9F");
+        }
+
+        private void 关于ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
         }
     }
     public class WindowObject : ObjectInstance

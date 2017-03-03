@@ -16,16 +16,25 @@
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
-    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateEnabled>true</UpdateEnabled>
     <UpdateMode>Foreground</UpdateMode>
     <UpdateInterval>7</UpdateInterval>
     <UpdateIntervalUnits>Days</UpdateIntervalUnits>
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
+    <UpdateUrl>http://localhost/RuiRuiQQRobot/</UpdateUrl>
+    <SupportUrl>https://github.com/hxl9654/RuiRuiQQ/wiki</SupportUrl>
+    <ErrorReportUrl>https://github.com/hxl9654/RuiRuiQQ/issues</ErrorReportUrl>
+    <TargetCulture>zh-Hans</TargetCulture>
+    <ProductName>RuiRuiQQRobot</ProductName>
+    <PublisherName>何相龙</PublisherName>
+    <SuiteName>RuiRuiQQRobot</SuiteName>
+    <AutorunEnabled>true</AutorunEnabled>
     <ApplicationRevision>0</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
+    <CreateDesktopShortcut>true</CreateDesktopShortcut>
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
@@ -54,7 +63,7 @@
     <RootNamespace>RuiRuiQQRobot</RootNamespace>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>ico.ico</ApplicationIcon>
+    <ApplicationIcon>Resources\ico.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup>
     <SignManifests>true</SignManifests>
@@ -64,6 +73,19 @@
   </PropertyGroup>
   <PropertyGroup>
     <GenerateManifests>true</GenerateManifests>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ManifestTimestampUrl>http://timestamp.comodoca.com/authenticode</ManifestTimestampUrl>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>false</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup />
+  <PropertyGroup>
+    <TargetZone>LocalIntranet</TargetZone>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationManifest>Properties\app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Jurassic, Version=2.1.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -91,14 +113,26 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="GoogleTK.js" />
-    <Content Include="ico.ico" />
-    <Content Include="Jurassic.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Newtonsoft.Json.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <None Include="Resources\Icon1.ico" />
+    <None Include="Resources\ico.ico" />
+    <None Include="Properties\app.manifest" />
+    <None Include="Resources\ZFB100.jpg" />
+    <None Include="Resources\ZFB50.jpg" />
+    <None Include="Resources\ZFB20.jpg" />
+    <None Include="Resources\ZFB10.jpg" />
+    <None Include="Resources\ZFB5.jpg" />
+    <None Include="Resources\ZFB1.jpg" />
+    <None Include="Resources\WX100.jpg" />
+    <None Include="Resources\WX50.jpg" />
+    <None Include="Resources\WX20.jpg" />
+    <None Include="Resources\WX10.jpg" />
+    <None Include="Resources\WX5.jpg" />
+    <None Include="Resources\WX1.jpg" />
+    <None Include="Resources\QQ100.jpg" />
+    <None Include="Resources\QQ50.jpg" />
+    <None Include="Resources\QQ20.jpg" />
+    <None Include="Resources\QQ10.jpg" />
+    <None Include="Resources\QQ5.jpg" />
+    <None Include="Resources\QQ1.jpg" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MainForm.cs">
@@ -109,7 +143,7 @@
     </Compile>
     <Compile Include="GetInfo.cs" />
     <Compile Include="HTTP.cs" />
-    <Compile Include="JosnModel.cs" />
+    <Compile Include="JsonModel.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
@@ -118,6 +152,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="RuiRui.cs" />
+    <Compile Include="Settings.cs" />
     <Compile Include="SmartQQ.cs" />
   </ItemGroup>
   <ItemGroup>
