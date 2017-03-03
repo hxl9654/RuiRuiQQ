@@ -42,7 +42,7 @@
             this.listBoxFriend = new System.Windows.Forms.ListBox();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.listBoxGroup = new System.Windows.Forms.ListBox();
-            this.notifyIcon1 = new System.Windows.Forms.NotifyIcon(this.components);
+            this.notifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
             this.tabControlMain = new System.Windows.Forms.TabControl();
             this.tabPageLogin = new System.Windows.Forms.TabPage();
             this.groupBox8 = new System.Windows.Forms.GroupBox();
@@ -89,6 +89,19 @@
             this.groupBox6 = new System.Windows.Forms.GroupBox();
             this.listBoxDiscuss = new System.Windows.Forms.ListBox();
             this.tabPageSetting = new System.Windows.Forms.TabPage();
+            this.groupBox13 = new System.Windows.Forms.GroupBox();
+            this.checkBox4 = new System.Windows.Forms.CheckBox();
+            this.checkBox3 = new System.Windows.Forms.CheckBox();
+            this.checkBox2 = new System.Windows.Forms.CheckBox();
+            this.checkBox1 = new System.Windows.Forms.CheckBox();
+            this.groupBox12 = new System.Windows.Forms.GroupBox();
+            this.groupBox11 = new System.Windows.Forms.GroupBox();
+            this.groupBox10 = new System.Windows.Forms.GroupBox();
+            this.buttonAdminQQ_Add = new System.Windows.Forms.Button();
+            this.textBoxAdminQQ_Add = new System.Windows.Forms.TextBox();
+            this.buttonAdminQQ_Delate = new System.Windows.Forms.Button();
+            this.listBoxAdminQQ = new System.Windows.Forms.ListBox();
+            this.label1 = new System.Windows.Forms.Label();
             this.tabPageLog = new System.Windows.Forms.TabPage();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
@@ -97,19 +110,8 @@
             this.配置ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.帮助ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.关于ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.groupBox10 = new System.Windows.Forms.GroupBox();
-            this.label1 = new System.Windows.Forms.Label();
-            this.listBoxAdminQQ = new System.Windows.Forms.ListBox();
-            this.buttonAdminQQ_Delate = new System.Windows.Forms.Button();
-            this.textBoxAdminQQ_Add = new System.Windows.Forms.TextBox();
-            this.buttonAdminQQ_Add = new System.Windows.Forms.Button();
-            this.groupBox11 = new System.Windows.Forms.GroupBox();
-            this.groupBox12 = new System.Windows.Forms.GroupBox();
-            this.groupBox13 = new System.Windows.Forms.GroupBox();
-            this.checkBox1 = new System.Windows.Forms.CheckBox();
-            this.checkBox2 = new System.Windows.Forms.CheckBox();
-            this.checkBox3 = new System.Windows.Forms.CheckBox();
-            this.checkBox4 = new System.Windows.Forms.CheckBox();
+            this.开源代码ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.contextMenuStripNotifyIcon = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.groupbox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxQRCode)).BeginInit();
             this.groupBox2.SuspendLayout();
@@ -131,10 +133,10 @@
             this.groupBox9.SuspendLayout();
             this.groupBox6.SuspendLayout();
             this.tabPageSetting.SuspendLayout();
+            this.groupBox13.SuspendLayout();
+            this.groupBox10.SuspendLayout();
             this.tabPageLog.SuspendLayout();
             this.menuStrip1.SuspendLayout();
-            this.groupBox10.SuspendLayout();
-            this.groupBox13.SuspendLayout();
             this.SuspendLayout();
             // 
             // groupbox1
@@ -264,11 +266,13 @@
             this.listBoxGroup.SelectedIndexChanged += new System.EventHandler(this.listBoxGroup_SelectedIndexChanged);
             this.listBoxGroup.DoubleClick += new System.EventHandler(this.listBoxGroup_DoubleClick);
             // 
-            // notifyIcon1
+            // notifyIcon
             // 
-            this.notifyIcon1.Icon = ((System.Drawing.Icon)(resources.GetObject("notifyIcon1.Icon")));
-            this.notifyIcon1.Text = "RuiRuiQQ";
-            this.notifyIcon1.Visible = true;
+            this.notifyIcon.BalloonTipIcon = System.Windows.Forms.ToolTipIcon.Info;
+            this.notifyIcon.ContextMenuStrip = this.contextMenuStripNotifyIcon;
+            this.notifyIcon.Icon = ((System.Drawing.Icon)(resources.GetObject("notifyIcon.Icon")));
+            this.notifyIcon.Text = "RuiRuiQQ";
+            this.notifyIcon.Visible = true;
             // 
             // tabControlMain
             // 
@@ -824,6 +828,139 @@
             this.tabPageSetting.TabIndex = 4;
             this.tabPageSetting.Text = "系统设置";
             // 
+            // groupBox13
+            // 
+            this.groupBox13.Controls.Add(this.checkBox4);
+            this.groupBox13.Controls.Add(this.checkBox3);
+            this.groupBox13.Controls.Add(this.checkBox2);
+            this.groupBox13.Controls.Add(this.checkBox1);
+            this.groupBox13.Enabled = false;
+            this.groupBox13.Location = new System.Drawing.Point(6, 126);
+            this.groupBox13.Name = "groupBox13";
+            this.groupBox13.Size = new System.Drawing.Size(176, 108);
+            this.groupBox13.TabIndex = 3;
+            this.groupBox13.TabStop = false;
+            this.groupBox13.Text = "消息处理设置";
+            // 
+            // checkBox4
+            // 
+            this.checkBox4.AutoSize = true;
+            this.checkBox4.Location = new System.Drawing.Point(18, 62);
+            this.checkBox4.Name = "checkBox4";
+            this.checkBox4.Size = new System.Drawing.Size(108, 16);
+            this.checkBox4.TabIndex = 3;
+            this.checkBox4.Text = "处理讨论组消息";
+            this.checkBox4.UseVisualStyleBackColor = true;
+            // 
+            // checkBox3
+            // 
+            this.checkBox3.AutoSize = true;
+            this.checkBox3.Location = new System.Drawing.Point(18, 40);
+            this.checkBox3.Name = "checkBox3";
+            this.checkBox3.Size = new System.Drawing.Size(84, 16);
+            this.checkBox3.TabIndex = 2;
+            this.checkBox3.Text = "处理群消息";
+            this.checkBox3.UseVisualStyleBackColor = true;
+            // 
+            // checkBox2
+            // 
+            this.checkBox2.AutoSize = true;
+            this.checkBox2.Enabled = false;
+            this.checkBox2.Location = new System.Drawing.Point(18, 84);
+            this.checkBox2.Name = "checkBox2";
+            this.checkBox2.Size = new System.Drawing.Size(120, 16);
+            this.checkBox2.TabIndex = 1;
+            this.checkBox2.Text = "处理临时会话消息";
+            this.checkBox2.UseVisualStyleBackColor = true;
+            // 
+            // checkBox1
+            // 
+            this.checkBox1.AutoSize = true;
+            this.checkBox1.Location = new System.Drawing.Point(18, 18);
+            this.checkBox1.Name = "checkBox1";
+            this.checkBox1.Size = new System.Drawing.Size(96, 16);
+            this.checkBox1.TabIndex = 0;
+            this.checkBox1.Text = "处理好友消息";
+            this.checkBox1.UseVisualStyleBackColor = true;
+            // 
+            // groupBox12
+            // 
+            this.groupBox12.Location = new System.Drawing.Point(368, 6);
+            this.groupBox12.Name = "groupBox12";
+            this.groupBox12.Size = new System.Drawing.Size(174, 371);
+            this.groupBox12.TabIndex = 2;
+            this.groupBox12.TabStop = false;
+            this.groupBox12.Text = "groupBox12";
+            // 
+            // groupBox11
+            // 
+            this.groupBox11.Location = new System.Drawing.Point(188, 6);
+            this.groupBox11.Name = "groupBox11";
+            this.groupBox11.Size = new System.Drawing.Size(174, 371);
+            this.groupBox11.TabIndex = 1;
+            this.groupBox11.TabStop = false;
+            this.groupBox11.Text = "groupBox11";
+            // 
+            // groupBox10
+            // 
+            this.groupBox10.Controls.Add(this.buttonAdminQQ_Add);
+            this.groupBox10.Controls.Add(this.textBoxAdminQQ_Add);
+            this.groupBox10.Controls.Add(this.buttonAdminQQ_Delate);
+            this.groupBox10.Controls.Add(this.listBoxAdminQQ);
+            this.groupBox10.Controls.Add(this.label1);
+            this.groupBox10.Enabled = false;
+            this.groupBox10.Location = new System.Drawing.Point(6, 6);
+            this.groupBox10.Name = "groupBox10";
+            this.groupBox10.Size = new System.Drawing.Size(176, 114);
+            this.groupBox10.TabIndex = 0;
+            this.groupBox10.TabStop = false;
+            this.groupBox10.Text = "管理员QQ设置";
+            // 
+            // buttonAdminQQ_Add
+            // 
+            this.buttonAdminQQ_Add.Location = new System.Drawing.Point(129, 87);
+            this.buttonAdminQQ_Add.Name = "buttonAdminQQ_Add";
+            this.buttonAdminQQ_Add.Size = new System.Drawing.Size(41, 21);
+            this.buttonAdminQQ_Add.TabIndex = 4;
+            this.buttonAdminQQ_Add.Text = "添加";
+            this.buttonAdminQQ_Add.UseVisualStyleBackColor = true;
+            // 
+            // textBoxAdminQQ_Add
+            // 
+            this.textBoxAdminQQ_Add.Location = new System.Drawing.Point(6, 87);
+            this.textBoxAdminQQ_Add.MaxLength = 15;
+            this.textBoxAdminQQ_Add.Name = "textBoxAdminQQ_Add";
+            this.textBoxAdminQQ_Add.Size = new System.Drawing.Size(117, 21);
+            this.textBoxAdminQQ_Add.TabIndex = 3;
+            // 
+            // buttonAdminQQ_Delate
+            // 
+            this.buttonAdminQQ_Delate.Location = new System.Drawing.Point(129, 17);
+            this.buttonAdminQQ_Delate.Name = "buttonAdminQQ_Delate";
+            this.buttonAdminQQ_Delate.Size = new System.Drawing.Size(41, 64);
+            this.buttonAdminQQ_Delate.TabIndex = 2;
+            this.buttonAdminQQ_Delate.Text = "删除";
+            this.buttonAdminQQ_Delate.UseVisualStyleBackColor = true;
+            // 
+            // listBoxAdminQQ
+            // 
+            this.listBoxAdminQQ.FormattingEnabled = true;
+            this.listBoxAdminQQ.ItemHeight = 12;
+            this.listBoxAdminQQ.Location = new System.Drawing.Point(6, 17);
+            this.listBoxAdminQQ.Name = "listBoxAdminQQ";
+            this.listBoxAdminQQ.ScrollAlwaysVisible = true;
+            this.listBoxAdminQQ.Size = new System.Drawing.Size(117, 64);
+            this.listBoxAdminQQ.TabIndex = 1;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(6, 17);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(0, 12);
+            this.label1.TabIndex = 0;
+            this.label1.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            // 
             // tabPageLog
             // 
             this.tabPageLog.BackColor = System.Drawing.SystemColors.Control;
@@ -849,7 +986,8 @@
             this.登录ToolStripMenuItem,
             this.配置ToolStripMenuItem,
             this.帮助ToolStripMenuItem,
-            this.关于ToolStripMenuItem});
+            this.关于ToolStripMenuItem,
+            this.开源代码ToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(580, 25);
@@ -881,138 +1019,16 @@
             this.关于ToolStripMenuItem.Text = "关于";
             this.关于ToolStripMenuItem.Click += new System.EventHandler(this.关于ToolStripMenuItem_Click);
             // 
-            // groupBox10
+            // 开源代码ToolStripMenuItem
             // 
-            this.groupBox10.Controls.Add(this.buttonAdminQQ_Add);
-            this.groupBox10.Controls.Add(this.textBoxAdminQQ_Add);
-            this.groupBox10.Controls.Add(this.buttonAdminQQ_Delate);
-            this.groupBox10.Controls.Add(this.listBoxAdminQQ);
-            this.groupBox10.Controls.Add(this.label1);
-            this.groupBox10.Enabled = false;
-            this.groupBox10.Location = new System.Drawing.Point(6, 6);
-            this.groupBox10.Name = "groupBox10";
-            this.groupBox10.Size = new System.Drawing.Size(176, 114);
-            this.groupBox10.TabIndex = 0;
-            this.groupBox10.TabStop = false;
-            this.groupBox10.Text = "管理员QQ设置";
+            this.开源代码ToolStripMenuItem.Name = "开源代码ToolStripMenuItem";
+            this.开源代码ToolStripMenuItem.Size = new System.Drawing.Size(68, 21);
+            this.开源代码ToolStripMenuItem.Text = "开源代码";
             // 
-            // label1
+            // contextMenuStripNotifyIcon
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(6, 17);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(0, 12);
-            this.label1.TabIndex = 0;
-            this.label1.TextAlign = System.Drawing.ContentAlignment.TopCenter;
-            // 
-            // listBoxAdminQQ
-            // 
-            this.listBoxAdminQQ.FormattingEnabled = true;
-            this.listBoxAdminQQ.ItemHeight = 12;
-            this.listBoxAdminQQ.Location = new System.Drawing.Point(6, 17);
-            this.listBoxAdminQQ.Name = "listBoxAdminQQ";
-            this.listBoxAdminQQ.ScrollAlwaysVisible = true;
-            this.listBoxAdminQQ.Size = new System.Drawing.Size(117, 64);
-            this.listBoxAdminQQ.TabIndex = 1;
-            // 
-            // buttonAdminQQ_Delate
-            // 
-            this.buttonAdminQQ_Delate.Location = new System.Drawing.Point(129, 17);
-            this.buttonAdminQQ_Delate.Name = "buttonAdminQQ_Delate";
-            this.buttonAdminQQ_Delate.Size = new System.Drawing.Size(41, 64);
-            this.buttonAdminQQ_Delate.TabIndex = 2;
-            this.buttonAdminQQ_Delate.Text = "删除";
-            this.buttonAdminQQ_Delate.UseVisualStyleBackColor = true;
-            // 
-            // textBoxAdminQQ_Add
-            // 
-            this.textBoxAdminQQ_Add.Location = new System.Drawing.Point(6, 87);
-            this.textBoxAdminQQ_Add.MaxLength = 15;
-            this.textBoxAdminQQ_Add.Name = "textBoxAdminQQ_Add";
-            this.textBoxAdminQQ_Add.Size = new System.Drawing.Size(117, 21);
-            this.textBoxAdminQQ_Add.TabIndex = 3;
-            // 
-            // buttonAdminQQ_Add
-            // 
-            this.buttonAdminQQ_Add.Location = new System.Drawing.Point(129, 87);
-            this.buttonAdminQQ_Add.Name = "buttonAdminQQ_Add";
-            this.buttonAdminQQ_Add.Size = new System.Drawing.Size(41, 21);
-            this.buttonAdminQQ_Add.TabIndex = 4;
-            this.buttonAdminQQ_Add.Text = "添加";
-            this.buttonAdminQQ_Add.UseVisualStyleBackColor = true;
-            // 
-            // groupBox11
-            // 
-            this.groupBox11.Location = new System.Drawing.Point(188, 6);
-            this.groupBox11.Name = "groupBox11";
-            this.groupBox11.Size = new System.Drawing.Size(174, 371);
-            this.groupBox11.TabIndex = 1;
-            this.groupBox11.TabStop = false;
-            this.groupBox11.Text = "groupBox11";
-            // 
-            // groupBox12
-            // 
-            this.groupBox12.Location = new System.Drawing.Point(368, 6);
-            this.groupBox12.Name = "groupBox12";
-            this.groupBox12.Size = new System.Drawing.Size(174, 371);
-            this.groupBox12.TabIndex = 2;
-            this.groupBox12.TabStop = false;
-            this.groupBox12.Text = "groupBox12";
-            // 
-            // groupBox13
-            // 
-            this.groupBox13.Controls.Add(this.checkBox4);
-            this.groupBox13.Controls.Add(this.checkBox3);
-            this.groupBox13.Controls.Add(this.checkBox2);
-            this.groupBox13.Controls.Add(this.checkBox1);
-            this.groupBox13.Enabled = false;
-            this.groupBox13.Location = new System.Drawing.Point(6, 126);
-            this.groupBox13.Name = "groupBox13";
-            this.groupBox13.Size = new System.Drawing.Size(176, 108);
-            this.groupBox13.TabIndex = 3;
-            this.groupBox13.TabStop = false;
-            this.groupBox13.Text = "消息处理设置";
-            // 
-            // checkBox1
-            // 
-            this.checkBox1.AutoSize = true;
-            this.checkBox1.Location = new System.Drawing.Point(18, 18);
-            this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(96, 16);
-            this.checkBox1.TabIndex = 0;
-            this.checkBox1.Text = "处理好友消息";
-            this.checkBox1.UseVisualStyleBackColor = true;
-            // 
-            // checkBox2
-            // 
-            this.checkBox2.AutoSize = true;
-            this.checkBox2.Enabled = false;
-            this.checkBox2.Location = new System.Drawing.Point(18, 84);
-            this.checkBox2.Name = "checkBox2";
-            this.checkBox2.Size = new System.Drawing.Size(120, 16);
-            this.checkBox2.TabIndex = 1;
-            this.checkBox2.Text = "处理临时会话消息";
-            this.checkBox2.UseVisualStyleBackColor = true;
-            // 
-            // checkBox3
-            // 
-            this.checkBox3.AutoSize = true;
-            this.checkBox3.Location = new System.Drawing.Point(18, 40);
-            this.checkBox3.Name = "checkBox3";
-            this.checkBox3.Size = new System.Drawing.Size(84, 16);
-            this.checkBox3.TabIndex = 2;
-            this.checkBox3.Text = "处理群消息";
-            this.checkBox3.UseVisualStyleBackColor = true;
-            // 
-            // checkBox4
-            // 
-            this.checkBox4.AutoSize = true;
-            this.checkBox4.Location = new System.Drawing.Point(18, 62);
-            this.checkBox4.Name = "checkBox4";
-            this.checkBox4.Size = new System.Drawing.Size(108, 16);
-            this.checkBox4.TabIndex = 3;
-            this.checkBox4.Text = "处理讨论组消息";
-            this.checkBox4.UseVisualStyleBackColor = true;
+            this.contextMenuStripNotifyIcon.Name = "contextMenuStripNotifyIcon";
+            this.contextMenuStripNotifyIcon.Size = new System.Drawing.Size(61, 4);
             // 
             // MainForm
             // 
@@ -1060,13 +1076,13 @@
             this.groupBox9.PerformLayout();
             this.groupBox6.ResumeLayout(false);
             this.tabPageSetting.ResumeLayout(false);
+            this.groupBox13.ResumeLayout(false);
+            this.groupBox13.PerformLayout();
+            this.groupBox10.ResumeLayout(false);
+            this.groupBox10.PerformLayout();
             this.tabPageLog.ResumeLayout(false);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
-            this.groupBox10.ResumeLayout(false);
-            this.groupBox10.PerformLayout();
-            this.groupBox13.ResumeLayout(false);
-            this.groupBox13.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1084,7 +1100,7 @@
         public System.Windows.Forms.TextBox textBoxLog;
         internal System.Windows.Forms.Button buttonLogIn;
         public System.Windows.Forms.Label labelQRStatu;
-        private System.Windows.Forms.NotifyIcon notifyIcon1;
+        private System.Windows.Forms.NotifyIcon notifyIcon;
         private System.Windows.Forms.TabControl tabControlMain;
         private System.Windows.Forms.TabPage tabPageLogin;
         private System.Windows.Forms.TabPage tabPageFriends;
@@ -1153,6 +1169,8 @@
         private System.Windows.Forms.CheckBox checkBox3;
         private System.Windows.Forms.CheckBox checkBox2;
         private System.Windows.Forms.CheckBox checkBox1;
+        private System.Windows.Forms.ToolStripMenuItem 开源代码ToolStripMenuItem;
+        private System.Windows.Forms.ContextMenuStrip contextMenuStripNotifyIcon;
     }
 }
 

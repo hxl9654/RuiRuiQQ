@@ -233,20 +233,29 @@ namespace RuiRuiQQRobot
 
         private void listBoxFriend_SelectedIndexChanged(object sender, EventArgs e)
         {
-            string[] tmp = listBoxFriend.SelectedItem.ToString().Split(':');
-            AddAndReNewTextBoxFriendChat(tmp[0], "", true);
+            if (listBoxFriend.SelectedIndex != -1)
+            {
+                string[] tmp = listBoxFriend.SelectedItem.ToString().Split(':');
+                AddAndReNewTextBoxFriendChat(tmp[0], "", true);
+            }
         }
 
         private void listBoxGroup_SelectedIndexChanged(object sender, EventArgs e)
         {
-            string[] tmp = listBoxGroup.SelectedItem.ToString().Split(':');
-            AddAndReNewTextBoxGroupChat(tmp[0], "", true);
+            if (listBoxGroup.SelectedIndex != -1)
+            {
+                string[] tmp = listBoxGroup.SelectedItem.ToString().Split(':');
+                AddAndReNewTextBoxGroupChat(tmp[0], "", true);
+            }
         }
 
         private void listBoxDiscuss_SelectedIndexChanged(object sender, EventArgs e)
         {
-            string[] tmp = listBoxDiscuss.SelectedItem.ToString().Split(':');
-            AddAndReNewTextBoxDiscussChat(tmp[0], "", true);
+            if (listBoxDiscuss.SelectedIndex != -1)
+            {
+                string[] tmp = listBoxDiscuss.SelectedItem.ToString().Split(':');
+                AddAndReNewTextBoxDiscussChat(tmp[0], "", true);
+            }
         }
 
         private void radioButtonDonate_AliPay1_CheckedChanged(object sender, EventArgs e)
@@ -359,7 +368,7 @@ namespace RuiRuiQQRobot
 
         private void tabControlDonate_Selecting(object sender, TabControlCancelEventArgs e)
         {
-            if(e.TabPage.Name== "tabPageDonate_QQ")
+            if (e.TabPage.Name == "tabPageDonate_QQ")
             {
                 radioButtonDonate_QQ5.Checked = true;
                 pictureBoxDonate.Image = RuiRuiQQRobot.Properties.Resources.Donate_QQ5;
@@ -383,7 +392,7 @@ namespace RuiRuiQQRobot
 
         private void 关于ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            
+
         }
     }
     public class WindowObject : ObjectInstance

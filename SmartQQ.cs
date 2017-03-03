@@ -71,6 +71,7 @@ namespace RuiRuiQQRobot
                 req.CookieContainer = HTTP.cookies;
 
                 HttpWebResponse res = (HttpWebResponse)req.GetResponse();
+                HTTP.cookies.Add(res.Cookies);
                 Program.MainForm.pictureBoxQRCode.Visible = true;
                 Program.MainForm.pictureBoxQRCode.Image = Image.FromStream(res.GetResponseStream());
             }
@@ -89,8 +90,10 @@ namespace RuiRuiQQRobot
         /// </summary>
         private static void Login_GetQRStatu()
         {
-            string dat;
-            dat = HTTP.Get("https://ssl.ptlogin2.qq.com/ptqrlogin?webqq_type=10&remember_uin=1&login2qq=1&aid=501004106 &u1=http%3A%2F%2Fw.qq.com%2Fproxy.html%3Flogin2qq%3D1%26webqq_type%3D10 &ptredirect=0&ptlang=2052&daid=164&from_ui=1&pttype=1&dumy=&fp=loginerroralert &action=0-0-157510&mibao_css=m_webqq&t=1&g=1&js_type=0&js_ver=10143&login_sig=&pt_randsalt=0", "https://ui.ptlogin2.qq.com/cgi-bin/login?daid=164&target=self&style=16&mibao_css=m_webqq&appid=501004106&enable_qlogin=0&no_verifyimg=1 &s_url=http%3A%2F%2Fw.qq.com%2Fproxy.html&f_url=loginerroralert &strong_login=1&login_state=10&t=20131024001");
+            string dat, ptqrtoken, qrsig;
+            qrsig = HTTP.cookies.GetCookies(new Uri("http://ptlogin2.qq.com"))["qrsig"].Value;
+            ptqrtoken = AID_Hash33(qrsig).ToString();
+            dat = HTTP.Get("https://ssl.ptlogin2.qq.com/ptqrlogin?ptqrtoken=#{ptqrtoken}&webqq_type=10&remember_uin=1&login2qq=1&aid=501004106&u1=http%3A%2F%2Fw.qq.com%2Fproxy.html%3Flogin2qq%3D1%26webqq_type%3D10&ptredirect=0&ptlang=2052&daid=164&from_ui=1&pttype=1&dumy=&fp=loginerroralert&0-0-157510&mibao_css=m_webqq&t=undefined&g=1&js_type=0&js_ver=10184&login_sig=&pt_randsalt=3".Replace("#{ptqrtoken}", ptqrtoken), "https://ui.ptlogin2.qq.com/cgi-bin/login?daid=164&target=self&style=16&mibao_css=m_webqq&appid=501004106&enable_qlogin=0&no_verifyimg=1&s_url=http%3A%2F%2Fw.qq.com%2Fproxy.html&f_url=loginerroralert&strong_login=1&login_state=10&t=20131024001");
             string[] temp = dat.Split('\'');
             switch (temp[1])
             {
@@ -709,6 +712,17 @@ namespace RuiRuiQQRobot
                 return Convert.ToInt64(ts.TotalSeconds).ToString();
             }
             else return "ERROR";
+        }
+        /// <summary>
+        /// 获取Hash33,用于计算ptqrtoken 
+        /// </summary>
+        /// <returns>ptqrtoken</returns>
+        private static int AID_Hash33(string s)
+        {
+            int e = 0, i = 0, n = s.Length;
+            for (; n > i; ++i)
+                e += (e << 5) + s[i];
+            return 2147483647 & e;
         }
         /// <summary>
         /// 生成由群主QQ和群创建时间构成的群标识码
